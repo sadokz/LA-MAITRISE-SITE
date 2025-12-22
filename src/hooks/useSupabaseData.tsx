@@ -46,6 +46,9 @@ export interface Competence {
   description: string;
   icon: string;
   position: number;
+  image_mode: 'auto' | 'url' | 'upload'; // New field
+  image_url?: string; // New field
+  image_file?: string; // New field
 }
 
 export interface Domaine {
@@ -114,7 +117,7 @@ export const useCompetences = () => {
       .order('position', { ascending: true });
     
     if (!error && data) {
-      setCompetences(data);
+      setCompetences(data as Competence[]);
     }
     setLoading(false);
   };
