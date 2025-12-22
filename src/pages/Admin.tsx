@@ -12,9 +12,10 @@ import AdminRealisations from '@/components/admin/AdminRealisations';
 import AdminFounder from '@/components/admin/AdminFounder';
 import AdminContact from '@/components/admin/AdminContact';
 import AdminSections from '@/components/admin/AdminSections';
-import AdminCompetencesPageHero from '@/components/admin/AdminCompetencesPageHero';
-import AdminDomainsPageHero from '@/components/admin/AdminDomainsPageHero';
-import AdminRealisationsPageHero from '@/components/admin/AdminRealisationsPageHero';
+// Removed individual page hero imports as they will be integrated into AdminSections
+// import AdminCompetencesPageHero from '@/components/admin/AdminCompetencesPageHero';
+// import AdminDomainsPageHero from '@/components/admin/AdminDomainsPageHero';
+// import AdminRealisationsPageHero from '@/components/admin/AdminRealisationsPageHero';
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
@@ -86,22 +87,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="sections" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-10">
+          <TabsList className="grid w-full grid-cols-7"> {/* Adjusted grid columns */}
             <TabsTrigger value="sections" className="flex items-center space-x-2">
               <LayoutGrid className="h-4 w-4" />
               <span>Sections</span>
-            </TabsTrigger>
-            <TabsTrigger value="competences-page-hero" className="flex items-center space-x-2">
-              <Lightbulb className="h-4 w-4" />
-              <span>Page Compétences</span>
-            </TabsTrigger>
-            <TabsTrigger value="domains-page-hero" className="flex items-center space-x-2">
-              <Building className="h-4 w-4" />
-              <span>Page Domaines</span>
-            </TabsTrigger>
-            <TabsTrigger value="realisations-page-hero" className="flex items-center space-x-2">
-              <Trophy className="h-4 w-4" />
-              <span>Page Réalisations</span>
             </TabsTrigger>
             <TabsTrigger value="hero" className="flex items-center space-x-2">
               <Home className="h-4 w-4" />
@@ -130,10 +119,11 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="sections">
-            <AdminSections />
+            <AdminSections /> {/* This component will now include the page hero settings */}
           </TabsContent>
 
-          <TabsContent value="competences-page-hero">
+          {/* Removed individual page hero TabsContent */}
+          {/* <TabsContent value="competences-page-hero">
             <Card>
               <CardHeader>
                 <CardTitle>Gestion du Hero de la page Compétences</CardTitle>
@@ -164,7 +154,7 @@ const Admin = () => {
                 <AdminRealisationsPageHero />
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="hero">
             <Card>

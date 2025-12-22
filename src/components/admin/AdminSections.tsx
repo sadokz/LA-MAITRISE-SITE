@@ -5,7 +5,10 @@ import { Label } from '@/components/ui/label';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail } from 'lucide-react';
+import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy } from 'lucide-react';
+import AdminCompetencesPageHero from './AdminCompetencesPageHero'; // Import the component
+import AdminDomainsPageHero from './AdminDomainsPageHero';     // Import the component
+import AdminRealisationsPageHero from './AdminRealisationsPageHero'; // Import the component
 
 interface SectionConfig {
   key: string;
@@ -61,60 +64,80 @@ const AdminSections = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Grid3X3 className="h-5 w-5" />
-          Visibilité des sections
-        </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Activez ou désactivez les sections du site public. Les sections masquées ne seront plus visibles par les visiteurs.
-        </p>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {sections.map((section) => {
-            const visibilityValue = visibility?.[section.key as keyof typeof visibility];
-            const isVisible = typeof visibilityValue === 'boolean' ? visibilityValue : true;
-            
-            return (
-              <div
-                key={section.key}
-                className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
-                  isVisible 
-                    ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' 
-                    : 'bg-muted/50 border-border'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`${isVisible ? 'text-green-600' : 'text-muted-foreground'}`}>
-                    {section.icon}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <LayoutGrid className="h-5 w-5" />
+            Visibilité des sections
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Activez ou désactivez les sections du site public. Les sections masquées ne seront plus visibles par les visiteurs.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {sections.map((section) => {
+              const visibilityValue = visibility?.[section.key as keyof typeof visibility];
+              const isVisible = typeof visibilityValue === 'boolean' ? visibilityValue : true;
+              
+              return (
+                <div
+                  key={section.key}
+                  className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
+                    isVisible 
+                      ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' 
+                      : 'bg-muted/50 border-border'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`${isVisible ? 'text-green-600' : 'text-muted-foreground'}`}>
+                      {section.icon}
+                    </div>
+                    <Label 
+                      htmlFor={`toggle-${section.key}`} 
+                      className={`font-medium cursor-pointer ${
+                        isVisible ? 'text-foreground' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {section.label}
+                    </Label>
                   </div>
-                  <Label 
-                    htmlFor={`toggle-${section.key}`} 
-                    className={`font-medium cursor-pointer ${
-                      isVisible ? 'text-foreground' : 'text-muted-foreground'
-                    }`}
-                  >
-                    {section.label}
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-medium ${isVisible ? 'text-green-600' : 'text-muted-foreground'}`}>
+                      {isVisible ? 'Visible' : 'Masquée'}
+                    </span>
+                    <Switch
+                      id={`toggle-${section.key}`}
+                      checked={isVisible}
+                      onCheckedChange={(checked) => handleToggle(section.key, checked)}
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs font-medium ${isVisible ? 'text-green-600' : 'text-muted-foreground'}`}>
-                    {isVisible ? 'Visible' : 'Masquée'}
-                  </span>
-                  <Switch
-                    id={`toggle-${section.key}`}
-                    checked={isVisible}
-                    onCheckedChange={(checked) => handleToggle(section.key, checked)}
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Page Hero Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Image className="h-5 w-5" />
+            Paramètres des bannières de page
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Gérez les images ou vidéos de fond pour les pages dédiées aux compétences, domaines et réalisations.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <AdminCompetencesPageHero />
+          <AdminDomainsPageHero />
+          <AdminRealisationsPageHero />
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
