@@ -123,14 +123,28 @@ const AdminDomaines = () => {
     e.preventDefault();
 
     const payload = {
-      title: form.title,
-      description: form.description,
-      long_description: form.long_description || null,
-      image_url: form.image_mode === 'url' ? form.image_url : null,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      long_description: form.long_description.trim() || null,
+      image_url: form.image_mode === 'url' ? (form.image_url.trim() || null) : null,
       image_mode: form.image_mode,
-      image_file: form.image_mode === 'upload' ? form.image_file : null,
-      icon: form.icon, // Use the text/emoji directly
+      image_file: form.image_mode === 'upload' ? (form.image_file.trim() || null) : null,
+      icon: form.icon.trim(),
     };
+
+    // Client-side validation
+    if (!payload.title) {
+      toast({ title: 'Erreur', description: 'Le titre est requis.', variant: 'destructive' });
+      return;
+    }
+    if (!payload.description) {
+      toast({ title: 'Erreur', description: 'La description courte est requise.', variant: 'destructive' });
+      return;
+    }
+    if (!payload.icon) {
+      toast({ title: 'Erreur', description: 'L\'icône est requise.', variant: 'destructive' });
+      return;
+    }
 
     if (editingDomaine) {
       const { error } = await supabase
@@ -139,9 +153,10 @@ const AdminDomaines = () => {
         .eq('id', editingDomaine.id);
 
       if (error) {
+        console.error('Supabase update error:', error); // Log the actual error
         toast({
           title: 'Erreur',
-          description: 'Impossible de mettre à jour le domaine',
+          description: `Impossible de mettre à jour le domaine: ${error.message}`,
           variant: 'destructive',
         });
         return;
@@ -153,9 +168,10 @@ const AdminDomaines = () => {
         .insert({ ...payload, position: maxPosition + 1 });
 
       if (error) {
+        console.error('Supabase insert error:', error); // Log the actual error
         toast({
           title: 'Erreur',
-          description: 'Impossible de créer le domaine',
+          description: `Impossible de créer le domaine: ${error.message}`,
           variant: 'destructive',
         });
         return;
@@ -197,9 +213,10 @@ const AdminDomaines = () => {
       .eq('id', id);
 
     if (error) {
+      console.error('Supabase delete error:', error); // Log the actual error
       toast({
         title: 'Erreur',
-        description: 'Impossible de supprimer le domaine',
+        description: `Impossible de supprimer le domaine: ${error.message}`,
         variant: 'destructive',
       });
       return;
@@ -240,9 +257,10 @@ const AdminDomaines = () => {
     }
 
     if (error) {
+      console.error('Supabase reorder error:', error); // Log the actual error
       toast({
         title: 'Erreur',
-        description: 'Impossible de réorganiser les domaines',
+        description: `Impossible de réorganiser les domaines: ${error.message}`,
         variant: 'destructive',
       });
       return;
@@ -304,6 +322,7 @@ const AdminDomaines = () => {
                   onChange={(e) => setForm({ ...form, icon: e.target.value })}
                   placeholder="Ex: ⚡, 🏠, 🏭"
                   maxLength={5}
+                  required
                 />
               </div>
               <div>
