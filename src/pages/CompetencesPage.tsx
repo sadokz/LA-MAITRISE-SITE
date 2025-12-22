@@ -5,13 +5,14 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import EditableText from '@/components/EditableText';
-import { useSiteTexts } from '@/hooks/useSupabaseData';
+import { useSiteTexts, useCompetences } from '@/hooks/useSupabaseData';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 
 const CompetencesPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
+  const { competences, loading: competencesLoading } = useCompetences();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -43,38 +44,58 @@ const CompetencesPage = () => {
             </div>
           </section>
 
-          {/* Under Construction Section */}
-          <section className="py-20 flex items-center justify-center">
-            <div className="text-center">
-              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto mb-4" />
-              <h2 className="text-3xl font-bold text-gray-dark mb-4">
-                <EditableText 
-                  textKey="competences.page.under_construction.title" 
-                  defaultValue={getSiteText('competences', 'page', 'under_construction.title', 'Page en construction')} 
-                  className="inline" 
-                  as="span" 
-                />
-              </h2>
-              <p className="text-gray-medium mb-8 max-w-md">
-                <EditableText 
-                  textKey="competences.page.under_construction.description" 
-                  defaultValue={getSiteText('competences', 'page', 'under_construction.description', 'Nous travaillons activement sur cette page pour vous fournir les meilleures informations.')} 
-                  className="inline" 
-                  as="span" 
-                  multiline 
-                />
-              </p>
-              <Button asChild>
-                <Link to="/" className="inline-flex items-center">
-                  <ArrowLeft className="mr-2 h-4 w-4" /> 
-                  <EditableText 
-                    textKey="competences.page.under_construction.button" 
-                    defaultValue={getSiteText('competences', 'page', 'under_construction.button', 'Retour à l\'accueil')} 
-                    className="inline" 
-                    as="span" 
-                  />
-                </Link>
-              </Button>
+          {/* Competences Section */}
+          <section className="section-padding bg-white">
+            <div className="container mx-auto px-4 lg:px-8">
+              {competencesLoading ? (
+                <div className="flex justify-center items-center py-20">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                </div>
+              ) : competences.length === 0 ? (
+                <div className="text-center py-20 text-gray-medium">
+                  <p>Aucune compétence n'est disponible pour le moment.</p>
+                  <Button asChild className="mt-8">
+                    <Link to="/" className="inline-flex items-center">
+                      <ArrowLeft className="mr-2 h-4 w-4" /> 
+                      Retour à l'accueil
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-20">
+                  {competences.sort((a, b) => a.position - b.position).map((competence, index) => {
+                    const isTextLeft = index % 2 === 0; // Alternate layout
+
+                    return (
+                      <div 
+                        key={competence.id} 
+                        className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        {/* Icon & Title Column */}
+                        <div className={`${isTextLeft ? 'order-1' : 'order-2'} md:order-none space-y-4`}>
+                          <div className="flex items-center space-x-4">
+                            <div className="text-5xl text-primary flex-shrink-0">
+                              {competence.icon}
+                            </div>
+                            <h2 className="font-heading font-bold text-3xl text-gray-dark">
+                              {competence.title}
+                            </h2>
+                          </div>
+                          <p className="text-gray-medium leading-relaxed">
+                            {competence.description}
+                          </p>
+                        </div>
+
+                        {/* Empty Column for spacing/alignment on alternating side */}
+                        <div className={`${isTextLeft ? 'order-2' : 'order-1'} md:order-none`}>
+                          {/* This column is intentionally left empty to create the alternating layout effect */}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </section>
         </main>
