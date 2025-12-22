@@ -21,7 +21,8 @@ const AdminCompetences = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     title: '',
-    description: '',
+    description: '', // Short description
+    long_description: '', // Long description
     icon: '⚡',
     image_mode: 'auto' as ImageMode,
     image_url: '',
@@ -33,6 +34,7 @@ const AdminCompetences = () => {
     setForm({ 
       title: '', 
       description: '', 
+      long_description: '',
       icon: '⚡',
       image_mode: 'auto',
       image_url: '',
@@ -114,6 +116,7 @@ const AdminCompetences = () => {
     const payload = {
       title: form.title,
       description: form.description,
+      long_description: form.long_description || null, // Save long description
       icon: form.icon,
       image_mode: form.image_mode,
       image_url: form.image_mode === 'url' ? form.image_url : null,
@@ -167,6 +170,7 @@ const AdminCompetences = () => {
     setForm({
       title: competence.title,
       description: competence.description,
+      long_description: competence.long_description || '', // Load long description
       icon: competence.icon,
       image_mode: competence.image_mode || 'auto',
       image_url: competence.image_url || '',
@@ -284,12 +288,21 @@ const AdminCompetences = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description courte (visible sur toutes les pages)</Label>
                 <Textarea
                   id="description"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   required
+                />
+              </div>
+              <div>
+                <Label htmlFor="long_description">Description longue (visible uniquement sur la page Compétences)</Label>
+                <Textarea
+                  id="long_description"
+                  value={form.long_description}
+                  onChange={(e) => setForm({ ...form, long_description: e.target.value })}
+                  placeholder="Description détaillée de la compétence..."
                 />
               </div>
 
@@ -396,7 +409,8 @@ const AdminCompetences = () => {
             <TableHead>Position</TableHead>
             <TableHead>Icône</TableHead>
             <TableHead>Titre</TableHead>
-            <TableHead>Description</TableHead>
+            <TableHead>Description courte</TableHead>
+            <TableHead>Description longue</TableHead>
             <TableHead>Image</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -429,6 +443,9 @@ const AdminCompetences = () => {
                   <TableCell className="text-2xl">{competence.icon}</TableCell>
                   <TableCell className="font-medium">{competence.title}</TableCell>
                   <TableCell className="max-w-xs truncate">{competence.description}</TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {competence.long_description || <span className="text-muted-foreground italic">Non définie</span>}
+                  </TableCell>
                   <TableCell>
                     {displayImage ? (
                       <img src={displayImage} alt={competence.title} className="w-10 h-10 object-cover rounded" />

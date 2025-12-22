@@ -115,7 +115,7 @@ const CompetencesPage = () => {
                         {/* Text Content Column */}
                         <div className={`${isImageLeft ? 'order-2' : 'order-1'} md:order-none space-y-4`}>
                           <div className="flex items-center space-x-4">
-                            <div className="text-3xl text-primary flex-shrink-0"> {/* Changed from text-5xl to text-3xl */}
+                            <div className="text-3xl text-primary flex-shrink-0">
                               {competence.icon}
                             </div>
                             <h2 className="font-heading font-bold text-3xl text-gray-dark">
@@ -125,6 +125,11 @@ const CompetencesPage = () => {
                           <p className="text-gray-medium leading-relaxed">
                             {competence.description}
                           </p>
+                          {competence.long_description && (
+                            <p className="text-gray-medium leading-relaxed border-t pt-4 mt-4">
+                              {competence.long_description}
+                            </p>
+                          )}
                         </div>
                       </div>
                     );

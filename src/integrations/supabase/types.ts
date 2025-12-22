@@ -23,6 +23,7 @@ export type Database = {
           image_file: string | null
           image_mode: string
           image_url: string | null
+          long_description: string | null
           position: number
           title: string
           updated_at: string
@@ -35,6 +36,7 @@ export type Database = {
           image_file?: string | null
           image_mode?: string
           image_url?: string | null
+          long_description?: string | null
           position?: number
           title: string
           updated_at?: string
@@ -47,6 +49,7 @@ export type Database = {
           image_file?: string | null
           image_mode?: string
           image_url?: string | null
+          long_description?: string | null
           position?: number
           title?: string
           updated_at?: string

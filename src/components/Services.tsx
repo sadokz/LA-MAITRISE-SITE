@@ -30,7 +30,7 @@ const Services = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  {competence.description}
+                  {competence.description} {/* This will now be the short description */}
                 </p>
               </CardContent>
             </Card>

@@ -43,12 +43,13 @@ export interface SiteText {
 export interface Competence {
   id: string;
   title: string;
-  description: string;
+  description: string; // Short description
+  long_description?: string; // New: Long description
   icon: string;
   position: number;
-  image_mode: 'auto' | 'url' | 'upload'; // New field
-  image_url?: string; // New field
-  image_file?: string; // New field
+  image_mode: 'auto' | 'url' | 'upload';
+  image_url?: string;
+  image_file?: string;
 }
 
 export interface Domaine {
