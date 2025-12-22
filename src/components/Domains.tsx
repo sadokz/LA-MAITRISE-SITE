@@ -104,7 +104,7 @@ const Domains = () => {
           <div className="text-center mb-16">
             <Button asChild size="lg" className="bg-gradient-primary text-white hover:opacity-90 font-semibold px-8 py-4 text-lg">
               <Link to="/domaines">
-                Découvrir tous nos domaines
+                En Savoir Plus
               </Link>
             </Button>
           </div>
