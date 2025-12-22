@@ -23,15 +23,18 @@ const References = () => {
 
   const loading = realisationsLoading || domainesLoading;
 
+  // Filter realisations to only include visible ones for public display
+  const visibleRealisations = useMemo(() => realisations.filter(r => r.is_visible), [realisations]);
+
   // Build dynamic filters based on domaines data
   const filters = useMemo(() => {
     const dynamicFilters = [
-      { id: 'all', label: 'Tous les projets', count: realisations.length },
+      { id: 'all', label: 'Tous les projets', count: visibleRealisations.length },
     ];
 
     // Create a map for quick lookup of realisation counts per domain
     const realisationCounts: Record<string, number> = {};
-    realisations.forEach(r => {
+    visibleRealisations.forEach(r => {
       realisationCounts[r.category] = (realisationCounts[r.category] || 0) + 1;
     });
 
@@ -48,13 +51,13 @@ const References = () => {
     });
 
     return dynamicFilters;
-  }, [realisations, domaines]);
+  }, [visibleRealisations, domaines]);
 
   const filteredProjects = useMemo(() => {
-    const sorted = [...realisations].sort((a, b) => a.position - b.position);
+    const sorted = [...visibleRealisations].sort((a, b) => a.position - b.position);
     if (activeFilter === 'all') return sorted;
     return sorted.filter(project => project.category === activeFilter);
-  }, [realisations, activeFilter]);
+  }, [visibleRealisations, activeFilter]);
 
   // Get display image for a realisation
   const getDisplayImage = (r: typeof realisations[0]) => {

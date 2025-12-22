@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -32,6 +32,9 @@ const RealisationsPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Filter realisations to only include visible ones for public display
+  const visibleRealisations = useMemo(() => realisations.filter(r => r.is_visible), [realisations]);
 
   // Get display image for a realisation (copied from References.tsx for consistency)
   const getDisplayImage = (r: typeof realisations[0]) => {
@@ -130,7 +133,7 @@ const RealisationsPage = () => {
                 <div className="flex justify-center items-center py-20">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
-              ) : realisations.length === 0 ? (
+              ) : visibleRealisations.length === 0 ? (
                 <div className="text-center py-20 text-gray-medium">
                   <p>Aucune réalisation n'est disponible pour le moment.</p>
                   <Button asChild className="mt-8">
@@ -142,7 +145,7 @@ const RealisationsPage = () => {
                 </div>
               ) : (
                 <div className="space-y-20">
-                  {realisations.sort((a, b) => a.position - b.position).map((project, index) => {
+                  {visibleRealisations.sort((a, b) => a.position - b.position).map((project, index) => {
                     const isImageLeft = index % 2 === 0; // Alternate layout
                     const displayImage = getDisplayImage(project);
 

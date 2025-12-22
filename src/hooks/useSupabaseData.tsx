@@ -74,6 +74,7 @@ export interface Realisation {
   image_mode: 'auto' | 'url' | 'upload';
   image_file?: string;
   position: number;
+  is_visible: boolean; // Added is_visible
 }
 
 export const useSiteTexts = () => {
