@@ -1,3 +1,4 @@
+' button after the hero section on the Realisations page.">
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -113,8 +114,18 @@ const RealisationsPage = () => {
             </div>
           </section>
 
+          {/* Back to Home Button */}
+          <div className="container mx-auto px-4 lg:px-8 py-8">
+            <Button asChild variant="outline" className="group">
+              <Link to="/">
+                <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                Accueil
+              </Link>
+            </Button>
+          </div>
+
           {/* Projects Section */}
-          <section className="section-padding bg-white">
+          <section className="section-padding bg-white pt-0"> {/* Adjusted padding-top */}
             <div className="container mx-auto px-4 lg:px-8">
               {realisationsLoading ? (
                 <div className="flex justify-center items-center py-20">
