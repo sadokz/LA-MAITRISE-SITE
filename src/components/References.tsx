@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useSiteTexts, useRealisations, useCompetences } from '@/hooks/useSupabaseData';
+import { useSiteTexts, useRealisations, useDomaines } from '@/hooks/useSupabaseData';
 import EditableText from '@/components/EditableText';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -18,39 +18,34 @@ const fallbackImages: Record<string, string> = {
 const References = () => {
   const { getSiteText } = useSiteTexts();
   const { realisations, loading: realisationsLoading } = useRealisations();
-  const { competences } = useCompetences();
+  const { domaines, loading: domainesLoading } = useDomaines(); // Use domaines for filters
   const [activeFilter, setActiveFilter] = useState('all');
 
-  // Build category labels from competences
-  const categoryLabels = useMemo(() => {
-    const labels: Record<string, string> = {};
-    competences.forEach(c => {
-      labels[c.title] = c.title;
-    });
-    return labels;
-  }, [competences]);
+  const loading = realisationsLoading || domainesLoading;
 
-  // Build dynamic filters based on realisations data
+  // Build dynamic filters based on domaines data
   const filters = useMemo(() => {
-    const categoryCounts: Record<string, number> = {};
-    realisations.forEach(r => {
-      categoryCounts[r.category] = (categoryCounts[r.category] || 0) + 1;
-    });
-
     const dynamicFilters = [
       { id: 'all', label: 'Tous les projets', count: realisations.length },
     ];
 
-    Object.entries(categoryCounts).forEach(([category, count]) => {
+    // Create a map for quick lookup of realisation counts per domain
+    const realisationCounts: Record<string, number> = {};
+    realisations.forEach(r => {
+      realisationCounts[r.category] = (realisationCounts[r.category] || 0) + 1;
+    });
+
+    // Add filters for each domain
+    domaines.forEach(domaine => {
       dynamicFilters.push({
-        id: category,
-        label: categoryLabels[category] || category,
-        count,
+        id: domaine.title, // Use domain title as filter ID
+        label: domaine.title,
+        count: realisationCounts[domaine.title] || 0, // Count realisations for this domain
       });
     });
 
     return dynamicFilters;
-  }, [realisations, categoryLabels]);
+  }, [realisations, domaines]);
 
   const filteredProjects = useMemo(() => {
     const sorted = [...realisations].sort((a, b) => a.position - b.position);
@@ -76,15 +71,14 @@ const References = () => {
     return text.substring(0, maxLength).trim() + '…';
   };
 
-  if (realisationsLoading) {
+  if (loading) {
     return (
       <section id="references" className="section-padding bg-white">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
-        </div>
-      </section>
+        </section>
     );
   }
 
@@ -148,7 +142,7 @@ const References = () => {
                   <div className="absolute inset-0 flex flex-col justify-end p-5 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 ease-out">
                     {/* Category Badge */}
                     <span className="inline-block self-start bg-orange/90 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2 uppercase tracking-wide">
-                      {categoryLabels[project.category] || project.category}
+                      {project.category}
                     </span>
                     {/* Title */}
                     <h3 className="font-heading font-bold text-xl text-white mb-1 leading-tight">
