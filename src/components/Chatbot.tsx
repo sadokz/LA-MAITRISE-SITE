@@ -60,7 +60,7 @@ const Chatbot = () => {
           <div className="flex items-center justify-between p-4 border-b border-border bg-primary rounded-t-lg">
             <div className="flex items-center space-x-2">
               <Bot className="h-6 w-6 text-white" />
-              <h3 className="text-lg font-semibold text-white">Assistant LME</h3>
+              <h3 className="text-lg font-semibold text-white">La Maitrise Génie 🧞‍♂️</h3>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:bg-white/20">
               <X className="h-5 w-5" />
