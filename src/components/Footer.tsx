@@ -21,6 +21,7 @@ const Footer = () => {
   const quickLinks = [
     { label: 'Accueil', id: 'accueil' },
     { label: 'Compétences', id: 'competences' },
+    { label: 'Domaines', id: 'domaines' }, // Added 'Domaines' link
     { label: 'Références', id: 'references' },
     { label: 'Contact', id: 'contact' }
   ];
