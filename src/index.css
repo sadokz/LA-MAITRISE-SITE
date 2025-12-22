@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* LA MAITRISE ENGINEERING Design System
+Orange corporat, gris sophistiqué, animations fluides
+*/
+
+@layer base {
+  :root {
+    /* Base colors */
+    --background: 0 0% 100%;
+    --foreground: 210 15% 20%;
+    
+    /* Corporate Orange Theme */
+    --orange: 25 95% 53%;
+    --orange-light: 25 95% 63%;
+    --orange-dark: 25 95% 43%;
+    --orange-foreground: 0 0% 100%;
+    
+    /* Professional Grays */
+    --gray-dark: 210 15% 20%;
+    --gray-medium: 210 10% 40%;
+    --gray-light: 210 10% 96%;
+    --gray-muted: 210 8% 60%;
+
+    /* Card and surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 210 15% 20%;
+    --card-hover: 210 10% 98%;
+
+    /* Semantic colors */
+    --primary: 25 95% 53%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 25 95% 43%;
+
+    --secondary: 210 10% 96%;
+    --secondary-foreground: 210 15% 20%;
+    --secondary-hover: 210 10% 90%;
+
+    --muted: 210 10% 96%;
+    --muted-foreground: 210 8% 60%;
+
+    --accent: 25 95% 95%;
+    --accent-foreground: 25 95% 53%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 15% 90%;
+    --input: 210 15% 95%;
+    --ring: 25 95% 53%;
+
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--orange)), hsl(var(--orange-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--orange)) 0%, hsl(var(--orange-dark)) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--background)) 0%, hsl(var(--gray-light)) 100%);
+    
+    /* Shadows */
+    --shadow-elegant: 0 10px 40px -10px hsl(var(--gray-dark) / 0.1);
+    --shadow-hover: 0 20px 50px -10px hsl(var(--orange) / 0.2);
+    --shadow-card: 0 4px 20px -2px hsl(var(--gray-dark) / 0.08);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Keep dark mode minimal for professional context */
+    --background: 210 15% 8%;
+    --foreground: 0 0% 95%;
+    --card: 210 15% 10%;
+    --card-foreground: 0 0% 95%;
+    --border: 210 15% 20%;
+    --input: 210 15% 15%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+@layer components {
+  /* Professional button variants */
+  .btn-primary {
+    @apply bg-gradient-to-r from-orange to-orange-light text-orange-foreground font-medium px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-10px_hsl(var(--orange)_/_0.4)] active:scale-95;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground font-medium px-8 py-3 rounded-lg transition-all duration-300 hover:bg-secondary-hover hover:scale-105 border border-border;
+  }
+  
+  /* Card components */
+  .card-elegant {
+    @apply bg-card rounded-xl p-6 transition-all duration-300 hover:shadow-elegant hover:-translate-y-1 border border-border/50;
+  }
+  
+  /* Hero gradient overlay */
+  .hero-overlay {
+    @apply absolute inset-0 bg-gradient-to-br from-gray-dark/80 via-gray-dark/60 to-orange/20;
+  }
+  
+  /* Section spacing */
+  .section-padding {
+    @apply py-16 lg:py-24;
+  }
+  
+  /* Animation utilities */
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out forwards;
+  }
+}
+
+@layer utilities {
+  /* Custom keyframes */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Gradient text */
+  .text-gradient-orange {
+    @apply bg-gradient-to-r from-orange to-orange-light bg-clip-text text-transparent;
+  }
+}
