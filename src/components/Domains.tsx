@@ -100,6 +100,15 @@ const Domains = () => {
             })}
           </div>
 
+          {/* Button moved here - directly under the domains list */}
+          <div className="text-center mb-16">
+            <Button asChild size="lg" className="bg-gradient-primary text-white hover:opacity-90 font-semibold px-8 py-4 text-lg">
+              <Link to="/domaines">
+                Découvrir tous nos domaines
+              </Link>
+            </Button>
+          </div>
+
           {/* Experience Banner */}
           <div className="bg-gradient-hero rounded-2xl p-8 lg:p-12 text-center text-white animate-fade-up">
             <div className="max-w-4xl mx-auto">
@@ -123,15 +132,6 @@ const Domains = () => {
                   <div className="text-3xl font-bold text-orange-light mb-1">30</div>
                   <div className="text-sm text-white/80">Années d'expérience</div>
                 </div>
-              </div>
-
-              {/* Button to link to the new page */}
-              <div className="mt-8">
-                <Button asChild size="lg" className="bg-white text-primary hover:bg-gray-100 font-semibold px-8 py-4 text-lg">
-                  <Link to="/domaines">
-                    Découvrir tous nos domaines
-                  </Link>
-                </Button>
               </div>
             </div>
           </div>
