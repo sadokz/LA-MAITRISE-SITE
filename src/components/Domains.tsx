@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Building2, Factory, Heart, Sun, Lightbulb, Landmark, Box } from 'lucide-react';
+import { Box } from 'lucide-react'; // Only Box is needed for fallback if icon is empty
 import { useSiteTexts, useDomaines } from '@/hooks/useSupabaseData';
 import EditableText from '@/components/EditableText';
 import { Button } from '@/components/ui/button';
@@ -10,26 +10,16 @@ const Domains = () => {
   const { domaines } = useDomaines();
 
   // Configuration des icônes et couleurs pour chaque domaine (fallback)
-  const domainConfig = [
-    { icon: Home, color: 'from-orange-500 to-orange-600' },
-    { icon: Building2, color: 'from-blue-500 to-blue-600' },
-    { icon: Factory, color: 'from-green-500 to-green-600' },
-    { icon: Heart, color: 'from-red-500 to-red-600' },
-    { icon: Sun, color: 'from-yellow-500 to-yellow-600' },
-    { icon: Lightbulb, color: 'from-purple-500 to-purple-600' },
-    { icon: Landmark, color: 'from-indigo-500 to-indigo-600' },
+  // This is now only for fallback if icon_border_color is not set
+  const defaultColors = [
+    'from-orange-500 to-orange-600',
+    'from-blue-500 to-blue-600',
+    'from-green-500 to-green-600',
+    'from-red-500 to-red-600',
+    'from-yellow-500 to-yellow-600',
+    'from-purple-500 to-purple-600',
+    'from-indigo-500 to-indigo-600',
   ];
-
-  // Get custom icon URL based on icon_type
-  const getCustomIconUrl = (domaine: typeof domaines[0]) => {
-    if (domaine.icon_type === 'upload' && domaine.icon_file) {
-      return domaine.icon_file;
-    }
-    if (domaine.icon_type === 'url' && domaine.icon_url) {
-      return domaine.icon_url;
-    }
-    return null;
-  };
 
   return (
     <section id="domaines" className="section-padding bg-gray-light/30">
@@ -47,41 +37,26 @@ const Domains = () => {
           {/* Domains Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {domaines.map((domaine, index) => {
-              const config = domainConfig[index] || domainConfig[0];
-              const FallbackIcon = config.icon;
-              const customIconUrl = getCustomIconUrl(domaine);
+              const defaultColorClass = defaultColors[index % defaultColors.length];
+              const iconBorderColor = domaine.icon_border_color || '#3B82F6';
               
               return (
                 <div key={domaine.id} className="card-elegant bg-white group hover:shadow-hover animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
                   {/* Icon */}
                   <div className="flex justify-center mb-6">
-                    {customIconUrl ? (
+                    {domaine.icon ? (
                       <div 
-                        className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-3 group-hover:scale-110 transition-transform duration-300 shadow-md"
+                        className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-3 group-hover:scale-110 transition-transform duration-300 shadow-md text-3xl"
                         style={{ 
-                          border: `3px solid ${domaine.icon_border_color || '#3B82F6'}`,
-                          boxShadow: `0 4px 12px ${domaine.icon_border_color || '#3B82F6'}30`
+                          border: `3px solid ${iconBorderColor}`,
+                          boxShadow: `0 4px 12px ${iconBorderColor}30`
                         }}
                       >
-                        <img 
-                          src={customIconUrl} 
-                          alt={domaine.title} 
-                          className="w-8 h-8 object-contain"
-                          onError={(e) => {
-                            // Hide image and show fallback on error
-                            (e.target as HTMLImageElement).style.display = 'none';
-                            const parent = (e.target as HTMLImageElement).parentElement;
-                            if (parent) {
-                              const fallback = document.createElement('div');
-                              fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
-                              parent.appendChild(fallback.firstChild!);
-                            }
-                          }}
-                        />
+                        {domaine.icon}
                       </div>
                     ) : (
-                      <div className={`w-16 h-16 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                        <FallbackIcon className="w-8 h-8 text-white" />
+                      <div className={`w-16 h-16 bg-gradient-to-br ${defaultColorClass} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                        <Box className="w-8 h-8 text-white" /> {/* Fallback Lucide icon */}
                       </div>
                     )}
                   </div>

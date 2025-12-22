@@ -144,10 +144,8 @@ export type Database = {
         Row: {
           created_at: string
           description: string
+          icon: string
           icon_border_color: string | null
-          icon_file: string | null
-          icon_type: string
-          icon_url: string | null
           id: string
           image_file: string | null
           image_mode: string
@@ -160,10 +158,8 @@ export type Database = {
         Insert: {
           created_at?: string
           description: string
+          icon: string
           icon_border_color?: string | null
-          icon_file?: string | null
-          icon_type?: string
-          icon_url?: string | null
           id?: string
           image_file?: string | null
           image_mode?: string
@@ -176,10 +172,8 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string
+          icon?: string
           icon_border_color?: string | null
-          icon_file?: string | null
-          icon_type?: string
-          icon_url?: string | null
           id?: string
           image_file?: string | null
           image_mode?: string

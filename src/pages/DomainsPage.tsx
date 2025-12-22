@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, Building2, Factory, Heart, Sun, Lightbulb, Landmark, Box } from 'lucide-react';
+import { ArrowLeft, Box } from 'lucide-react'; // Removed unused Lucide icons
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useDomaines } from '@/hooks/useSupabaseData';
 import AdminEditBar from '@/components/AdminEditBar';
@@ -26,28 +26,6 @@ const DomainsPage = () => {
   const { isAdmin } = useEditMode();
   const { domaines, loading: domainesLoading } = useDomaines();
 
-  // Configuration des icônes et couleurs pour chaque domaine (fallback)
-  const domainConfig = [
-    { icon: 'Home', color: 'from-orange-500 to-orange-600' },
-    { icon: 'Building2', color: 'from-blue-500 to-blue-600' },
-    { icon: 'Factory', color: 'from-green-500 to-green-600' },
-    { icon: 'Heart', color: 'from-red-500 to-red-600' },
-    { icon: 'Sun', color: 'from-yellow-500 to-yellow-600' },
-    { icon: 'Lightbulb', color: 'from-purple-500 to-purple-600' },
-    { icon: 'Landmark', color: 'from-indigo-500 to-indigo-600' },
-  ];
-
-  // Get custom icon URL based on icon_type
-  const getCustomIconUrl = (domaine: typeof domaines[0]) => {
-    if (domaine.icon_type === 'upload' && domaine.icon_file) {
-      return domaine.icon_file;
-    }
-    if (domaine.icon_type === 'url' && domaine.icon_url) {
-      return domaine.icon_url;
-    }
-    return null;
-  };
-
   // Get display image for a domain (for the DomainsPage)
   const getDisplayImage = (domaine: typeof domaines[0]) => {
     if (domaine.image_mode === 'upload' && domaine.image_file) {
@@ -58,11 +36,6 @@ const DomainsPage = () => {
     }
     // Auto mode: use fallback based on title
     return fallbackImages[domaine.title] || fallbackImages['default'];
-  };
-
-  // Map Lucide icon names to components
-  const LucideIcons: { [key: string]: React.ElementType } = {
-    Home, Building2, Factory, Heart, Sun, Lightbulb, Landmark, Box
   };
 
   return (
@@ -115,9 +88,6 @@ const DomainsPage = () => {
               ) : (
                 <div className="space-y-20">
                   {domaines.sort((a, b) => a.position - b.position).map((domaine, index) => {
-                    const config = domainConfig[index % domainConfig.length];
-                    const FallbackIcon = LucideIcons[config.icon] || Box;
-                    const customIconUrl = getCustomIconUrl(domaine);
                     const displayImage = getDisplayImage(domaine);
                     const isImageLeft = index % 2 === 0; // Alternate layout
 
@@ -146,34 +116,15 @@ const DomainsPage = () => {
                         {/* Text Content Column */}
                         <div className={`${isImageLeft ? 'order-2' : 'order-1'} md:order-none space-y-4`}>
                           <div className="flex items-center space-x-4">
-                            {customIconUrl ? (
-                              <div 
-                                className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-2 shadow-md flex-shrink-0"
-                                style={{ 
-                                  border: `2px solid ${domaine.icon_border_color || '#3B82F6'}`,
-                                  boxShadow: `0 3px 8px ${domaine.icon_border_color || '#3B82F6'}20`
-                                }}
-                              >
-                                <img 
-                                  src={customIconUrl} 
-                                  alt={domaine.title} 
-                                  className="w-6 h-6 object-contain"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = 'none';
-                                    const parent = (e.target as HTMLImageElement).parentElement;
-                                    if (parent) {
-                                      const fallback = document.createElement('div');
-                                      fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
-                                      parent.appendChild(fallback.firstChild!);
-                                    }
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <div className={`w-12 h-12 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center flex-shrink-0`}>
-                                <FallbackIcon className="w-6 h-6 text-white" />
-                              </div>
-                            )}
+                            <div 
+                              className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-2 shadow-md flex-shrink-0 text-2xl"
+                              style={{ 
+                                border: `2px solid ${domaine.icon_border_color || '#3B82F6'}`,
+                                boxShadow: `0 3px 8px ${domaine.icon_border_color || '#3B82F6'}20`
+                              }}
+                            >
+                              {domaine.icon}
+                            </div>
                             <h2 className="font-heading font-bold text-3xl text-gray-dark">
                               {domaine.title}
                             </h2>

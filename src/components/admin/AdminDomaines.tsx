@@ -10,7 +10,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDomaines, Domaine } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
 
-type IconType = 'builtin' | 'url' | 'upload';
 type ImageMode = 'auto' | 'url' | 'upload';
 
 // Fallback images for auto mode
@@ -28,9 +27,7 @@ const AdminDomaines = () => {
   const { domaines, fetchDomaines } = useDomaines();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDomaine, setEditingDomaine] = useState<Domaine | null>(null);
-  const [uploadingIcon, setUploadingIcon] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const iconFileInputRef = useRef<HTMLInputElement>(null);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
@@ -40,9 +37,7 @@ const AdminDomaines = () => {
     image_url: '', // Image URL for the domain page
     image_mode: 'auto' as ImageMode, // Image mode for the domain page
     image_file: '', // Uploaded image file URL for the domain page
-    icon_type: 'builtin' as IconType,
-    icon_url: '',
-    icon_file: '',
+    icon: '⚡', // Now directly stores the text/emoji
     icon_border_color: '#3B82F6',
   });
   const { toast } = useToast();
@@ -55,77 +50,10 @@ const AdminDomaines = () => {
       image_url: '',
       image_mode: 'auto',
       image_file: '',
-      icon_type: 'builtin',
-      icon_url: '',
-      icon_file: '',
+      icon: '⚡',
       icon_border_color: '#3B82F6',
     });
     setEditingDomaine(null);
-  };
-
-  const handleIconFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const validTypes = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/webp'];
-    if (!validTypes.includes(file.type)) {
-      toast({
-        title: 'Type de fichier invalide',
-        description: 'Veuillez téléverser un fichier SVG, PNG, JPEG ou WebP',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    if (file.size > 500 * 1024) { // Max 500KB for icons
-      toast({
-        title: 'Fichier trop volumineux',
-        description: 'La taille maximale pour les icônes est de 500KB',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setUploadingIcon(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const filePath = `icons/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('domain-icons')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('domain-icons')
-        .getPublicUrl(filePath);
-
-      setForm(prev => ({ 
-        ...prev, 
-        icon_type: 'upload', 
-        icon_file: publicUrl,
-        icon_url: '',
-      }));
-
-      toast({
-        title: 'Succès',
-        description: 'Icône téléversée avec succès',
-      });
-    } catch (error) {
-      console.error('Icon upload error:', error);
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de téléverser l\'icône',
-        variant: 'destructive',
-      });
-    } finally {
-      setUploadingIcon(false);
-      if (iconFileInputRef.current) {
-        iconFileInputRef.current.value = '';
-      }
-    }
   };
 
   const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,10 +131,8 @@ const AdminDomaines = () => {
       image_url: form.image_mode === 'url' ? form.image_url : null,
       image_mode: form.image_mode,
       image_file: form.image_mode === 'upload' ? form.image_file : null,
-      icon_type: form.icon_type,
-      icon_url: form.icon_type === 'url' ? form.icon_url : null,
-      icon_file: form.icon_type === 'upload' ? form.icon_file : null,
-      icon_border_color: (form.icon_type === 'upload' || form.icon_type === 'url') ? form.icon_border_color : null,
+      icon: form.icon, // Use the text/emoji directly
+      icon_border_color: form.icon_border_color || null,
     };
 
     if (editingDomaine) {
@@ -258,9 +184,7 @@ const AdminDomaines = () => {
       image_url: domaine.image_url || '',
       image_mode: domaine.image_mode || 'auto',
       image_file: domaine.image_file || '',
-      icon_type: domaine.icon_type || 'builtin',
-      icon_url: domaine.icon_url || '',
-      icon_file: domaine.icon_file || '',
+      icon: domaine.icon || '⚡', // Load existing icon text/emoji
       icon_border_color: domaine.icon_border_color || '#3B82F6',
     });
     setIsDialogOpen(true);
@@ -331,26 +255,6 @@ const AdminDomaines = () => {
     fetchDomaines();
   };
 
-  const getIconPreview = () => {
-    if (form.icon_type === 'upload' && form.icon_file) {
-      return form.icon_file;
-    }
-    if (form.icon_type === 'url' && form.icon_url) {
-      return form.icon_url;
-    }
-    return null;
-  };
-
-  const getDomaineIconPreview = (domaine: Domaine) => {
-    if (domaine.icon_type === 'upload' && domaine.icon_file) {
-      return domaine.icon_file;
-    }
-    if (domaine.icon_type === 'url' && domaine.icon_url) {
-      return domaine.icon_url;
-    }
-    return null;
-  };
-
   const getImagePreview = () => {
     if (form.image_mode === 'upload' && form.image_file) {
       return form.image_file;
@@ -367,7 +271,6 @@ const AdminDomaines = () => {
     return fallbackImages[domaine.title] || fallbackImages['default'];
   };
 
-  const iconPreview = getIconPreview();
   const imagePreview = getImagePreview();
 
   return (
@@ -416,126 +319,50 @@ const AdminDomaines = () => {
                 />
               </div>
 
-              {/* Icon Section */}
+              {/* Icon Section - now a simple text input */}
               <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
-                <Label className="text-base font-semibold">Icône du domaine</Label>
+                <Label className="text-base font-semibold">Icône du domaine (Emoji ou texte court)</Label>
+                <Input
+                  id="icon"
+                  value={form.icon}
+                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                  placeholder="Ex: ⚡, 🏠, 🏭"
+                  maxLength={5}
+                />
                 
-                {/* Icon Type Selection */}
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant={form.icon_type === 'builtin' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setForm({ ...form, icon_type: 'builtin', icon_url: '', icon_file: '' })}
-                    className="flex-1"
-                  >
-                    <Box className="h-4 w-4 mr-1" />
-                    Par défaut
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={form.icon_type === 'upload' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setForm({ ...form, icon_type: 'upload' })}
-                    className="flex-1"
-                  >
-                    <Upload className="h-4 w-4 mr-1" />
-                    Téléverser
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={form.icon_type === 'url' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setForm({ ...form, icon_type: 'url' })}
-                    className="flex-1"
-                  >
-                    <Link className="h-4 w-4 mr-1" />
-                    URL
-                  </Button>
-                </div>
-
-                {/* Upload Input */}
-                {form.icon_type === 'upload' && (
-                  <div className="space-y-2">
+                {/* Border Color for the icon container */}
+                <div className="space-y-2">
+                  <Label htmlFor="icon_border_color">Couleur du cadre de l'icône</Label>
+                  <div className="flex gap-3 items-center">
                     <input
-                      ref={iconFileInputRef}
-                      type="file"
-                      accept=".svg,.png,.jpg,.jpeg,.webp"
-                      onChange={handleIconFileUpload}
-                      className="hidden"
-                      id="icon-upload"
+                      type="color"
+                      id="icon_border_color"
+                      value={form.icon_border_color}
+                      onChange={(e) => setForm({ ...form, icon_border_color: e.target.value })}
+                      className="w-12 h-10 rounded cursor-pointer border border-input"
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => iconFileInputRef.current?.click()}
-                      disabled={uploadingIcon}
-                      className="w-full"
-                    >
-                      {uploadingIcon ? 'Téléversement...' : 'Choisir un fichier (SVG, PNG, max 500KB)'}
-                    </Button>
-                  </div>
-                )}
-
-                {/* URL Input */}
-                {form.icon_type === 'url' && (
-                  <div>
                     <Input
-                      placeholder="https://exemple.com/icone.svg"
-                      value={form.icon_url}
-                      onChange={(e) => setForm({ ...form, icon_url: e.target.value })}
+                      value={form.icon_border_color}
+                      onChange={(e) => setForm({ ...form, icon_border_color: e.target.value })}
+                      placeholder="#3B82F6"
+                      className="flex-1"
+                      maxLength={7}
                     />
                   </div>
-                )}
-
-                {/* Border Color - Only for custom icons */}
-                {(form.icon_type === 'upload' || form.icon_type === 'url') && (
-                  <div className="space-y-2">
-                    <Label htmlFor="icon_border_color">Couleur du cadre de l'icône</Label>
-                    <div className="flex gap-3 items-center">
-                      <input
-                        type="color"
-                        id="icon_border_color"
-                        value={form.icon_border_color}
-                        onChange={(e) => setForm({ ...form, icon_border_color: e.target.value })}
-                        className="w-12 h-10 rounded cursor-pointer border border-input"
-                      />
-                      <Input
-                        value={form.icon_border_color}
-                        onChange={(e) => setForm({ ...form, icon_border_color: e.target.value })}
-                        placeholder="#3B82F6"
-                        className="flex-1"
-                        maxLength={7}
-                      />
-                    </div>
-                  </div>
-                )}
+                </div>
 
                 {/* Preview */}
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-muted-foreground">Aperçu :</span>
-                  {iconPreview ? (
-                    <div 
-                      className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-2"
-                      style={{ 
-                        border: `3px solid ${form.icon_border_color}`,
-                        boxShadow: `0 0 0 1px ${form.icon_border_color}20`
-                      }}
-                    >
-                      <img 
-                        src={iconPreview} 
-                        alt="Aperçu icône" 
-                        className="w-6 h-6 object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
-                      <Box className="w-6 h-6 text-white" />
-                    </div>
-                  )}
+                  <div 
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-2 text-2xl"
+                    style={{ 
+                      border: `3px solid ${form.icon_border_color}`,
+                      boxShadow: `0 0 0 1px ${form.icon_border_color}20`
+                    }}
+                  >
+                    {form.icon}
+                  </div>
                 </div>
               </div>
 
@@ -628,7 +455,7 @@ const AdminDomaines = () => {
                 )}
               </div>
 
-              <Button type="submit" className="w-full" disabled={uploadingIcon || uploadingImage}>
+              <Button type="submit" className="w-full" disabled={uploadingImage}>
                 {editingDomaine ? 'Mettre à jour' : 'Créer'}
               </Button>
             </form>
@@ -652,7 +479,6 @@ const AdminDomaines = () => {
           {domaines
             .sort((a, b) => a.position - b.position)
             .map((domaine) => {
-              const iconSrc = getDomaineIconPreview(domaine);
               const displayImage = getDomaineDisplayImage(domaine);
               return (
                 <TableRow key={domaine.id}>
@@ -675,24 +501,14 @@ const AdminDomaines = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {iconSrc ? (
-                      <div 
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center p-1.5"
-                        style={{ 
-                          border: `2px solid ${domaine.icon_border_color || '#3B82F6'}` 
-                        }}
-                      >
-                        <img 
-                          src={iconSrc} 
-                          alt={domaine.title} 
-                          className="w-5 h-5 object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
-                        <Box className="w-5 h-5 text-white" />
-                      </div>
-                    )}
+                    <div 
+                      className="w-10 h-10 bg-white rounded-full flex items-center justify-center p-1.5 text-xl"
+                      style={{ 
+                        border: `2px solid ${domaine.icon_border_color || '#3B82F6'}` 
+                      }}
+                    >
+                      {domaine.icon}
+                    </div>
                   </TableCell>
                   <TableCell className="font-medium">{domaine.title}</TableCell>
                   <TableCell className="max-w-xs truncate">{domaine.description}</TableCell>

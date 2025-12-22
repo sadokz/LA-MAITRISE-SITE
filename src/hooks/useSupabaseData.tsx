@@ -61,9 +61,7 @@ export interface Domaine {
   image_mode: 'auto' | 'url' | 'upload'; // New: Image mode
   image_file?: string; // New: Uploaded image file URL
   position: number;
-  icon_type: 'builtin' | 'url' | 'upload';
-  icon_url?: string;
-  icon_file?: string;
+  icon: string; // Now directly stores the text/emoji
   icon_border_color?: string;
 }
 
@@ -216,7 +214,7 @@ export const useHeroSettings = () => {
 
 export const useRealisations = () => {
   const [realisations, setRealisations] = useState<Realisation[]>([]);
-  const [loading, setLoading] = useState(true); // Fixed: Correctly initialize useState
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchRealisations();
