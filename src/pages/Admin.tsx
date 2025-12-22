@@ -12,6 +12,7 @@ import AdminRealisations from '@/components/admin/AdminRealisations';
 import AdminFounder from '@/components/admin/AdminFounder';
 import AdminContact from '@/components/admin/AdminContact';
 import AdminSections from '@/components/admin/AdminSections';
+import AdminCompetencesPageHero from '@/components/admin/AdminCompetencesPageHero'; // Import new component
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
@@ -83,7 +84,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="sections" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8"> {/* Increased grid columns */}
             <TabsTrigger value="sections" className="flex items-center space-x-2">
               <LayoutGrid className="h-4 w-4" />
               <span>Sections</span>
@@ -95,6 +96,10 @@ const Admin = () => {
             <TabsTrigger value="competences" className="flex items-center space-x-2">
               <Lightbulb className="h-4 w-4" />
               <span>Compétences</span>
+            </TabsTrigger>
+            <TabsTrigger value="competences-page-hero" className="flex items-center space-x-2"> {/* New tab */}
+              <Lightbulb className="h-4 w-4" />
+              <span>Page Compétences</span>
             </TabsTrigger>
             <TabsTrigger value="domaines" className="flex items-center space-x-2">
               <Building className="h-4 w-4" />
@@ -136,6 +141,17 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <AdminCompetences />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="competences-page-hero"> {/* New tab content */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestion du Hero de la page Compétences</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AdminCompetencesPageHero />
               </CardContent>
             </Card>
           </TabsContent>

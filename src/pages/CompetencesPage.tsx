@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useCompetences } from '@/hooks/useSupabaseData';
+import { useCompetencesPageSettings } from '@/hooks/useCompetencesPageSettings'; // Import the new hook
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
+import heroImage from '@/assets/hero-engineering.jpg'; // Default hero image
 
 // Fallback images for auto mode
 const fallbackImages: Record<string, string> = {
@@ -24,6 +26,7 @@ const CompetencesPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { competences, loading: competencesLoading } = useCompetences();
+  const { competencesPageSettings } = useCompetencesPageSettings(); // Use the new hook
 
   // Scroll to top on component mount
   useEffect(() => {
@@ -42,6 +45,24 @@ const CompetencesPage = () => {
     return fallbackImages[c.title] || fallbackImages['default'];
   };
 
+  // Determine hero media based on settings
+  const getHeroMedia = () => {
+    if (!competencesPageSettings) return { type: 'image', url: heroImage };
+    
+    const { media_type, source_type, media_url, media_file } = competencesPageSettings;
+
+    if (source_type === 'upload' && media_file) {
+      return { type: media_type, url: media_file };
+    }
+    if (source_type === 'url' && media_url) {
+      return { type: media_type, url: media_url };
+    }
+    return { type: 'image', url: heroImage }; // Fallback to default hero image
+  };
+
+  const heroMedia = getHeroMedia();
+  const isVideo = heroMedia.type === 'video' && heroMedia.url;
+
   return (
     <div className="min-h-screen flex flex-col">
       <AdminEditBar />
@@ -49,10 +70,30 @@ const CompetencesPage = () => {
         <Header />
         <main className="flex-grow">
           {/* Hero Section */}
-          <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
-            <div className="absolute inset-0 bg-[url('/src/assets/hero-engineering.jpg')] bg-cover bg-center opacity-20"></div>
+          <section className="relative min-h-[25vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none">
+              {isVideo ? (
+                <video 
+                  src={heroMedia.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img 
+                  src={heroMedia.url} 
+                  alt="Compétences en ingénierie électrique" 
+                  className="w-full h-full object-cover"
+                  width="1920"
+                  height="1080"
+                />
+              )}
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30 pointer-events-none"></div>
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-dark mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 <EditableText 
                   textKey="competences.page.title" 
                   defaultValue={getSiteText('competences', 'page', 'title', 'Nos Compétences en ingénierie électrique')} 
@@ -60,7 +101,7 @@ const CompetencesPage = () => {
                   as="span" 
                 />
               </h1>
-              <p className="text-xl text-gray-medium max-w-3xl mx-auto">
+              <p className="text-xl text-white/90 max-w-3xl mx-auto">
                 <EditableText 
                   textKey="competences.page.description" 
                   defaultValue={getSiteText('competences', 'page', 'description', 'Découvrez notre expertise technique et nos domaines de spécialisation')} 
