@@ -1,15 +1,16 @@
+' button after the hero section on the Competences page.">
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react'; // Import ArrowRight for the new button
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useCompetences } from '@/hooks/useSupabaseData';
-import { useCompetencesPageSettings } from '@/hooks/useCompetencesPageSettings'; // Import the new hook
+import { useCompetencesPageSettings } from '@/hooks/useCompetencesPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
-import heroImage from '@/assets/hero-engineering.jpg'; // Default hero image
+import heroImage from '@/assets/hero-engineering.jpg';
 
 // Fallback images for auto mode
 const fallbackImages: Record<string, string> = {
@@ -26,14 +27,12 @@ const CompetencesPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { competences, loading: competencesLoading } = useCompetences();
-  const { competencesPageSettings } = useCompetencesPageSettings(); // Use the new hook
+  const { competencesPageSettings } = useCompetencesPageSettings();
 
-  // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Get display image for a competence
   const getDisplayImage = (c: typeof competences[0]) => {
     if (c.image_mode === 'upload' && c.image_file) {
       return c.image_file;
@@ -41,11 +40,9 @@ const CompetencesPage = () => {
     if (c.image_mode === 'url' && c.image_url) {
       return c.image_url;
     }
-    // Auto mode: use fallback based on title
     return fallbackImages[c.title] || fallbackImages['default'];
   };
 
-  // Determine hero media based on settings
   const getHeroMedia = () => {
     if (!competencesPageSettings) return { type: 'image', url: heroImage };
     
@@ -57,7 +54,7 @@ const CompetencesPage = () => {
     if (source_type === 'url' && media_url) {
       return { type: media_type, url: media_url };
     }
-    return { type: 'image', url: heroImage }; // Fallback to default hero image
+    return { type: 'image', url: heroImage };
   };
 
   const heroMedia = getHeroMedia();
@@ -113,8 +110,18 @@ const CompetencesPage = () => {
             </div>
           </section>
 
+          {/* Back to Home Button */}
+          <div className="container mx-auto px-4 lg:px-8 py-8">
+            <Button asChild variant="outline" className="group">
+              <Link to="/">
+                <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                Accueil
+              </Link>
+            </Button>
+          </div>
+
           {/* Competences Section */}
-          <section className="section-padding bg-white">
+          <section className="section-padding bg-white pt-0"> {/* Adjusted padding-top */}
             <div className="container mx-auto px-4 lg:px-8">
               {competencesLoading ? (
                 <div className="flex justify-center items-center py-20">
@@ -133,7 +140,7 @@ const CompetencesPage = () => {
               ) : (
                 <div className="space-y-20">
                   {competences.sort((a, b) => a.position - b.position).map((competence, index) => {
-                    const isImageLeft = index % 2 === 0; // Alternate layout
+                    const isImageLeft = index % 2 === 0;
                     const displayImage = getDisplayImage(competence);
 
                     return (
