@@ -5,10 +5,10 @@ import { Label } from '@/components/ui/label';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy } from 'lucide-react';
-import AdminCompetencesPageHero from './AdminCompetencesPageHero'; // Import the component
-import AdminDomainsPageHero from './AdminDomainsPageHero';     // Import the component
-import AdminRealisationsPageHero from './AdminRealisationsPageHero'; // Import the component
+import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image } from 'lucide-react'; // Added LayoutGrid and Image
+import AdminCompetencesPageHero from './AdminCompetencesPageHero';
+import AdminDomainsPageHero from './AdminDomainsPageHero';
+import AdminRealisationsPageHero from './AdminRealisationsPageHero';
 
 interface SectionConfig {
   key: string;
