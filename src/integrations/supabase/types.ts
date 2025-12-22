@@ -359,7 +359,8 @@ export type Database = {
           image_file: string | null
           image_mode: string
           image_url: string | null
-          is_visible: boolean // Added is_visible
+          is_featured: boolean // Added is_featured
+          is_visible: boolean
           position: number
           title: string
           updated_at: string
@@ -372,7 +373,8 @@ export type Database = {
           image_file?: string | null
           image_mode?: string
           image_url?: string | null
-          is_visible?: boolean // Added is_visible
+          is_featured?: boolean // Added is_featured
+          is_visible?: boolean
           position?: number
           title: string
           updated_at?: string
@@ -385,7 +387,8 @@ export type Database = {
           image_file?: string | null
           image_mode?: string
           image_url?: string | null
-          is_visible?: boolean // Added is_visible
+          is_featured?: boolean // Added is_featured
+          is_visible?: boolean
           position?: number
           title?: string
           updated_at?: string

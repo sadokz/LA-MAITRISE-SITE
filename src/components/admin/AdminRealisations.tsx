@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff } from 'lucide-react';
+import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
@@ -24,13 +24,14 @@ const AdminRealisations = () => {
     image_url: '',
     image_mode: 'auto' as 'auto' | 'url' | 'upload',
     image_file: '',
-    is_visible: true, // Added is_visible to form state
+    is_visible: true,
+    is_featured: false, // Added is_featured to form state
   });
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
   const resetForm = () => {
-    setForm({ title: '', description: '', category: '', image_url: '', image_mode: 'auto', image_file: '', is_visible: true });
+    setForm({ title: '', description: '', category: '', image_url: '', image_mode: 'auto', image_file: '', is_visible: true, is_featured: false });
     setEditingRealisation(null);
   };
 
@@ -98,7 +99,8 @@ const AdminRealisations = () => {
       image_url: form.image_mode === 'url' ? form.image_url : null,
       image_mode: form.image_mode,
       image_file: form.image_mode === 'upload' ? form.image_file : null,
-      is_visible: form.is_visible, // Include is_visible in payload
+      is_visible: form.is_visible,
+      is_featured: form.is_featured, // Include is_featured in payload
     };
 
     if (editingRealisation) {
@@ -150,7 +152,8 @@ const AdminRealisations = () => {
       image_url: realisation.image_url || '',
       image_mode: realisation.image_mode || 'auto',
       image_file: realisation.image_file || '',
-      is_visible: realisation.is_visible, // Load is_visible
+      is_visible: realisation.is_visible,
+      is_featured: realisation.is_featured, // Load is_featured
     });
     setIsDialogOpen(true);
   };
@@ -378,6 +381,18 @@ const AdminRealisations = () => {
                 />
               </div>
 
+              {/* Featured Toggle */}
+              <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                <Label htmlFor="is_featured" className="font-medium">
+                  Mettre en avant (Page d'accueil)
+                </Label>
+                <Switch
+                  id="is_featured"
+                  checked={form.is_featured}
+                  onCheckedChange={(checked) => setForm({ ...form, is_featured: checked })}
+                />
+              </div>
+
               <Button type="submit" className="w-full" disabled={uploading}>
                 {editingRealisation ? 'Mettre à jour' : 'Créer'}
               </Button>
@@ -394,7 +409,8 @@ const AdminRealisations = () => {
             <TableHead>Domaine</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Image</TableHead>
-            <TableHead>Visible</TableHead> {/* New column header */}
+            <TableHead>Visible</TableHead>
+            <TableHead>En avant</TableHead> {/* New column header */}
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -437,11 +453,18 @@ const AdminRealisations = () => {
                       <span className="text-xs text-muted-foreground">Auto</span>
                     )}
                   </TableCell>
-                  <TableCell> {/* New visibility cell */}
+                  <TableCell>
                     {realisation.is_visible ? (
                       <Eye className="h-5 w-5 text-green-500" />
                     ) : (
                       <EyeOff className="h-5 w-5 text-red-500" />
+                    )}
+                  </TableCell>
+                  <TableCell> {/* New featured cell */}
+                    {realisation.is_featured ? (
+                      <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                    ) : (
+                      <Star className="h-5 w-5 text-gray-400" />
                     )}
                   </TableCell>
                   <TableCell>

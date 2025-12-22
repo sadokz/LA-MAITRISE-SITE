@@ -23,22 +23,25 @@ const References = () => {
 
   const loading = realisationsLoading || domainesLoading;
 
-  // Filter realisations to only include visible ones for public display
-  const visibleRealisations = useMemo(() => realisations.filter(r => r.is_visible), [realisations]);
+  // Filter realisations to only include visible AND featured ones for public display on homepage
+  const featuredAndVisibleRealisations = useMemo(() => 
+    realisations.filter(r => r.is_visible && r.is_featured), 
+    [realisations]
+  );
 
   // Build dynamic filters based on domaines data
   const filters = useMemo(() => {
     const dynamicFilters = [
-      { id: 'all', label: 'Tous les projets', count: visibleRealisations.length },
+      { id: 'all', label: 'Tous les projets', count: featuredAndVisibleRealisations.length },
     ];
 
     // Create a map for quick lookup of realisation counts per domain
     const realisationCounts: Record<string, number> = {};
-    visibleRealisations.forEach(r => {
+    featuredAndVisibleRealisations.forEach(r => {
       realisationCounts[r.category] = (realisationCounts[r.category] || 0) + 1;
     });
 
-    // Add filters for each domain, only if they have at least one project
+    // Add filters for each domain, only if they have at least one featured project
     domaines.forEach(domaine => {
       const count = realisationCounts[domaine.title] || 0;
       if (count > 0) { // Only add if count is greater than 0
@@ -51,13 +54,13 @@ const References = () => {
     });
 
     return dynamicFilters;
-  }, [visibleRealisations, domaines]);
+  }, [featuredAndVisibleRealisations, domaines]);
 
   const filteredProjects = useMemo(() => {
-    const sorted = [...visibleRealisations].sort((a, b) => a.position - b.position);
+    const sorted = [...featuredAndVisibleRealisations].sort((a, b) => a.position - b.position);
     if (activeFilter === 'all') return sorted;
     return sorted.filter(project => project.category === activeFilter);
-  }, [visibleRealisations, activeFilter]);
+  }, [featuredAndVisibleRealisations, activeFilter]);
 
   // Get display image for a realisation
   const getDisplayImage = (r: typeof realisations[0]) => {
