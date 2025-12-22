@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useSiteTexts, useRealisations, useCompetences } from '@/hooks/useSupabaseData';
 import EditableText from '@/components/EditableText';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 // Fallback images by category for auto mode
 const fallbackImages: Record<string, string> = {
@@ -93,26 +95,10 @@ const References = () => {
           {/* Header */}
           <div className="text-center mb-16 animate-fade-up">
             <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
-              <EditableText
-                textKey="references.header.title1"
-                defaultValue={getSiteText('references', 'header', 'title1', 'Nos')}
-                className="inline"
-                as="span"
-              />{' '}
-              <EditableText
-                textKey="references.header.title2"
-                defaultValue={getSiteText('references', 'header', 'title2', 'Réalisations')}
-                className="text-gradient-orange inline"
-                as="span"
-              />
+              <EditableText textKey="references.header.title1" defaultValue={getSiteText('references', 'header', 'title1', 'Nos')} className="inline" as="span" />{' '}
+              <EditableText textKey="references.header.title2" defaultValue={getSiteText('references', 'header', 'title2', 'Réalisations')} className="text-gradient-orange inline" as="span" />
             </h2>
-            <EditableText
-              textKey="references.header.description"
-              defaultValue={getSiteText('references', 'header', 'description', "Découvrez nos projets illustrant notre savoir-faire et notre capacité d'innovation dans l'ingénierie électrique et le BIM.")}
-              className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed"
-              as="p"
-              multiline
-            />
+            <EditableText textKey="references.header.description" defaultValue={getSiteText('references', 'header', 'description', "Découvrez nos projets illustrant notre savoir-faire et notre capacité d'innovation dans l'ingénierie électrique et le BIM.")} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>
 
           {/* Filters */}
@@ -137,16 +123,15 @@ const References = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-16">
             {filteredProjects.map((project, index) => {
               const displayImage = getDisplayImage(project);
-              
               return (
-                <div 
+                <div
                   key={project.id}
                   className="group relative aspect-[4/3] rounded-xl overflow-hidden shadow-card cursor-pointer animate-scale-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   {/* Background Image */}
-                  <img 
-                    src={displayImage} 
+                  <img
+                    src={displayImage}
                     alt={project.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {
@@ -155,27 +140,22 @@ const References = () => {
                       console.warn(`Image admin non disponible pour "${project.title}", fallback utilisé.`);
                     }}
                   />
-                  
+
                   {/* Dark Overlay - Always visible on mobile, hover on desktop */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-dark/90 via-gray-dark/40 to-transparent 
-                    opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
-                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-dark/90 via-gray-dark/40 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
+
                   {/* Content - Always visible on mobile, hover on desktop */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-5 
-                    translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 
-                    opacity-100 md:opacity-0 md:group-hover:opacity-100 
-                    transition-all duration-300 ease-out">
-                    
+                  <div className="absolute inset-0 flex flex-col justify-end p-5 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 ease-out">
                     {/* Category Badge */}
                     <span className="inline-block self-start bg-orange/90 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2 uppercase tracking-wide">
                       {categoryLabels[project.category] || project.category}
                     </span>
-                    
+
                     {/* Title */}
                     <h3 className="font-heading font-bold text-xl text-white mb-1 leading-tight">
                       {project.title}
                     </h3>
-                    
+
                     {/* Short Description */}
                     <p className="text-white/70 text-sm leading-relaxed line-clamp-2">
                       {truncateDescription(project.description)}
@@ -196,20 +176,9 @@ const References = () => {
           {/* Contact CTA */}
           <div className="text-center animate-fade-up">
             <div className="bg-gradient-card rounded-2xl p-8 lg:p-12 border border-border/50">
-              <EditableText
-                textKey="references.cta.title"
-                defaultValue={getSiteText('references', 'cta', 'title', 'Votre projet mérite notre expertise')}
-                className="font-heading font-bold text-2xl lg:text-3xl text-gray-dark mb-4"
-                as="h3"
-              />
-              <EditableText
-                textKey="references.cta.description"
-                defaultValue={getSiteText('references', 'cta', 'description', "Rejoignez nos clients satisfaits et confiez-nous la réalisation de votre projet d'ingénierie électrique.")}
-                className="text-lg text-gray-medium mb-8 max-w-2xl mx-auto"
-                as="p"
-                multiline
-              />
-              <button 
+              <EditableText textKey="references.cta.title" defaultValue={getSiteText('references', 'cta', 'title', 'Votre projet mérite notre expertise')} className="font-heading font-bold text-2xl lg:text-3xl text-gray-dark mb-4" as="h3" />
+              <EditableText textKey="references.cta.description" defaultValue={getSiteText('references', 'cta', 'description', "Rejoignez nos clients satisfaits et confiez-nous la réalisation de votre projet d'ingénierie électrique.")} className="text-lg text-gray-medium mb-8 max-w-2xl mx-auto" as="p" multiline />
+              <button
                 onClick={() => {
                   const element = document.getElementById('contact');
                   if (element) element.scrollIntoView({ behavior: 'smooth' });
@@ -219,6 +188,15 @@ const References = () => {
                 Démarrer votre projet
               </button>
             </div>
+          </div>
+
+          {/* Button to Realisations page */}
+          <div className="text-center mt-12">
+            <Button asChild size="lg" className="bg-gradient-primary text-white hover:opacity-90 font-semibold px-8 py-4 text-lg">
+              <Link to="/realisations">
+                En Savoir Plus <span className="ml-2">→</span>
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

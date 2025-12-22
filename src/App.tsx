@@ -12,6 +12,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { EditModeProvider } from "@/contexts/EditModeContext";
 import DomainsPage from "./pages/DomainsPage";
 import CompetencesPage from "./pages/CompetencesPage";
+import RealisationsPage from "./pages/RealisationsPage";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/admin" element={<Admin />} />
               <Route path="/domaines" element={<DomainsPage />} />
               <Route path="/competences" element={<CompetencesPage />} />
+              <Route path="/realisations" element={<RealisationsPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
