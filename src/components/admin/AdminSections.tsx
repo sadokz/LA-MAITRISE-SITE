@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image } from 'lucide-react'; // Added LayoutGrid and Image
+import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle } from 'lucide-react'; // Added MessageCircle
 import AdminCompetencesPageHero from './AdminCompetencesPageHero';
 import AdminDomainsPageHero from './AdminDomainsPageHero';
 import AdminRealisationsPageHero from './AdminRealisationsPageHero';
@@ -24,6 +24,7 @@ const sections: SectionConfig[] = [
   { key: 'projects', label: 'Références / Réalisations', icon: <FolderOpen className="h-5 w-5" /> },
   { key: 'founder', label: 'Le Fondateur', icon: <User className="h-5 w-5" /> },
   { key: 'contact', label: 'Contact', icon: <Mail className="h-5 w-5" /> },
+  { key: 'chatbot_visible', label: 'Chatbot', icon: <MessageCircle className="h-5 w-5" /> }, // New chatbot toggle
 ];
 
 const AdminSections = () => {
@@ -54,7 +55,7 @@ const AdminSections = () => {
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
-            {[...Array(7)].map((_, i) => (
+            {[...Array(8)].map((_, i) => ( // Adjusted array size for new chatbot section
               <div key={i} className="h-12 bg-muted rounded" />
             ))}
           </div>

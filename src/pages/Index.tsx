@@ -8,10 +8,10 @@ import References from '@/components/References';
 import Founder from '@/components/Founder';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
-import WhatsAppButton from '@/components/WhatsAppButton';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
+import Chatbot from '@/components/Chatbot'; // Import the new Chatbot component
 
 const Index = () => {
   const { isAdmin } = useEditMode();
@@ -57,8 +57,8 @@ const Index = () => {
         {/* Footer */}
         <Footer />
         
-        {/* WhatsApp Button */}
-        <WhatsAppButton />
+        {/* Chatbot Button - conditionally rendered */}
+        {isVisible('chatbot_visible') && <Chatbot />}
       </div>
     </main>
   );

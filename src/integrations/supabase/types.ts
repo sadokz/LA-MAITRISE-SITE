@@ -361,7 +361,7 @@ export type Database = {
           image_url: string | null
           is_featured: boolean
           is_visible: boolean
-          long_description: string | null // Added long_description
+          long_description: string | null
           position: number
           title: string
           updated_at: string
@@ -376,7 +376,7 @@ export type Database = {
           image_url?: string | null
           is_featured?: boolean
           is_visible?: boolean
-          long_description?: string | null // Added long_description
+          long_description?: string | null
           position?: number
           title: string
           updated_at?: string
@@ -391,7 +391,7 @@ export type Database = {
           image_url?: string | null
           is_featured?: boolean
           is_visible?: boolean
-          long_description?: string | null // Added long_description
+          long_description?: string | null
           position?: number
           title?: string
           updated_at?: string
@@ -431,6 +431,7 @@ export type Database = {
       section_visibility: {
         Row: {
           about: boolean
+          chatbot_visible: boolean
           contact: boolean
           created_at: string
           domains: boolean
@@ -443,6 +444,7 @@ export type Database = {
         }
         Insert: {
           about?: boolean
+          chatbot_visible?: boolean
           contact?: boolean
           created_at?: string
           domains?: boolean
@@ -455,6 +457,7 @@ export type Database = {
         }
         Update: {
           about?: boolean
+          chatbot_visible?: boolean
           contact?: boolean
           created_at?: string
           domains?: boolean

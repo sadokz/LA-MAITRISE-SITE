@@ -13,6 +13,7 @@ export interface SectionVisibility {
   projects: boolean;
   founder: boolean;
   contact: boolean;
+  chatbot_visible: boolean; // New: Chatbot visibility
   created_at: string;
   updated_at: string;
 }
