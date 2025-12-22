@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useDomaines } from '@/hooks/useSupabaseData';
+import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings'; // Import the new hook
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg'; // Default hero image
@@ -25,6 +26,7 @@ const DomainsPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { domaines, loading: domainesLoading } = useDomaines();
+  const { domainsPageSettings } = useDomainsPageSettings(); // Use the new hook
 
   // Scroll to top on component mount
   useEffect(() => {
@@ -43,6 +45,24 @@ const DomainsPage = () => {
     return fallbackImages[domaine.title] || fallbackImages['default'];
   };
 
+  // Determine hero media based on settings
+  const getHeroMedia = () => {
+    if (!domainsPageSettings) return { type: 'image', url: heroImage };
+    
+    const { media_type, source_type, media_url, media_file } = domainsPageSettings;
+
+    if (source_type === 'upload' && media_file) {
+      return { type: media_type, url: media_file };
+    }
+    if (source_type === 'url' && media_url) {
+      return { type: media_type, url: media_url };
+    }
+    return { type: 'image', url: heroImage }; // Fallback to default hero image
+  };
+
+  const heroMedia = getHeroMedia();
+  const isVideo = heroMedia.type === 'video' && heroMedia.url;
+
   return (
     <div className="min-h-screen flex flex-col">
       <AdminEditBar />
@@ -50,10 +70,30 @@ const DomainsPage = () => {
         <Header />
         <main className="flex-grow">
           {/* Hero Section */}
-          <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
-            <div className="absolute inset-0 bg-[url('/src/assets/hero-engineering.jpg')] bg-cover bg-center opacity-20"></div>
+          <section className="relative min-h-[33vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none">
+              {isVideo ? (
+                <video 
+                  src={heroMedia.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img 
+                  src={heroMedia.url} 
+                  alt="Domaines d'intervention" 
+                  className="w-full h-full object-cover"
+                  width="1920"
+                  height="1080"
+                />
+              )}
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30 pointer-events-none"></div>
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-dark mb-6">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 <EditableText 
                   textKey="domains.page.title" 
                   defaultValue={getSiteText('domains', 'page', 'title', 'Nos Domaines d\'Intervention')} 
@@ -61,7 +101,7 @@ const DomainsPage = () => {
                   as="span" 
                 />
               </h1>
-              <p className="text-xl text-gray-medium max-w-3xl mx-auto">
+              <p className="text-xl text-white/90 max-w-3xl mx-auto">
                 <EditableText 
                   textKey="domains.page.description" 
                   defaultValue={getSiteText('domains', 'page', 'description', 'Découvrez les secteurs dans lesquels notre expertise en ingénierie électrique et BIM s\'exprime')} 

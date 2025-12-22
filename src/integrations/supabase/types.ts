@@ -212,6 +212,36 @@ export type Database = {
         }
         Relationships: []
       }
+      domains_page_settings: {
+        Row: {
+          created_at: string
+          id: number
+          media_file: string | null
+          media_type: string
+          media_url: string | null
+          source_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          media_file?: string | null
+          media_type?: string
+          media_url?: string | null
+          source_type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          media_file?: string | null
+          media_type?: string
+          media_url?: string | null
+          source_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       founder: {
         Row: {
           bio_html: string
