@@ -14,7 +14,7 @@ import AdminContact from '@/components/admin/AdminContact';
 import AdminSections from '@/components/admin/AdminSections';
 import AdminCompetencesPageHero from '@/components/admin/AdminCompetencesPageHero';
 import AdminDomainsPageHero from '@/components/admin/AdminDomainsPageHero';
-import AdminRealisationsPageHero from '@/components/admin/AdminRealisationsPageHero'; // Import new component
+import AdminRealisationsPageHero from '@/components/admin/AdminRealisationsPageHero';
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
@@ -86,10 +86,22 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="sections" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-10"> {/* Increased grid columns to 10 */}
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="sections" className="flex items-center space-x-2">
               <LayoutGrid className="h-4 w-4" />
               <span>Sections</span>
+            </TabsTrigger>
+            <TabsTrigger value="competences-page-hero" className="flex items-center space-x-2">
+              <Lightbulb className="h-4 w-4" />
+              <span>Page Compétences</span>
+            </TabsTrigger>
+            <TabsTrigger value="domains-page-hero" className="flex items-center space-x-2">
+              <Building className="h-4 w-4" />
+              <span>Page Domaines</span>
+            </TabsTrigger>
+            <TabsTrigger value="realisations-page-hero" className="flex items-center space-x-2">
+              <Trophy className="h-4 w-4" />
+              <span>Page Réalisations</span>
             </TabsTrigger>
             <TabsTrigger value="hero" className="flex items-center space-x-2">
               <Home className="h-4 w-4" />
@@ -99,25 +111,13 @@ const Admin = () => {
               <Lightbulb className="h-4 w-4" />
               <span>Compétences</span>
             </TabsTrigger>
-            <TabsTrigger value="competences-page-hero" className="flex items-center space-x-2">
-              <Lightbulb className="h-4 w-4" />
-              <span>Page Compétences</span>
-            </TabsTrigger>
             <TabsTrigger value="domaines" className="flex items-center space-x-2">
               <Building className="h-4 w-4" />
               <span>Domaines</span>
             </TabsTrigger>
-            <TabsTrigger value="domains-page-hero" className="flex items-center space-x-2">
-              <Building className="h-4 w-4" />
-              <span>Page Domaines</span>
-            </TabsTrigger>
             <TabsTrigger value="realisations" className="flex items-center space-x-2">
               <Trophy className="h-4 w-4" />
               <span>Réalisations</span>
-            </TabsTrigger>
-            <TabsTrigger value="realisations-page-hero" className="flex items-center space-x-2"> {/* New tab */}
-              <Trophy className="h-4 w-4" />
-              <span>Page Réalisations</span>
             </TabsTrigger>
             <TabsTrigger value="founder" className="flex items-center space-x-2">
               <User className="h-4 w-4" />
@@ -131,6 +131,39 @@ const Admin = () => {
 
           <TabsContent value="sections">
             <AdminSections />
+          </TabsContent>
+
+          <TabsContent value="competences-page-hero">
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestion du Hero de la page Compétences</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AdminCompetencesPageHero />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="domains-page-hero">
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestion du Hero de la page Domaines</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AdminDomainsPageHero />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="realisations-page-hero">
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestion du Hero de la page Réalisations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AdminRealisationsPageHero />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="hero">
@@ -155,17 +188,6 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="competences-page-hero">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion du Hero de la page Compétences</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AdminCompetencesPageHero />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="domaines">
             <Card>
               <CardHeader>
@@ -177,17 +199,6 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="domains-page-hero">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion du Hero de la page Domaines</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AdminDomainsPageHero />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="realisations">
             <Card>
               <CardHeader>
@@ -195,17 +206,6 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <AdminRealisations />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="realisations-page-hero"> {/* New tab content */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion du Hero de la page Réalisations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AdminRealisationsPageHero />
               </CardContent>
             </Card>
           </TabsContent>
