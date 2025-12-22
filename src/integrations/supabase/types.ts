@@ -157,7 +157,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description: string
-          icon: string
+          icon?: string
           id?: string
           image_file?: string | null
           image_mode?: string
