@@ -148,30 +148,30 @@ const DomainsPage = () => {
                           <div className="flex items-center space-x-4">
                             {customIconUrl ? (
                               <div 
-                                className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-3 shadow-md flex-shrink-0"
+                                className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-2 shadow-md flex-shrink-0"
                                 style={{ 
-                                  border: `3px solid ${domaine.icon_border_color || '#3B82F6'}`,
-                                  boxShadow: `0 4px 12px ${domaine.icon_border_color || '#3B82F6'}30`
+                                  border: `2px solid ${domaine.icon_border_color || '#3B82F6'}`,
+                                  boxShadow: `0 3px 8px ${domaine.icon_border_color || '#3B82F6'}20`
                                 }}
                               >
                                 <img 
                                   src={customIconUrl} 
                                   alt={domaine.title} 
-                                  className="w-8 h-8 object-contain"
+                                  className="w-6 h-6 object-contain"
                                   onError={(e) => {
                                     (e.target as HTMLImageElement).style.display = 'none';
                                     const parent = (e.target as HTMLImageElement).parentElement;
                                     if (parent) {
                                       const fallback = document.createElement('div');
-                                      fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
+                                      fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
                                       parent.appendChild(fallback.firstChild!);
                                     }
                                   }}
                                 />
                               </div>
                             ) : (
-                              <div className={`w-16 h-16 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center flex-shrink-0`}>
-                                <FallbackIcon className="w-8 h-8 text-white" />
+                              <div className={`w-12 h-12 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center flex-shrink-0`}>
+                                <FallbackIcon className="w-6 h-6 text-white" />
                               </div>
                             )}
                             <h2 className="font-heading font-bold text-3xl text-gray-dark">
