@@ -393,7 +393,7 @@ const Contact = () => {
             <div className="card-elegant bg-white p-0 overflow-hidden">
               <iframe
                 title="Localisation LA MAITRISE ENGINEERING"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3188.8!2d10.737!3d36.455!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzYuNDU1LCAxMC43Mzc!5e0!3m2!1sen!2stn!4v1640995200000!5m2!1sen!2stn&q=LA+MAITRISE+ENGINEERING,+Nabeul,+Tunisie"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3261.5!2d10.735537!3d36.451667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzYuNDUxNjY3LCAxMC43MzU1Mzc!5e0!3m2!1sfr!2stn!4v1640995200000!5m2!1sfr!2stn&q=FP2P%2BJ5C+Nabeul"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 className="w-full h-96 border-0"
