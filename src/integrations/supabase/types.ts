@@ -149,6 +149,8 @@ export type Database = {
           icon_type: string
           icon_url: string | null
           id: string
+          image_file: string | null
+          image_mode: string
           image_url: string | null
           long_description: string | null
           position: number
@@ -163,6 +165,8 @@ export type Database = {
           icon_type?: string
           icon_url?: string | null
           id?: string
+          image_file?: string | null
+          image_mode?: string
           image_url?: string | null
           long_description?: string | null
           position?: number
@@ -177,6 +181,8 @@ export type Database = {
           icon_type?: string
           icon_url?: string | null
           id?: string
+          image_file?: string | null
+          image_mode?: string
           image_url?: string | null
           long_description?: string | null
           position?: number

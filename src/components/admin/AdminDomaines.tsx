@@ -5,24 +5,41 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Box } from 'lucide-react';
+import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Box, Sparkles, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useDomaines, Domaine } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
 
 type IconType = 'builtin' | 'url' | 'upload';
+type ImageMode = 'auto' | 'url' | 'upload';
+
+// Fallback images for auto mode
+const fallbackImages: Record<string, string> = {
+  'default': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
+  'Bâtiments Résidentiels': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
+  'Bâtiments Tertiaires': 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop',
+  'Industrie': 'https://images.unsplash.com/photo-1545558014_8692077e9b5c?w=600&h=400&fit=crop',
+  'Infrastructures': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+  'Énergie': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
+  'Santé': 'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&h=400&fit=crop',
+};
 
 const AdminDomaines = () => {
   const { domaines, fetchDomaines } = useDomaines();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDomaine, setEditingDomaine] = useState<Domaine | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingIcon, setUploadingIcon] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const iconFileInputRef = useRef<HTMLInputElement>(null);
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
+
   const [form, setForm] = useState({
     title: '',
     description: '', // Short description
     long_description: '', // Long description
-    image_url: '',
+    image_url: '', // Image URL for the domain page
+    image_mode: 'auto' as ImageMode, // Image mode for the domain page
+    image_file: '', // Uploaded image file URL for the domain page
     icon_type: 'builtin' as IconType,
     icon_url: '',
     icon_file: '',
@@ -36,6 +53,8 @@ const AdminDomaines = () => {
       description: '', 
       long_description: '',
       image_url: '',
+      image_mode: 'auto',
+      image_file: '',
       icon_type: 'builtin',
       icon_url: '',
       icon_file: '',
@@ -44,11 +63,10 @@ const AdminDomaines = () => {
     setEditingDomaine(null);
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIconFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     const validTypes = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/webp'];
     if (!validTypes.includes(file.type)) {
       toast({
@@ -59,17 +77,16 @@ const AdminDomaines = () => {
       return;
     }
 
-    // Validate file size (max 500KB)
-    if (file.size > 500 * 1024) {
+    if (file.size > 500 * 1024) { // Max 500KB for icons
       toast({
         title: 'Fichier trop volumineux',
-        description: 'La taille maximale est de 500KB',
+        description: 'La taille maximale pour les icônes est de 500KB',
         variant: 'destructive',
       });
       return;
     }
 
-    setUploading(true);
+    setUploadingIcon(true);
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
@@ -85,28 +102,93 @@ const AdminDomaines = () => {
         .from('domain-icons')
         .getPublicUrl(filePath);
 
-      setForm({ 
-        ...form, 
+      setForm(prev => ({ 
+        ...prev, 
         icon_type: 'upload', 
         icon_file: publicUrl,
         icon_url: '',
-      });
+      }));
 
       toast({
         title: 'Succès',
         description: 'Icône téléversée avec succès',
       });
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('Icon upload error:', error);
       toast({
         title: 'Erreur',
         description: 'Impossible de téléverser l\'icône',
         variant: 'destructive',
       });
     } finally {
-      setUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      setUploadingIcon(false);
+      if (iconFileInputRef.current) {
+        iconFileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      toast({
+        title: 'Type de fichier invalide',
+        description: 'Veuillez téléverser un fichier PNG, JPEG ou WebP',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) { // Max 2MB for images
+      toast({
+        title: 'Fichier trop volumineux',
+        description: 'La taille maximale pour les images est de 2MB',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('domain-images') // Use the new bucket
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('domain-images')
+        .getPublicUrl(filePath);
+
+      setForm(prev => ({ 
+        ...prev, 
+        image_mode: 'upload', 
+        image_file: publicUrl,
+        image_url: '',
+      }));
+
+      toast({
+        title: 'Succès',
+        description: 'Image téléversée avec succès',
+      });
+    } catch (error) {
+      console.error('Image upload error:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de téléverser l\'image',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingImage(false);
+      if (imageFileInputRef.current) {
+        imageFileInputRef.current.value = '';
       }
     }
   };
@@ -117,8 +199,10 @@ const AdminDomaines = () => {
     const payload = {
       title: form.title,
       description: form.description,
-      long_description: form.long_description || null, // Save long description
-      image_url: form.image_url || null,
+      long_description: form.long_description || null,
+      image_url: form.image_mode === 'url' ? form.image_url : null,
+      image_mode: form.image_mode,
+      image_file: form.image_mode === 'upload' ? form.image_file : null,
       icon_type: form.icon_type,
       icon_url: form.icon_type === 'url' ? form.icon_url : null,
       icon_file: form.icon_type === 'upload' ? form.icon_file : null,
@@ -170,8 +254,10 @@ const AdminDomaines = () => {
     setForm({
       title: domaine.title,
       description: domaine.description,
-      long_description: domaine.long_description || '', // Load long description
+      long_description: domaine.long_description || '',
       image_url: domaine.image_url || '',
+      image_mode: domaine.image_mode || 'auto',
+      image_file: domaine.image_file || '',
       icon_type: domaine.icon_type || 'builtin',
       icon_url: domaine.icon_url || '',
       icon_file: domaine.icon_file || '',
@@ -265,7 +351,24 @@ const AdminDomaines = () => {
     return null;
   };
 
+  const getImagePreview = () => {
+    if (form.image_mode === 'upload' && form.image_file) {
+      return form.image_file;
+    }
+    if (form.image_mode === 'url' && form.image_url) {
+      return form.image_url;
+    }
+    return null;
+  };
+
+  const getDomaineDisplayImage = (domaine: Domaine) => {
+    if (domaine.image_mode === 'upload' && domaine.image_file) return domaine.image_file;
+    if (domaine.image_mode === 'url' && domaine.image_url) return domaine.image_url;
+    return fallbackImages[domaine.title] || fallbackImages['default'];
+  };
+
   const iconPreview = getIconPreview();
+  const imagePreview = getImagePreview();
 
   return (
     <div className="space-y-4">
@@ -355,21 +458,21 @@ const AdminDomaines = () => {
                 {form.icon_type === 'upload' && (
                   <div className="space-y-2">
                     <input
-                      ref={fileInputRef}
+                      ref={iconFileInputRef}
                       type="file"
                       accept=".svg,.png,.jpg,.jpeg,.webp"
-                      onChange={handleFileUpload}
+                      onChange={handleIconFileUpload}
                       className="hidden"
                       id="icon-upload"
                     />
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading}
+                      onClick={() => iconFileInputRef.current?.click()}
+                      disabled={uploadingIcon}
                       className="w-full"
                     >
-                      {uploading ? 'Téléversement...' : 'Choisir un fichier (SVG, PNG, max 500KB)'}
+                      {uploadingIcon ? 'Téléversement...' : 'Choisir un fichier (SVG, PNG, max 500KB)'}
                     </Button>
                   </div>
                 )}
@@ -436,16 +539,96 @@ const AdminDomaines = () => {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="image_url">URL de l'image de fond (optionnel)</Label>
-                <Input
-                  id="image_url"
-                  value={form.image_url}
-                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                  placeholder="https://..."
-                />
+              {/* Image Section for Domains Page */}
+              <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+                <Label className="text-base font-semibold">Image du domaine (visible sur la page dédiée)</Label>
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={form.image_mode === 'auto' ? 'default' : 'outline'}
+                    onClick={() => setForm({ ...form, image_mode: 'auto', image_url: '', image_file: '' })}
+                  >
+                    <Sparkles className="h-4 w-4 mr-1" />
+                    Auto
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={form.image_mode === 'url' ? 'default' : 'outline'}
+                    onClick={() => setForm({ ...form, image_mode: 'url', image_file: '' })}
+                  >
+                    <Link className="h-4 w-4 mr-1" />
+                    URL
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={form.image_mode === 'upload' ? 'default' : 'outline'}
+                    onClick={() => setForm({ ...form, image_mode: 'upload', image_url: '' })}
+                  >
+                    <Upload className="h-4 w-4 mr-1" />
+                    Téléverser
+                  </Button>
+                </div>
+
+                {/* URL input */}
+                {form.image_mode === 'url' && (
+                  <div className="mt-4">
+                    <Label htmlFor="domain_image_url">URL de l'image</Label>
+                    <Input
+                      id="domain_image_url"
+                      value={form.image_url}
+                      onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                      placeholder="https://exemple.com/image.jpg"
+                    />
+                    {form.image_url && (
+                      <div className="mt-2">
+                        <img 
+                          src={form.image_url} 
+                          alt="Aperçu" 
+                          className="w-full h-32 object-cover rounded border"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Upload input */}
+                {form.image_mode === 'upload' && (
+                  <div className="mt-4">
+                    <Label htmlFor="domain_image_file">Téléverser une image</Label>
+                    <Input
+                      ref={imageFileInputRef}
+                      id="domain_image_file"
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.webp"
+                      onChange={handleImageFileUpload}
+                      disabled={uploadingImage}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG, WebP (max 2 Mo)</p>
+                    {form.image_file && (
+                      <div className="mt-2">
+                        <img 
+                          src={form.image_file} 
+                          alt="Aperçu" 
+                          className="w-full h-32 object-cover rounded border"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Auto mode info */}
+                {form.image_mode === 'auto' && (
+                  <p className="text-sm text-muted-foreground bg-muted p-3 rounded">
+                    En mode automatique, une image par défaut sera utilisée si aucune image n'est spécifiée.
+                  </p>
+                )}
               </div>
-              <Button type="submit" className="w-full">
+
+              <Button type="submit" className="w-full" disabled={uploadingIcon || uploadingImage}>
                 {editingDomaine ? 'Mettre à jour' : 'Créer'}
               </Button>
             </form>
@@ -461,6 +644,7 @@ const AdminDomaines = () => {
             <TableHead>Titre</TableHead>
             <TableHead>Description courte</TableHead>
             <TableHead>Description longue</TableHead>
+            <TableHead>Image</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -469,6 +653,7 @@ const AdminDomaines = () => {
             .sort((a, b) => a.position - b.position)
             .map((domaine) => {
               const iconSrc = getDomaineIconPreview(domaine);
+              const displayImage = getDomaineDisplayImage(domaine);
               return (
                 <TableRow key={domaine.id}>
                   <TableCell>
@@ -513,6 +698,13 @@ const AdminDomaines = () => {
                   <TableCell className="max-w-xs truncate">{domaine.description}</TableCell>
                   <TableCell className="max-w-xs truncate">
                     {domaine.long_description || <span className="text-muted-foreground italic">Non définie</span>}
+                  </TableCell>
+                  <TableCell>
+                    {displayImage && displayImage !== fallbackImages['default'] ? (
+                      <img src={displayImage} alt={domaine.title} className="w-10 h-10 object-cover rounded" />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Auto</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">

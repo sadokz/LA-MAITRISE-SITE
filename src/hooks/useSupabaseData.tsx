@@ -57,7 +57,9 @@ export interface Domaine {
   title: string;
   description: string; // Short description
   long_description?: string; // New: Long description
-  image_url?: string;
+  image_url?: string; // New: Image URL for the domain page
+  image_mode: 'auto' | 'url' | 'upload'; // New: Image mode
+  image_file?: string; // New: Uploaded image file URL
   position: number;
   icon_type: 'builtin' | 'url' | 'upload';
   icon_url?: string;
@@ -214,7 +216,7 @@ export const useHeroSettings = () => {
 
 export const useRealisations = () => {
   const [realisations, setRealisations] = useState<Realisation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = true);
 
   useEffect(() => {
     fetchRealisations();

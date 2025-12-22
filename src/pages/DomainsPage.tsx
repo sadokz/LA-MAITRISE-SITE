@@ -3,11 +3,23 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, Building2, Factory, Heart, Sun, Lightbulb, Landmark, Box } from 'lucide-react'; // Added imports for Lucide icons
+import { ArrowLeft, Home, Building2, Factory, Heart, Sun, Lightbulb, Landmark, Box } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useDomaines } from '@/hooks/useSupabaseData';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
+import heroImage from '@/assets/hero-engineering.jpg'; // Default hero image
+
+// Fallback images for auto mode (consistent with AdminDomaines)
+const fallbackImages: Record<string, string> = {
+  'default': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
+  'Bâtiments Résidentiels': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
+  'Bâtiments Tertiaires': 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop',
+  'Industrie': 'https://images.unsplash.com/photo-1545558014_8692077e9b5c?w=600&h=400&fit=crop',
+  'Infrastructures': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+  'Énergie': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
+  'Santé': 'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&h=400&fit=crop',
+};
 
 const DomainsPage = () => {
   const { getSiteText } = useSiteTexts();
@@ -34,6 +46,18 @@ const DomainsPage = () => {
       return domaine.icon_url;
     }
     return null;
+  };
+
+  // Get display image for a domain (for the DomainsPage)
+  const getDisplayImage = (domaine: typeof domaines[0]) => {
+    if (domaine.image_mode === 'upload' && domaine.image_file) {
+      return domaine.image_file;
+    }
+    if (domaine.image_mode === 'url' && domaine.image_url) {
+      return domaine.image_url;
+    }
+    // Auto mode: use fallback based on title
+    return fallbackImages[domaine.title] || fallbackImages['default'];
   };
 
   // Map Lucide icon names to components
@@ -94,6 +118,8 @@ const DomainsPage = () => {
                     const config = domainConfig[index % domainConfig.length];
                     const FallbackIcon = LucideIcons[config.icon] || Box;
                     const customIconUrl = getCustomIconUrl(domaine);
+                    const displayImage = getDisplayImage(domaine);
+                    const isImageLeft = index % 2 === 0; // Alternate layout
 
                     return (
                       <div 
@@ -101,43 +127,57 @@ const DomainsPage = () => {
                         className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
-                        {/* Icon/Image Column (always on left for simplicity, or could alternate) */}
-                        <div className="flex justify-center md:justify-start">
-                          {customIconUrl ? (
-                            <div 
-                              className="w-24 h-24 bg-white rounded-full flex items-center justify-center p-4 shadow-md"
-                              style={{ 
-                                border: `4px solid ${domaine.icon_border_color || '#3B82F6'}`,
-                                boxShadow: `0 6px 16px ${domaine.icon_border_color || '#3B82F6'}30`
+                        {/* Image Column */}
+                        {displayImage && (
+                          <div className={`${isImageLeft ? 'order-1' : 'order-2'} md:order-none`}>
+                            <img 
+                              src={displayImage} 
+                              alt={domaine.title} 
+                              className="w-full h-72 object-cover rounded-xl shadow-lg"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = fallbackImages['default'];
+                                console.warn(`Image non disponible pour "${domaine.title}", fallback utilisé.`);
                               }}
-                            >
-                              <img 
-                                src={customIconUrl} 
-                                alt={domaine.title} 
-                                className="w-12 h-12 object-contain"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).style.display = 'none';
-                                  const parent = (e.target as HTMLImageElement).parentElement;
-                                  if (parent) {
-                                    const fallback = document.createElement('div');
-                                    fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
-                                    parent.appendChild(fallback.firstChild!);
-                                  }
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <div className={`w-24 h-24 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center`}>
-                              <FallbackIcon className="w-12 h-12 text-white" />
-                            </div>
-                          )}
-                        </div>
+                            />
+                          </div>
+                        )}
 
                         {/* Text Content Column */}
-                        <div className="space-y-4">
-                          <h2 className="font-heading font-bold text-3xl text-gray-dark">
-                            {domaine.title}
-                          </h2>
+                        <div className={`${isImageLeft ? 'order-2' : 'order-1'} md:order-none space-y-4`}>
+                          <div className="flex items-center space-x-4">
+                            {customIconUrl ? (
+                              <div 
+                                className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-3 shadow-md flex-shrink-0"
+                                style={{ 
+                                  border: `3px solid ${domaine.icon_border_color || '#3B82F6'}`,
+                                  boxShadow: `0 4px 12px ${domaine.icon_border_color || '#3B82F6'}30`
+                                }}
+                              >
+                                <img 
+                                  src={customIconUrl} 
+                                  alt={domaine.title} 
+                                  className="w-8 h-8 object-contain"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                    const parent = (e.target as HTMLImageElement).parentElement;
+                                    if (parent) {
+                                      const fallback = document.createElement('div');
+                                      fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
+                                      parent.appendChild(fallback.firstChild!);
+                                    }
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div className={`w-16 h-16 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center flex-shrink-0`}>
+                                <FallbackIcon className="w-8 h-8 text-white" />
+                              </div>
+                            )}
+                            <h2 className="font-heading font-bold text-3xl text-gray-dark">
+                              {domaine.title}
+                            </h2>
+                          </div>
                           <p className="text-gray-medium leading-relaxed">
                             {domaine.description}
                           </p>
