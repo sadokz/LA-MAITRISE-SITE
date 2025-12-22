@@ -69,13 +69,14 @@ export interface Realisation {
   id: string;
   title: string;
   description: string;
+  long_description?: string; // Added long_description
   category: string;
   image_url?: string;
   image_mode: 'auto' | 'url' | 'upload';
   image_file?: string;
   position: number;
   is_visible: boolean;
-  is_featured: boolean; // Added is_featured
+  is_featured: boolean;
 }
 
 export const useSiteTexts = () => {

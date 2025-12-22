@@ -19,19 +19,30 @@ const AdminRealisations = () => {
   const [editingRealisation, setEditingRealisation] = useState<Realisation | null>(null);
   const [form, setForm] = useState({
     title: '',
-    description: '',
+    description: '', // Short description
+    long_description: '', // Long description
     category: '',
     image_url: '',
     image_mode: 'auto' as 'auto' | 'url' | 'upload',
     image_file: '',
     is_visible: true,
-    is_featured: false, // Added is_featured to form state
+    is_featured: false,
   });
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
   const resetForm = () => {
-    setForm({ title: '', description: '', category: '', image_url: '', image_mode: 'auto', image_file: '', is_visible: true, is_featured: false });
+    setForm({ 
+      title: '', 
+      description: '', 
+      long_description: '',
+      category: '', 
+      image_url: '', 
+      image_mode: 'auto', 
+      image_file: '', 
+      is_visible: true, 
+      is_featured: false 
+    });
     setEditingRealisation(null);
   };
 
@@ -95,12 +106,13 @@ const AdminRealisations = () => {
     const payload = {
       title: form.title,
       description: form.description,
+      long_description: form.long_description || null, // Include long_description
       category: form.category,
       image_url: form.image_mode === 'url' ? form.image_url : null,
       image_mode: form.image_mode,
       image_file: form.image_mode === 'upload' ? form.image_file : null,
       is_visible: form.is_visible,
-      is_featured: form.is_featured, // Include is_featured in payload
+      is_featured: form.is_featured,
     };
 
     if (editingRealisation) {
@@ -148,12 +160,13 @@ const AdminRealisations = () => {
     setForm({
       title: realisation.title,
       description: realisation.description,
+      long_description: realisation.long_description || '', // Load long_description
       category: realisation.category,
       image_url: realisation.image_url || '',
       image_mode: realisation.image_mode || 'auto',
       image_file: realisation.image_file || '',
       is_visible: realisation.is_visible,
-      is_featured: realisation.is_featured, // Load is_featured
+      is_featured: realisation.is_featured,
     });
     setIsDialogOpen(true);
   };
@@ -272,12 +285,21 @@ const AdminRealisations = () => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description courte (pour la page d'accueil et la page Réalisations)</Label>
                 <Textarea
                   id="description"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   required
+                />
+              </div>
+              <div>
+                <Label htmlFor="long_description">Description longue (uniquement pour la page Réalisations)</Label>
+                <Textarea
+                  id="long_description"
+                  value={form.long_description}
+                  onChange={(e) => setForm({ ...form, long_description: e.target.value })}
+                  placeholder="Description détaillée de la réalisation..."
                 />
               </div>
 
@@ -407,10 +429,11 @@ const AdminRealisations = () => {
             <TableHead>Position</TableHead>
             <TableHead>Titre</TableHead>
             <TableHead>Domaine</TableHead>
-            <TableHead>Description</TableHead>
+            <TableHead>Description courte</TableHead> {/* Updated header */}
+            <TableHead>Description longue</TableHead> {/* New header */}
             <TableHead>Image</TableHead>
             <TableHead>Visible</TableHead>
-            <TableHead>En avant</TableHead> {/* New column header */}
+            <TableHead>En avant</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -446,6 +469,9 @@ const AdminRealisations = () => {
                     </span>
                   </TableCell>
                   <TableCell className="max-w-xs truncate">{realisation.description}</TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {realisation.long_description || <span className="text-muted-foreground italic">Non définie</span>}
+                  </TableCell>
                   <TableCell>
                     {displayImage ? (
                       <img src={displayImage} alt={realisation.title} className="w-10 h-10 object-cover rounded" />
@@ -460,7 +486,7 @@ const AdminRealisations = () => {
                       <EyeOff className="h-5 w-5 text-red-500" />
                     )}
                   </TableCell>
-                  <TableCell> {/* New featured cell */}
+                  <TableCell>
                     {realisation.is_featured ? (
                       <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                     ) : (

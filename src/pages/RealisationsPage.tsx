@@ -178,8 +178,13 @@ const RealisationsPage = () => {
                             {project.category}
                           </p>
                           <p className="text-gray-medium leading-relaxed">
-                            {project.description}
+                            {project.description} {/* Short description */}
                           </p>
+                          {project.long_description && (
+                            <p className="text-gray-medium leading-relaxed border-t pt-4 mt-4">
+                              {project.long_description} {/* Long description */}
+                            </p>
+                          )}
                         </div>
                       </div>
                     );
