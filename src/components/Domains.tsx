@@ -10,7 +10,7 @@ const Domains = () => {
   const { domaines } = useDomaines();
 
   // Configuration des icônes et couleurs pour chaque domaine (fallback)
-  // This is now only for fallback if icon_border_color is not set
+  // This is now only for fallback if icon is empty
   const defaultColors = [
     'from-orange-500 to-orange-600',
     'from-blue-500 to-blue-600',
@@ -38,20 +38,13 @@ const Domains = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {domaines.map((domaine, index) => {
               const defaultColorClass = defaultColors[index % defaultColors.length];
-              const iconBorderColor = domaine.icon_border_color || '#3B82F6';
               
               return (
                 <div key={domaine.id} className="card-elegant bg-white group hover:shadow-hover animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
                   {/* Icon */}
                   <div className="flex justify-center mb-6">
                     {domaine.icon ? (
-                      <div 
-                        className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-3 group-hover:scale-110 transition-transform duration-300 shadow-md text-3xl"
-                        style={{ 
-                          border: `3px solid ${iconBorderColor}`,
-                          boxShadow: `0 4px 12px ${iconBorderColor}30`
-                        }}
-                      >
+                      <div className="text-5xl text-primary group-hover:scale-110 transition-transform duration-300">
                         {domaine.icon}
                       </div>
                     ) : (

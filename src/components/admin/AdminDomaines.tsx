@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Box, Sparkles, Image } from 'lucide-react';
+import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useDomaines, Domaine } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
@@ -38,7 +38,6 @@ const AdminDomaines = () => {
     image_mode: 'auto' as ImageMode, // Image mode for the domain page
     image_file: '', // Uploaded image file URL for the domain page
     icon: '⚡', // Now directly stores the text/emoji
-    icon_border_color: '#3B82F6',
   });
   const { toast } = useToast();
 
@@ -51,7 +50,6 @@ const AdminDomaines = () => {
       image_mode: 'auto',
       image_file: '',
       icon: '⚡',
-      icon_border_color: '#3B82F6',
     });
     setEditingDomaine(null);
   };
@@ -132,7 +130,6 @@ const AdminDomaines = () => {
       image_mode: form.image_mode,
       image_file: form.image_mode === 'upload' ? form.image_file : null,
       icon: form.icon, // Use the text/emoji directly
-      icon_border_color: form.icon_border_color || null,
     };
 
     if (editingDomaine) {
@@ -185,7 +182,6 @@ const AdminDomaines = () => {
       image_mode: domaine.image_mode || 'auto',
       image_file: domaine.image_file || '',
       icon: domaine.icon || '⚡', // Load existing icon text/emoji
-      icon_border_color: domaine.icon_border_color || '#3B82F6',
     });
     setIsDialogOpen(true);
   };
@@ -301,6 +297,16 @@ const AdminDomaines = () => {
                 />
               </div>
               <div>
+                <Label htmlFor="icon">Icône (Emoji ou texte court)</Label>
+                <Input
+                  id="icon"
+                  value={form.icon}
+                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                  placeholder="Ex: ⚡, 🏠, 🏭"
+                  maxLength={5}
+                />
+              </div>
+              <div>
                 <Label htmlFor="description">Description courte (visible sur toutes les pages)</Label>
                 <Textarea
                   id="description"
@@ -317,53 +323,6 @@ const AdminDomaines = () => {
                   onChange={(e) => setForm({ ...form, long_description: e.target.value })}
                   placeholder="Description détaillée du domaine..."
                 />
-              </div>
-
-              {/* Icon Section - now a simple text input */}
-              <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
-                <Label className="text-base font-semibold">Icône du domaine (Emoji ou texte court)</Label>
-                <Input
-                  id="icon"
-                  value={form.icon}
-                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
-                  placeholder="Ex: ⚡, 🏠, 🏭"
-                  maxLength={5}
-                />
-                
-                {/* Border Color for the icon container */}
-                <div className="space-y-2">
-                  <Label htmlFor="icon_border_color">Couleur du cadre de l'icône</Label>
-                  <div className="flex gap-3 items-center">
-                    <input
-                      type="color"
-                      id="icon_border_color"
-                      value={form.icon_border_color}
-                      onChange={(e) => setForm({ ...form, icon_border_color: e.target.value })}
-                      className="w-12 h-10 rounded cursor-pointer border border-input"
-                    />
-                    <Input
-                      value={form.icon_border_color}
-                      onChange={(e) => setForm({ ...form, icon_border_color: e.target.value })}
-                      placeholder="#3B82F6"
-                      className="flex-1"
-                      maxLength={7}
-                    />
-                  </div>
-                </div>
-
-                {/* Preview */}
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">Aperçu :</span>
-                  <div 
-                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-2 text-2xl"
-                    style={{ 
-                      border: `3px solid ${form.icon_border_color}`,
-                      boxShadow: `0 0 0 1px ${form.icon_border_color}20`
-                    }}
-                  >
-                    {form.icon}
-                  </div>
-                </div>
               </div>
 
               {/* Image Section for Domains Page */}
@@ -500,16 +459,7 @@ const AdminDomaines = () => {
                       </Button>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div 
-                      className="w-10 h-10 bg-white rounded-full flex items-center justify-center p-1.5 text-xl"
-                      style={{ 
-                        border: `2px solid ${domaine.icon_border_color || '#3B82F6'}` 
-                      }}
-                    >
-                      {domaine.icon}
-                    </div>
-                  </TableCell>
+                  <TableCell className="text-2xl">{domaine.icon}</TableCell>
                   <TableCell className="font-medium">{domaine.title}</TableCell>
                   <TableCell className="max-w-xs truncate">{domaine.description}</TableCell>
                   <TableCell className="max-w-xs truncate">

@@ -62,7 +62,6 @@ export interface Domaine {
   image_file?: string; // New: Uploaded image file URL
   position: number;
   icon: string; // Now directly stores the text/emoji
-  icon_border_color?: string;
 }
 
 export interface Realisation {

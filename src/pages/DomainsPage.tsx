@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Box } from 'lucide-react'; // Removed unused Lucide icons
+import { ArrowLeft } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useDomaines } from '@/hooks/useSupabaseData';
 import AdminEditBar from '@/components/AdminEditBar';
@@ -116,13 +116,7 @@ const DomainsPage = () => {
                         {/* Text Content Column */}
                         <div className={`${isImageLeft ? 'order-2' : 'order-1'} md:order-none space-y-4`}>
                           <div className="flex items-center space-x-4">
-                            <div 
-                              className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-2 shadow-md flex-shrink-0 text-2xl"
-                              style={{ 
-                                border: `2px solid ${domaine.icon_border_color || '#3B82F6'}`,
-                                boxShadow: `0 3px 8px ${domaine.icon_border_color || '#3B82F6'}20`
-                              }}
-                            >
+                            <div className="text-3xl text-primary flex-shrink-0">
                               {domaine.icon}
                             </div>
                             <h2 className="font-heading font-bold text-3xl text-gray-dark">

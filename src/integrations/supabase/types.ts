@@ -145,7 +145,6 @@ export type Database = {
           created_at: string
           description: string
           icon: string
-          icon_border_color: string | null
           id: string
           image_file: string | null
           image_mode: string
@@ -159,7 +158,6 @@ export type Database = {
           created_at?: string
           description: string
           icon: string
-          icon_border_color?: string | null
           id?: string
           image_file?: string | null
           image_mode?: string
@@ -173,7 +171,6 @@ export type Database = {
           created_at?: string
           description?: string
           icon?: string
-          icon_border_color?: string | null
           id?: string
           image_file?: string | null
           image_mode?: string
