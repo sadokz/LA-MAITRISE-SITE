@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Home, Building2, Factory, Heart, Sun, Lightbulb, Landmark, Box } from 'lucide-react'; // Added imports for Lucide icons
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useDomaines } from '@/hooks/useSupabaseData';
 import AdminEditBar from '@/components/AdminEditBar';
