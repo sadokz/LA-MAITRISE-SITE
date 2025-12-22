@@ -140,22 +140,20 @@ const References = () => {
                       console.warn(`Image admin non disponible pour "${project.title}", fallback utilisé.`);
                     }}
                   />
-
+                  
                   {/* Dark Overlay - Always visible on mobile, hover on desktop */}
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-dark/90 via-gray-dark/40 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
-
+                  
                   {/* Content - Always visible on mobile, hover on desktop */}
                   <div className="absolute inset-0 flex flex-col justify-end p-5 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 ease-out">
                     {/* Category Badge */}
                     <span className="inline-block self-start bg-orange/90 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2 uppercase tracking-wide">
                       {categoryLabels[project.category] || project.category}
                     </span>
-
                     {/* Title */}
                     <h3 className="font-heading font-bold text-xl text-white mb-1 leading-tight">
                       {project.title}
                     </h3>
-
                     {/* Short Description */}
                     <p className="text-white/70 text-sm leading-relaxed line-clamp-2">
                       {truncateDescription(project.description)}
@@ -175,9 +173,13 @@ const References = () => {
 
           {/* Button moved here - directly under the projects list */}
           <div className="text-center mb-16">
-            <Button asChild size="lg" className="bg-gradient-primary text-white hover:opacity-90 font-semibold px-8 py-4 text-lg">
+            <Button 
+              asChild 
+              className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3"
+            >
               <Link to="/realisations">
-                En Savoir Plus <span className="ml-2">→</span>
+                En Savoir Plus
+                <span className="ml-2">→</span>
               </Link>
             </Button>
           </div>
