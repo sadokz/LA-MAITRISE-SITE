@@ -70,7 +70,7 @@ const CompetencesPage = () => {
         <Header />
         <main className="flex-grow">
           {/* Hero Section */}
-          <section className="relative min-h-[25vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
+          <section className="relative min-h-[30vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
             <div className="absolute inset-0 pointer-events-none">
               {isVideo ? (
                 <video 
