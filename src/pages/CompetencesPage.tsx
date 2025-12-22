@@ -115,7 +115,7 @@ const CompetencesPage = () => {
                         {/* Text Content Column */}
                         <div className={`${isImageLeft ? 'order-2' : 'order-1'} md:order-none space-y-4`}>
                           <div className="flex items-center space-x-4">
-                            <div className="text-5xl text-primary flex-shrink-0">
+                            <div className="text-3xl text-primary flex-shrink-0"> {/* Changed from text-5xl to text-3xl */}
                               {competence.icon}
                             </div>
                             <h2 className="font-heading font-bold text-3xl text-gray-dark">
