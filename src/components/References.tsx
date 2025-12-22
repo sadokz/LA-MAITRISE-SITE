@@ -18,8 +18,7 @@ const fallbackImages: Record<string, string> = {
 const References = () => {
   const { getSiteText } = useSiteTexts();
   const { realisations, loading: realisationsLoading } = useRealisations();
-  const { domaines, loading: domainesLoading } = useDomaines(); // Use domaines for filters
-  const [activeFilter, setActiveFilter] = useState('all');
+  const { domaines, loading: domainesLoading } = useDomaines(); 
 
   const loading = realisationsLoading || domainesLoading;
 
@@ -29,38 +28,11 @@ const References = () => {
     [realisations]
   );
 
-  // Build dynamic filters based on domaines data
-  const filters = useMemo(() => {
-    const dynamicFilters = [
-      { id: 'all', label: 'Tous les projets', count: featuredAndVisibleRealisations.length },
-    ];
-
-    // Create a map for quick lookup of realisation counts per domain
-    const realisationCounts: Record<string, number> = {};
-    featuredAndVisibleRealisations.forEach(r => {
-      realisationCounts[r.category] = (realisationCounts[r.category] || 0) + 1;
-    });
-
-    // Add filters for each domain, only if they have at least one featured project
-    domaines.forEach(domaine => {
-      const count = realisationCounts[domaine.title] || 0;
-      if (count > 0) { // Only add if count is greater than 0
-        dynamicFilters.push({
-          id: domaine.title, // Use domain title as filter ID
-          label: domaine.title,
-          count: count, // Count realisations for this domain
-        });
-      }
-    });
-
-    return dynamicFilters;
-  }, [featuredAndVisibleRealisations, domaines]);
-
-  const filteredProjects = useMemo(() => {
-    const sorted = [...featuredAndVisibleRealisations].sort((a, b) => a.position - b.position);
-    if (activeFilter === 'all') return sorted;
-    return sorted.filter(project => project.category === activeFilter);
-  }, [featuredAndVisibleRealisations, activeFilter]);
+  // The projects to display are now simply the featured and visible ones, sorted by position
+  const projectsToDisplay = useMemo(() => 
+    [...featuredAndVisibleRealisations].sort((a, b) => a.position - b.position),
+    [featuredAndVisibleRealisations]
+  );
 
   // Get display image for a realisation
   const getDisplayImage = (r: typeof realisations[0]) => {
@@ -105,27 +77,9 @@ const References = () => {
             <EditableText textKey="references.header.description" defaultValue={getSiteText('references', 'header', 'description', "Découvrez nos projets illustrant notre savoir-faire et notre capacité d'innovation dans l'ingénierie électrique et le BIM.")} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>
 
-          {/* Filters */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {filters.map((filter) => (
-              <button
-                key={filter.id}
-                onClick={() => setActiveFilter(filter.id)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  activeFilter === filter.id
-                    ? 'bg-gradient-primary text-white shadow-hover'
-                    : 'bg-gray-light text-gray-dark hover:bg-gray-light/70'
-                }`}
-              >
-                {filter.label}
-                <span className="ml-2 text-sm opacity-75">({filter.count})</span>
-              </button>
-            ))}
-          </div>
-
           {/* Projects Grid - Image Cards with Hover Overlay */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-16">
-            {filteredProjects.map((project, index) => {
+            {projectsToDisplay.map((project, index) => {
               const displayImage = getDisplayImage(project);
               return (
                 <div
@@ -169,7 +123,7 @@ const References = () => {
           </div>
 
           {/* Empty state */}
-          {filteredProjects.length === 0 && (
+          {projectsToDisplay.length === 0 && (
             <div className="text-center py-12 text-gray-medium">
               <p>Aucune réalisation trouvée pour cette catégorie.</p>
             </div>
