@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 const Domains = () => {
   const { getSiteText } = useSiteTexts();
   const { domaines } = useDomaines();
-  
+
   // Configuration des icônes et couleurs pour chaque domaine (fallback)
   const domainConfig = [
     { icon: Home, color: 'from-orange-500 to-orange-600' },
@@ -38,7 +38,7 @@ const Domains = () => {
           {/* Header */}
           <div className="text-center mb-16 animate-fade-up">
             <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
-              <EditableText textKey="domains.header.title1" defaultValue={getSiteText('domains', 'header', 'title1', 'Nos Domaines')} className="inline" as="span" />{' '}
+              <EditableText textKey="domains.header.title1" defaultValue={getSiteText('domains', 'header', 'title1', 'Nos')} className="inline" as="span" />{' '}
               <EditableText textKey="domains.header.title2" defaultValue={getSiteText('domains', 'header', 'title2', "d'Intervention")} className="text-gradient-orange inline" as="span" />
             </h2>
             <EditableText textKey="domains.header.description" defaultValue={getSiteText('domains', 'header', 'description', 'Nous adaptons nos solutions aux spécificités de chaque secteur pour offrir des infrastructures fiables, durables et adaptées aux besoins de nos clients.')} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
@@ -50,34 +50,22 @@ const Domains = () => {
               const config = domainConfig[index] || domainConfig[0];
               const FallbackIcon = config.icon;
               const customIconUrl = getCustomIconUrl(domaine);
-
               return (
                 <div key={domaine.id} className="card-elegant bg-white group hover:shadow-hover animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
                   {/* Icon */}
                   <div className="flex justify-center mb-6">
                     {customIconUrl ? (
-                      <div 
-                        className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-3 group-hover:scale-110 transition-transform duration-300 shadow-md"
-                        style={{ 
-                          border: `3px solid ${domaine.icon_border_color || '#3B82F6'}`,
-                          boxShadow: `0 4px 12px ${domaine.icon_border_color || '#3B82F6'}30`
-                        }}
-                      >
-                        <img 
-                          src={customIconUrl} 
-                          alt={domaine.title} 
-                          className="w-8 h-8 object-contain"
-                          onError={(e) => {
-                            // Hide image and show fallback on error
-                            (e.target as HTMLImageElement).style.display = 'none';
-                            const parent = (e.target as HTMLImageElement).parentElement;
-                            if (parent) {
-                              const fallback = document.createElement('div');
-                              fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
-                              parent.appendChild(fallback.firstChild!);
-                            }
-                          }}
-                        />
+                      <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center p-3 group-hover:scale-110 transition-transform duration-300 shadow-md" style={{ border: `3px solid ${domaine.icon_border_color || '#3B82F6'}`, boxShadow: `0 4px 12px ${domaine.icon_border_color || '#3B82F6'}30` }} >
+                        <img src={customIconUrl} alt={domaine.title} className="w-8 h-8 object-contain" onError={(e) => {
+                          // Hide image and show fallback on error
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          const parent = (e.target as HTMLImageElement).parentElement;
+                          if (parent) {
+                            const fallback = document.createElement('div');
+                            fallback.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`;
+                            parent.appendChild(fallback.firstChild!);
+                          }
+                        }} />
                       </div>
                     ) : (
                       <div className={`w-16 h-16 bg-gradient-to-br ${config.color} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
@@ -104,7 +92,7 @@ const Domains = () => {
           <div className="text-center mb-16">
             <Button asChild size="lg" className="bg-gradient-primary text-white hover:opacity-90 font-semibold px-8 py-4 text-lg">
               <Link to="/domaines">
-                En Savoir Plus
+                En Savoir Plus <span className="ml-2">→</span>
               </Link>
             </Button>
           </div>
@@ -114,7 +102,6 @@ const Domains = () => {
             <div className="max-w-4xl mx-auto">
               <EditableText textKey="domains.experience.title" defaultValue={getSiteText('domains', 'experience', 'title', "Plus de 30 ans d'expertise à votre service")} className="font-heading font-bold text-2xl lg:text-3xl mb-4" as="h3" />
               <EditableText textKey="domains.experience.description" defaultValue={getSiteText('domains', 'experience', 'description', "De la Tunisie à l'Afrique, nous avons développé une expertise reconnue dans tous les secteurs de l'ingénierie électrique et du BIM.")} className="text-lg lg:text-xl mb-8 text-white/90" as="p" multiline />
-              
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
                 <div>
                   <div className="text-3xl font-bold text-orange-light mb-1">500+</div>
