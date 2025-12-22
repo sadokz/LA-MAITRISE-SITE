@@ -173,6 +173,15 @@ const References = () => {
             </div>
           )}
 
+          {/* Button moved here - directly under the projects list */}
+          <div className="text-center mb-16">
+            <Button asChild size="lg" className="bg-gradient-primary text-white hover:opacity-90 font-semibold px-8 py-4 text-lg">
+              <Link to="/realisations">
+                En Savoir Plus <span className="ml-2">→</span>
+              </Link>
+            </Button>
+          </div>
+
           {/* Contact CTA */}
           <div className="text-center animate-fade-up">
             <div className="bg-gradient-card rounded-2xl p-8 lg:p-12 border border-border/50">
@@ -188,15 +197,6 @@ const References = () => {
                 Démarrer votre projet
               </button>
             </div>
-          </div>
-
-          {/* Button to Realisations page */}
-          <div className="text-center mt-12">
-            <Button asChild size="lg" className="bg-gradient-primary text-white hover:opacity-90 font-semibold px-8 py-4 text-lg">
-              <Link to="/realisations">
-                En Savoir Plus <span className="ml-2">→</span>
-              </Link>
-            </Button>
           </div>
         </div>
       </div>
