@@ -35,13 +35,16 @@ const References = () => {
       realisationCounts[r.category] = (realisationCounts[r.category] || 0) + 1;
     });
 
-    // Add filters for each domain
+    // Add filters for each domain, only if they have at least one project
     domaines.forEach(domaine => {
-      dynamicFilters.push({
-        id: domaine.title, // Use domain title as filter ID
-        label: domaine.title,
-        count: realisationCounts[domaine.title] || 0, // Count realisations for this domain
-      });
+      const count = realisationCounts[domaine.title] || 0;
+      if (count > 0) { // Only add if count is greater than 0
+        dynamicFilters.push({
+          id: domaine.title, // Use domain title as filter ID
+          label: domaine.title,
+          count: count, // Count realisations for this domain
+        });
+      }
     });
 
     return dynamicFilters;
