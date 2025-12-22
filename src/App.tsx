@@ -10,6 +10,7 @@ import AdminLogin from "./pages/AdminLogin";
 import Login from "./pages/Login";
 import { AuthProvider } from "@/hooks/useAuth";
 import { EditModeProvider } from "@/contexts/EditModeContext";
+import DomainsPage from "./pages/DomainsPage";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/domaines" element={<DomainsPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
