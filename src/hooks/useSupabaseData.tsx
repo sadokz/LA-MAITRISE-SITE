@@ -77,7 +77,7 @@ export interface Realisation {
 
 export const useSiteTexts = () => {
   const [siteTexts, setSiteTexts] = useState<SiteText[]>([]);
-  const [loading, setLoading] = true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSiteTexts();
