@@ -181,23 +181,6 @@ const References = () => {
               </Link>
             </Button>
           </div>
-
-          {/* Contact CTA */}
-          <div className="text-center animate-fade-up">
-            <div className="bg-gradient-card rounded-2xl p-8 lg:p-12 border border-border/50">
-              <EditableText textKey="references.cta.title" defaultValue={getSiteText('references', 'cta', 'title', 'Votre projet mérite notre expertise')} className="font-heading font-bold text-2xl lg:text-3xl text-gray-dark mb-4" as="h3" />
-              <EditableText textKey="references.cta.description" defaultValue={getSiteText('references', 'cta', 'description', "Rejoignez nos clients satisfaits et confiez-nous la réalisation de votre projet d'ingénierie électrique.")} className="text-lg text-gray-medium mb-8 max-w-2xl mx-auto" as="p" multiline />
-              <button
-                onClick={() => {
-                  const element = document.getElementById('contact');
-                  if (element) element.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="btn-primary text-lg"
-              >
-                Démarrer votre projet
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </section>
