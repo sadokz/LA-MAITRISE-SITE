@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -25,6 +25,11 @@ const RealisationsPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { realisations, loading: realisationsLoading } = useRealisations();
+
+  // Scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Get display image for a realisation (copied from References.tsx for consistency)
   const getDisplayImage = (r: typeof realisations[0]) => {
