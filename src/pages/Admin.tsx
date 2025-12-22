@@ -13,7 +13,8 @@ import AdminFounder from '@/components/admin/AdminFounder';
 import AdminContact from '@/components/admin/AdminContact';
 import AdminSections from '@/components/admin/AdminSections';
 import AdminCompetencesPageHero from '@/components/admin/AdminCompetencesPageHero';
-import AdminDomainsPageHero from '@/components/admin/AdminDomainsPageHero'; // Import new component
+import AdminDomainsPageHero from '@/components/admin/AdminDomainsPageHero';
+import AdminRealisationsPageHero from '@/components/admin/AdminRealisationsPageHero'; // Import new component
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
@@ -85,7 +86,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="sections" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9"> {/* Increased grid columns */}
+          <TabsList className="grid w-full grid-cols-10"> {/* Increased grid columns to 10 */}
             <TabsTrigger value="sections" className="flex items-center space-x-2">
               <LayoutGrid className="h-4 w-4" />
               <span>Sections</span>
@@ -106,13 +107,17 @@ const Admin = () => {
               <Building className="h-4 w-4" />
               <span>Domaines</span>
             </TabsTrigger>
-            <TabsTrigger value="domains-page-hero" className="flex items-center space-x-2"> {/* New tab */}
+            <TabsTrigger value="domains-page-hero" className="flex items-center space-x-2">
               <Building className="h-4 w-4" />
               <span>Page Domaines</span>
             </TabsTrigger>
             <TabsTrigger value="realisations" className="flex items-center space-x-2">
               <Trophy className="h-4 w-4" />
               <span>Réalisations</span>
+            </TabsTrigger>
+            <TabsTrigger value="realisations-page-hero" className="flex items-center space-x-2"> {/* New tab */}
+              <Trophy className="h-4 w-4" />
+              <span>Page Réalisations</span>
             </TabsTrigger>
             <TabsTrigger value="founder" className="flex items-center space-x-2">
               <User className="h-4 w-4" />
@@ -172,7 +177,7 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="domains-page-hero"> {/* New tab content */}
+          <TabsContent value="domains-page-hero">
             <Card>
               <CardHeader>
                 <CardTitle>Gestion du Hero de la page Domaines</CardTitle>
@@ -190,6 +195,17 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <AdminRealisations />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="realisations-page-hero"> {/* New tab content */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestion du Hero de la page Réalisations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AdminRealisationsPageHero />
               </CardContent>
             </Card>
           </TabsContent>

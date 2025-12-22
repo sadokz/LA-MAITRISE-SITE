@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { RealisationsPageSettings } from './useRealisationsPageSettings'; // Import the new interface
 
 // Section Visibility types
 export interface SectionVisibility {
