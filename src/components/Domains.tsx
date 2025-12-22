@@ -80,32 +80,6 @@ const Domains = () => {
               </Link>
             </Button>
           </div>
-          
-          {/* Experience Banner */}
-          <div className="bg-gradient-hero rounded-2xl p-8 lg:p-12 text-center text-white animate-fade-up">
-            <div className="max-w-4xl mx-auto">
-              <EditableText textKey="domains.experience.title" defaultValue={getSiteText('domains', 'experience', 'title', "Plus de 30 ans d'expertise à votre service")} className="font-heading font-bold text-2xl lg:text-3xl mb-4" as="h3" />
-              <EditableText textKey="domains.experience.description" defaultValue={getSiteText('domains', 'experience', 'description', "De la Tunisie à l'Afrique, nous avons développé une expertise reconnue dans tous les secteurs de l'ingénierie électrique et du BIM.")} className="text-lg lg:text-xl mb-8 text-white/90" as="p" multiline />
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-                <div>
-                  <div className="text-3xl font-bold text-orange-light mb-1">500+</div>
-                  <div className="text-sm text-white/80">Projets réalisés</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-orange-light mb-1">5</div>
-                  <div className="text-sm text-white/80">Pays d'intervention</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-orange-light mb-1">98%</div>
-                  <div className="text-sm text-white/80">Clients satisfaits</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-orange-light mb-1">30</div>
-                  <div className="text-sm text-white/80">Années d'expérience</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
