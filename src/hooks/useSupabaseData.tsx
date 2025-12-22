@@ -216,7 +216,7 @@ export const useHeroSettings = () => {
 
 export const useRealisations = () => {
   const [realisations, setRealisations] = useState<Realisation[]>([]);
-  const [loading, setLoading] = true);
+  const [loading, setLoading] = useState(true); // Fixed: Correctly initialize useState
 
   useEffect(() => {
     fetchRealisations();
