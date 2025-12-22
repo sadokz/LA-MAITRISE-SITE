@@ -150,6 +150,7 @@ export type Database = {
           icon_url: string | null
           id: string
           image_url: string | null
+          long_description: string | null
           position: number
           title: string
           updated_at: string
@@ -163,6 +164,7 @@ export type Database = {
           icon_url?: string | null
           id?: string
           image_url?: string | null
+          long_description?: string | null
           position?: number
           title: string
           updated_at?: string
@@ -176,6 +178,7 @@ export type Database = {
           icon_url?: string | null
           id?: string
           image_url?: string | null
+          long_description?: string | null
           position?: number
           title?: string
           updated_at?: string

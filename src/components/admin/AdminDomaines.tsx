@@ -20,7 +20,8 @@ const AdminDomaines = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     title: '',
-    description: '',
+    description: '', // Short description
+    long_description: '', // Long description
     image_url: '',
     icon_type: 'builtin' as IconType,
     icon_url: '',
@@ -33,6 +34,7 @@ const AdminDomaines = () => {
     setForm({ 
       title: '', 
       description: '', 
+      long_description: '',
       image_url: '',
       icon_type: 'builtin',
       icon_url: '',
@@ -115,6 +117,7 @@ const AdminDomaines = () => {
     const payload = {
       title: form.title,
       description: form.description,
+      long_description: form.long_description || null, // Save long description
       image_url: form.image_url || null,
       icon_type: form.icon_type,
       icon_url: form.icon_type === 'url' ? form.icon_url : null,
@@ -167,6 +170,7 @@ const AdminDomaines = () => {
     setForm({
       title: domaine.title,
       description: domaine.description,
+      long_description: domaine.long_description || '', // Load long description
       image_url: domaine.image_url || '',
       icon_type: domaine.icon_type || 'builtin',
       icon_url: domaine.icon_url || '',
@@ -291,12 +295,21 @@ const AdminDomaines = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description courte (visible sur toutes les pages)</Label>
                 <Textarea
                   id="description"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   required
+                />
+              </div>
+              <div>
+                <Label htmlFor="long_description">Description longue (visible uniquement sur la page Domaines)</Label>
+                <Textarea
+                  id="long_description"
+                  value={form.long_description}
+                  onChange={(e) => setForm({ ...form, long_description: e.target.value })}
+                  placeholder="Description détaillée du domaine..."
                 />
               </div>
 
@@ -446,7 +459,8 @@ const AdminDomaines = () => {
             <TableHead>Position</TableHead>
             <TableHead>Icône</TableHead>
             <TableHead>Titre</TableHead>
-            <TableHead>Description</TableHead>
+            <TableHead>Description courte</TableHead>
+            <TableHead>Description longue</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -497,6 +511,9 @@ const AdminDomaines = () => {
                   </TableCell>
                   <TableCell className="font-medium">{domaine.title}</TableCell>
                   <TableCell className="max-w-xs truncate">{domaine.description}</TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {domaine.long_description || <span className="text-muted-foreground italic">Non définie</span>}
+                  </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button

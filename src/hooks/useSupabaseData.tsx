@@ -55,7 +55,8 @@ export interface Competence {
 export interface Domaine {
   id: string;
   title: string;
-  description: string;
+  description: string; // Short description
+  long_description?: string; // New: Long description
   image_url?: string;
   position: number;
   icon_type: 'builtin' | 'url' | 'upload';
