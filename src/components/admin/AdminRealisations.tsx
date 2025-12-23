@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star } from 'lucide-react';
+import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
@@ -27,6 +27,8 @@ const AdminRealisations = () => {
     image_file: '',
     is_visible: true,
     is_featured: false,
+    date_text: '', // New: Date text
+    emplacement: '', // New: Emplacement
   });
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
@@ -41,7 +43,9 @@ const AdminRealisations = () => {
       image_mode: 'auto', 
       image_file: '', 
       is_visible: true, 
-      is_featured: false 
+      is_featured: false,
+      date_text: '', // Reset new fields
+      emplacement: '', // Reset new fields
     });
     setEditingRealisation(null);
   };
@@ -106,13 +110,15 @@ const AdminRealisations = () => {
     const payload = {
       title: form.title,
       description: form.description,
-      long_description: form.long_description || null, // Include long_description
+      long_description: form.long_description || null,
       category: form.category,
       image_url: form.image_mode === 'url' ? form.image_url : null,
       image_mode: form.image_mode,
       image_file: form.image_mode === 'upload' ? form.image_file : null,
       is_visible: form.is_visible,
       is_featured: form.is_featured,
+      date_text: form.date_text || null, // Save new fields
+      emplacement: form.emplacement || null, // Save new fields
     };
 
     if (editingRealisation) {
@@ -160,13 +166,15 @@ const AdminRealisations = () => {
     setForm({
       title: realisation.title,
       description: realisation.description,
-      long_description: realisation.long_description || '', // Load long_description
+      long_description: realisation.long_description || '',
       category: realisation.category,
       image_url: realisation.image_url || '',
       image_mode: realisation.image_mode || 'auto',
       image_file: realisation.image_file || '',
       is_visible: realisation.is_visible,
       is_featured: realisation.is_featured,
+      date_text: realisation.date_text || '', // Load new fields
+      emplacement: realisation.emplacement || '', // Load new fields
     });
     setIsDialogOpen(true);
   };
@@ -283,6 +291,24 @@ const AdminRealisations = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="date_text">Date (ex: 2023, Q4 2023)</Label>
+                <Input
+                  id="date_text"
+                  value={form.date_text}
+                  onChange={(e) => setForm({ ...form, date_text: e.target.value })}
+                  placeholder="Ex: 2023, Q4 2023"
+                />
+              </div>
+              <div>
+                <Label htmlFor="emplacement">Emplacement</Label>
+                <Input
+                  id="emplacement"
+                  value={form.emplacement}
+                  onChange={(e) => setForm({ ...form, emplacement: e.target.value })}
+                  placeholder="Ex: Nabeul, Tunisie"
+                />
               </div>
               <div>
                 <Label htmlFor="description">Description courte (pour la page d'accueil et la page Réalisations)</Label>
@@ -429,8 +455,10 @@ const AdminRealisations = () => {
             <TableHead>Position</TableHead>
             <TableHead>Titre</TableHead>
             <TableHead>Domaine</TableHead>
-            <TableHead>Description courte</TableHead> {/* Updated header */}
-            <TableHead>Description longue</TableHead> {/* New header */}
+            <TableHead>Date</TableHead> {/* New header */}
+            <TableHead>Emplacement</TableHead> {/* New header */}
+            <TableHead>Description courte</TableHead>
+            <TableHead>Description longue</TableHead>
             <TableHead>Image</TableHead>
             <TableHead>Visible</TableHead>
             <TableHead>En avant</TableHead>
@@ -468,6 +496,8 @@ const AdminRealisations = () => {
                       {realisation.category}
                     </span>
                   </TableCell>
+                  <TableCell>{realisation.date_text || <span className="text-muted-foreground italic">N/A</span>}</TableCell> {/* Display new field */}
+                  <TableCell>{realisation.emplacement || <span className="text-muted-foreground italic">N/A</span>}</TableCell> {/* Display new field */}
                   <TableCell className="max-w-xs truncate">{realisation.description}</TableCell>
                   <TableCell className="max-w-xs truncate">
                     {realisation.long_description || <span className="text-muted-foreground italic">Non définie</span>}

@@ -3,6 +3,7 @@ import { useSiteTexts, useRealisations, useDomaines } from '@/hooks/useSupabaseD
 import EditableText from '@/components/EditableText';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { Calendar, MapPin } from 'lucide-react'; // Import new icons
 
 // Fallback images by category for auto mode
 const fallbackImages: Record<string, string> = {
@@ -112,6 +113,21 @@ const References = () => {
                     <h3 className="font-heading font-bold text-xl text-white mb-1 leading-tight">
                       {project.title}
                     </h3>
+                    {/* Date and Emplacement */}
+                    {(project.date_text || project.emplacement) && (
+                      <div className="flex items-center text-white/80 text-sm mb-2">
+                        {project.date_text && (
+                          <span className="flex items-center mr-3">
+                            <Calendar className="h-3 w-3 mr-1" /> {project.date_text}
+                          </span>
+                        )}
+                        {project.emplacement && (
+                          <span className="flex items-center">
+                            <MapPin className="h-3 w-3 mr-1" /> {project.emplacement}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     {/* Short Description */}
                     <p className="text-white/70 text-sm leading-relaxed line-clamp-2">
                       {truncateDescription(project.description)}

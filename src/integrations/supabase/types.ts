@@ -354,7 +354,9 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          date_text: string | null
           description: string
+          emplacement: string | null
           id: string
           image_file: string | null
           image_mode: string
@@ -369,7 +371,9 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          date_text?: string | null
           description: string
+          emplacement?: string | null
           id?: string
           image_file?: string | null
           image_mode?: string
@@ -384,7 +388,9 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          date_text?: string | null
           description?: string
+          emplacement?: string | null
           id?: string
           image_file?: string | null
           image_mode?: string

@@ -78,6 +78,8 @@ export interface Realisation {
   position: number;
   is_visible: boolean;
   is_featured: boolean;
+  date_text?: string; // New: Date text for the realization
+  emplacement?: string; // New: Emplacement for the realization
 }
 
 export const useSiteTexts = () => {

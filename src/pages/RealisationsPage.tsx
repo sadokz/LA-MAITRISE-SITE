@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin } from 'lucide-react'; // Import new icons
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useRealisations } from '@/hooks/useSupabaseData';
 import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings'; // Import the new hook
@@ -174,9 +174,24 @@ const RealisationsPage = () => {
                           <h2 className="font-heading font-bold text-3xl text-gray-dark">
                             {project.title}
                           </h2>
-                          <p className="text-lg font-medium text-orange">
+                          <p className="text-lg font-medium text-orange mb-2">
                             {project.category}
                           </p>
+                          {/* New: Date and Emplacement */}
+                          {(project.date_text || project.emplacement) && (
+                            <div className="flex items-center text-gray-medium text-sm mb-4">
+                              {project.date_text && (
+                                <span className="flex items-center mr-4">
+                                  <Calendar className="h-4 w-4 mr-1 text-primary" /> {project.date_text}
+                                </span>
+                              )}
+                              {project.emplacement && (
+                                <span className="flex items-center">
+                                  <MapPin className="h-4 w-4 mr-1 text-primary" /> {project.emplacement}
+                                </span>
+                              )}
+                            </div>
+                          )}
                           <p className="text-gray-medium leading-relaxed">
                             {project.description} {/* Short description */}
                           </p>
