@@ -142,6 +142,11 @@ Blue corporat, gris sophistiqué, animations fluides
   .animate-scale-in {
     animation: scaleIn 0.4s ease-out forwards;
   }
+
+  /* Card with elegant shadow and rounded corners */
+  .card-elegant {
+    @apply bg-gradient-card rounded-2xl p-8 shadow-elegant; /* Changed rounded-xl to rounded-2xl */
+  }
 }
 
 @layer utilities {

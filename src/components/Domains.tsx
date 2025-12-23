@@ -42,7 +42,7 @@ const Domains = () => {
               return (
                 <div key={domaine.id} className="card-elegant bg-white group hover:shadow-hover animate-scale-in border-2 hover:border-primary/20" style={{ animationDelay: `${index * 0.1}s` }}>
                   {/* Icon */}
-                  <div className="flex justify-center mb-6">
+                  <div className="flex justify-center mb-8"> {/* Changed mb-6 to mb-8 */}
                     {domaine.icon ? (
                       <div className="text-5xl text-primary group-hover:scale-110 transition-transform duration-300">
                         {domaine.icon}
@@ -55,7 +55,7 @@ const Domains = () => {
                   </div>
                   
                   {/* Title */}
-                  <h3 className="font-heading font-semibold text-xl text-gray-dark mb-4 text-center">
+                  <h3 className="font-heading font-semibold text-xl text-gray-dark mb-6 text-center"> {/* Changed mb-4 to mb-6 */}
                     {domaine.title}
                   </h3>
                   
