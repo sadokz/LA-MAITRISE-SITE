@@ -71,7 +71,7 @@ const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => 
 
   return (
     <div className={cn(
-      "p-8 rounded-2xl shadow-card transition-colors duration-300", // Frame styling
+      "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
       index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
     )}>
       <div 
