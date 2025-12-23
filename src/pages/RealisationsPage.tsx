@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom'; // Import useLocation
+import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -18,29 +18,27 @@ const RealisationsPage = () => {
   const { realisations, loading: realisationsLoading } = useRealisations();
   const { domaines, loading: domainesLoading } = useDomaines();
   const { realisationsPageSettings } = useRealisationsPageSettings();
-  const location = useLocation(); // Initialize useLocation
+  const location = useLocation();
 
-  // Read initial category from location state
-  const initialCategoryFromState = (location.state as { category?: string })?.category || 'all';
-  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFromState);
+  // Initialize selectedCategory to 'all'
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Update selectedCategory if location state changes (e.g., user navigates from header)
+  // Effect to update selectedCategory based on location.state
   useEffect(() => {
     const categoryFromState = (location.state as { category?: string })?.category;
-    if (categoryFromState && categoryFromState !== selectedCategory) {
+    if (categoryFromState) {
       setSelectedCategory(categoryFromState);
       setExpandedDomains(new Set()); // Collapse all when a new category is selected
-    } else if (!categoryFromState && selectedCategory !== 'all') {
-      // If no category in state, but one was previously selected, reset to 'all'
-      setSelectedCategory('all');
+    } else {
+      setSelectedCategory('all'); // Default to 'all' if no category in state
       setExpandedDomains(new Set());
     }
-  }, [location.state, selectedCategory]); // Depend on location.state and selectedCategory
+  }, [location.state]); // Only re-run when location.state changes
 
   const visibleRealisations = useMemo(() => 
     realisations.filter(r => r.is_visible), 
@@ -69,10 +67,12 @@ const RealisationsPage = () => {
 
   const filteredRealisations = useMemo(() => {
     if (selectedCategory === 'all') {
-      return []; // When 'all' is selected, we'll render grouped projects
+      // When 'all' is selected, we'll render grouped projects, so this memo returns an empty array
+      // The rendering logic below handles displaying all grouped projects.
+      return []; 
     }
     return groupedRealisations[selectedCategory] || [];
-  }, [selectedCategory, groupedRealisations]); // Removed visibleRealisations from dependency as it's covered by groupedRealisations
+  }, [selectedCategory, groupedRealisations]);
 
   const categoryCounts = useMemo(() => {
     const counts: { [key: string]: number } = { all: visibleRealisations.length };
@@ -217,7 +217,7 @@ const RealisationsPage = () => {
                     // Display grouped projects when 'all' is selected
                     Object.keys(groupedRealisations).length === 0 ? (
                       <div className="text-center py-20 text-gray-medium">
-                        <p>Aucune réalisation n'est disponible pour le moment.</p>
+                        <p>Aucune réalisation n'is disponible pour le moment.</p>
                       </div>
                     ) : (
                       <div className="space-y-20">
