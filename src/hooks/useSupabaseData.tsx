@@ -91,6 +91,7 @@ export interface Realisation {
   emplacement?: string; // New: Emplacement for the realization
   reference?: string; // New: Reference for the realization
   images?: RealisationImage[]; // New: Array of additional images
+  parsed_year?: number; // New: For client-side sorting
 }
 
 export const useSiteTexts = () => {
@@ -241,14 +242,29 @@ export const useRealisations = () => {
     const { data, error } = await supabase
       .from('realisations')
       .select('*, realisation_images(*)') // Fetch related images
-      .order('position', { ascending: true });
+      .order('position', { ascending: true }); // Keep initial order for consistency before client-side sort
     
     if (!error && data) {
-      // Sort images by position for each realisation
-      const sortedRealisations = data.map(r => ({
-        ...r,
-        images: r.realisation_images ? [...r.realisation_images].sort((a, b) => a.position - b.position) : [],
-      }));
+      const processedRealisations = data.map(r => {
+        // Extract year from date_text for sorting
+        const yearMatch = r.date_text?.match(/\d{4}/);
+        const parsedYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+
+        return {
+          ...r,
+          images: r.realisation_images ? [...r.realisation_images].sort((a, b) => a.position - b.position) : [],
+          parsed_year: parsedYear,
+        };
+      });
+
+      // Sort by year (newest first), then by original position
+      const sortedRealisations = processedRealisations.sort((a, b) => {
+        if (a.parsed_year !== b.parsed_year) {
+          return (b.parsed_year || 0) - (a.parsed_year || 0); // Newest year first
+        }
+        return a.position - b.position; // Maintain original position for same year
+      });
+
       setRealisations(sortedRealisations as Realisation[]);
     }
     setLoading(false);
