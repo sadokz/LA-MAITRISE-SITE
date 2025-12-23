@@ -40,7 +40,7 @@ const Domains = () => {
               const defaultColorClass = defaultColors[index % defaultColors.length];
               
               return (
-                <div key={domaine.id} className="card-elegant bg-white group hover:shadow-hover animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div key={domaine.id} className="card-elegant bg-white group hover:shadow-hover animate-scale-in border-2 hover:border-primary/20" style={{ animationDelay: `${index * 0.1}s` }}>
                   {/* Icon */}
                   <div className="flex justify-center mb-6">
                     {domaine.icon ? (
