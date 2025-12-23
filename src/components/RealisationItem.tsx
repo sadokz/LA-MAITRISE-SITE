@@ -13,7 +13,7 @@ interface RealisationItemProps {
 }
 
 const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => {
-  const isImageLeft = index % 2 === 0;
+  const isImageLeft = index % 2 === 0; // True for 0, 2, 4... (image on left on desktop)
 
   // Combine main image and additional images, then sort by position
   const allProjectImages = useMemo(() => {
@@ -74,8 +74,8 @@ const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => 
       className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
       style={{ animationDelay: `${index * 0.1}s` }}
     >
-      {/* Image Gallery Column */}
-      <div className={`${isImageLeft ? 'order-1' : 'order-2'} md:order-none`}>
+      {/* Image Gallery Column - Always first in source order for mobile stacking */}
+      <div className={isImageLeft ? 'md:order-1' : 'md:order-2'}> 
         {allProjectImages.length > 0 ? (
           <div className="relative">
             <div className="embla overflow-hidden rounded-xl shadow-lg" ref={emblaRef}>
@@ -143,8 +143,8 @@ const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => 
         )}
       </div>
 
-      {/* Description Column */}
-      <div className={`${isImageLeft ? 'order-2' : 'order-1'} md:order-none space-y-4`}>
+      {/* Description Column - Always second in source order for mobile stacking */}
+      <div className={isImageLeft ? 'md:order-2' : 'md:order-1'} > 
         <h2 className="font-heading font-bold text-3xl text-gray-dark">
           {project.title}
         </h2>
