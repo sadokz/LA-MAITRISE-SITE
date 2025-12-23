@@ -2,8 +2,11 @@ import React, { useMemo } from 'react';
 import { MapPin, CheckCircle } from 'lucide-react';
 import { useRealisations, useSiteTexts } from '@/hooks/useSupabaseData';
 import EditableText from '@/components/EditableText';
-import tunisiaMapImage from '@/assets/tunisia-map.png'; // Placeholder map image
+// import tunisiaMapImage from '@/assets/tunisia-map.png'; // Removed this import
 import { cn } from '@/lib/utils';
+
+// A generic map image URL for better visibility
+const DEFAULT_TUNISIA_MAP_IMAGE = 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
 // Define approximate coordinates for cities on a 800x600px map image (relative percentages)
 // These coordinates are illustrative and would need fine-tuning with an actual map image.
@@ -56,7 +59,7 @@ const TunisiaMap = () => {
 
   if (realisationsLoading) {
     return (
-      <section id="tunisia-map" className="section-padding bg-muted/30">
+      <section id="tunisia-map" className="section-padding bg-muted/30 min-h-[400px]">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -69,7 +72,7 @@ const TunisiaMap = () => {
   const locationsWithProjects = Array.from(projectsByLocation.keys()).filter(location => cityCoordinates[location]);
 
   return (
-    <section id="tunisia-map" className="section-padding bg-muted/30">
+    <section id="tunisia-map" className="section-padding bg-muted/30 min-h-[400px]">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -81,11 +84,11 @@ const TunisiaMap = () => {
             <EditableText textKey="tunisiaMap.header.description" defaultValue={getSiteText('tunisiaMap', 'header', 'description', 'Découvrez les villes où nous avons réalisé des projets, témoignant de notre engagement national.')} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>
 
-          <div className="relative w-full max-w-4xl mx-auto aspect-[4/3] bg-white rounded-xl shadow-elegant overflow-hidden">
+          <div className="relative w-full max-w-4xl mx-auto aspect-[4/3] bg-gray-200 rounded-xl shadow-elegant overflow-hidden min-h-[300px]">
             <img 
-              src={tunisiaMapImage} 
+              src={DEFAULT_TUNISIA_MAP_IMAGE} 
               alt="Carte de la Tunisie" 
-              className="w-full h-full object-contain" 
+              className="w-full h-full object-cover" 
             />
             {locationsWithProjects.map(location => {
               const coords = cityCoordinates[location];

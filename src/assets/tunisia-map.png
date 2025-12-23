@@ -1,9 +1,0 @@
-<!-- This is a placeholder image. In a real application, you would replace this with an actual map image of Tunisia. -->
-<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="800" height="600" fill="#E0F2F7"/>
-<path d="M400 50L350 150L450 200L500 100L400 50Z" fill="#B2EBF2"/>
-<path d="M300 200L250 300L350 350L400 250L300 200Z" fill="#80DEEA"/>
-<path d="M500 300L450 400L550 450L600 350L500 300Z" fill="#4DD0E1"/>
-<path d="M200 400L150 500L250 550L300 450L200 400Z" fill="#00BCD4"/>
-<text x="50%" y="50%" font-family="Arial" font-size="40" fill="#00796B" text-anchor="middle" alignment-baseline="middle">Tunisia Map Placeholder</text>
-</svg>
