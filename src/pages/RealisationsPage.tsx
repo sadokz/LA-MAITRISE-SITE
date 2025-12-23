@@ -139,7 +139,7 @@ const RealisationsPage = () => {
                   {categoryCounts.all}
                 </span>
               </Button>
-              {domaines.sort((a, b) => a.title.localeCompare(b.title)).map((domaine) => (
+              {domaines.sort((a, b) => a.position - b.position).map((domaine) => (
                 <Button
                   key={domaine.id}
                   variant={selectedCategory === domaine.title ? 'default' : 'outline'}
