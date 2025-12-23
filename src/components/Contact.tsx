@@ -358,20 +358,20 @@ const Contact = () => {
               </div>
 
               {/* WhatsApp CTA */}
-              <div className="card-elegant bg-gradient-primary text-white">
+              <div className="card-elegant bg-gradient-primary text-white p-6 lg:p-6"> {/* Reduced padding */}
                 <div className="text-center">
-                  <MessageSquare className="w-12 h-12 mx-auto mb-4" />
-                  <h4 className="font-heading font-semibold text-xl mb-2">
+                  <MessageSquare className="w-10 h-10 mx-auto mb-2" /> {/* Reduced icon size and margin */}
+                  <h4 className="font-heading font-semibold text-lg mb-1"> {/* Reduced font size and margin */}
                     {getContactText('whatsapp_title', 'Contact rapide')}
                   </h4>
-                  <p className="mb-4 text-white/90">
+                  <p className="mb-2 text-white/90 text-sm"> {/* Reduced font size and margin */}
                     {getContactText('whatsapp_subtitle', 'Besoin d\'une réponse immédiate ? Contactez-nous sur WhatsApp')}
                   </p>
                   <a
                     href="https://wa.me/21652949411"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg font-medium hover:bg-white/30 transition-colors"
+                    className="inline-block bg-white/20 backdrop-blur-sm text-white px-5 py-2 rounded-lg font-medium text-sm hover:bg-white/30 transition-colors" {/* Reduced padding and font size */}
                     aria-label="Contacter LA MAITRISE ENGINEERING via WhatsApp"
                   >
                     {getContactText('whatsapp_button', 'Écrire sur WhatsApp')}
