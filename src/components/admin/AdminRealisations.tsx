@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin } from 'lucide-react';
+import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin, Hash } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
@@ -29,6 +29,7 @@ const AdminRealisations = () => {
     is_featured: false,
     date_text: '', // New: Date text
     emplacement: '', // New: Emplacement
+    reference: '', // New: Reference
   });
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
@@ -46,6 +47,7 @@ const AdminRealisations = () => {
       is_featured: false,
       date_text: '', // Reset new fields
       emplacement: '', // Reset new fields
+      reference: '', // Reset new field
     });
     setEditingRealisation(null);
   };
@@ -119,6 +121,7 @@ const AdminRealisations = () => {
       is_featured: form.is_featured,
       date_text: form.date_text || null, // Save new fields
       emplacement: form.emplacement || null, // Save new fields
+      reference: form.reference || null, // Save new field
     };
 
     if (editingRealisation) {
@@ -175,6 +178,7 @@ const AdminRealisations = () => {
       is_featured: realisation.is_featured,
       date_text: realisation.date_text || '', // Load new fields
       emplacement: realisation.emplacement || '', // Load new fields
+      reference: realisation.reference || '', // Load new field
     });
     setIsDialogOpen(true);
   };
@@ -308,6 +312,15 @@ const AdminRealisations = () => {
                   value={form.emplacement}
                   onChange={(e) => setForm({ ...form, emplacement: e.target.value })}
                   placeholder="Ex: Nabeul, Tunisie"
+                />
+              </div>
+              <div>
+                <Label htmlFor="reference">Référence (Réf)</Label>
+                <Input
+                  id="reference"
+                  value={form.reference}
+                  onChange={(e) => setForm({ ...form, reference: e.target.value })}
+                  placeholder="Ex: Réf-001, Projet-X"
                 />
               </div>
               <div>
@@ -455,8 +468,9 @@ const AdminRealisations = () => {
             <TableHead>Position</TableHead>
             <TableHead>Titre</TableHead>
             <TableHead>Domaine</TableHead>
-            <TableHead>Date</TableHead> {/* New header */}
-            <TableHead>Emplacement</TableHead> {/* New header */}
+            <TableHead>Date</TableHead>
+            <TableHead>Emplacement</TableHead>
+            <TableHead>Réf</TableHead> {/* New header */}
             <TableHead>Description courte</TableHead>
             <TableHead>Description longue</TableHead>
             <TableHead>Image</TableHead>
@@ -496,8 +510,9 @@ const AdminRealisations = () => {
                       {realisation.category}
                     </span>
                   </TableCell>
-                  <TableCell>{realisation.date_text || <span className="text-muted-foreground italic">N/A</span>}</TableCell> {/* Display new field */}
-                  <TableCell>{realisation.emplacement || <span className="text-muted-foreground italic">N/A</span>}</TableCell> {/* Display new field */}
+                  <TableCell>{realisation.date_text || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                  <TableCell>{realisation.emplacement || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                  <TableCell>{realisation.reference || <span className="text-muted-foreground italic">N/A</span>}</TableCell> {/* Display new field */}
                   <TableCell className="max-w-xs truncate">{realisation.description}</TableCell>
                   <TableCell className="max-w-xs truncate">
                     {realisation.long_description || <span className="text-muted-foreground italic">Non définie</span>}

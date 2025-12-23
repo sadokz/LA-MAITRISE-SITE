@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, MapPin } from 'lucide-react'; // Import new icons
+import { ArrowLeft, Calendar, MapPin, Hash } from 'lucide-react'; // Import Hash icon
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useRealisations } from '@/hooks/useSupabaseData';
 import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings'; // Import the new hook
@@ -177,17 +177,22 @@ const RealisationsPage = () => {
                           <p className="text-lg font-medium text-orange mb-2">
                             {project.category}
                           </p>
-                          {/* New: Date and Emplacement */}
-                          {(project.date_text || project.emplacement) && (
-                            <div className="flex items-center text-gray-medium text-sm mb-4">
+                          {/* New: Date, Emplacement, and Reference */}
+                          {(project.date_text || project.emplacement || project.reference) && (
+                            <div className="flex flex-wrap items-center text-gray-medium text-sm mb-4 gap-x-4 gap-y-2">
                               {project.date_text && (
-                                <span className="flex items-center mr-4">
+                                <span className="flex items-center">
                                   <Calendar className="h-4 w-4 mr-1 text-primary" /> {project.date_text}
                                 </span>
                               )}
                               {project.emplacement && (
                                 <span className="flex items-center">
                                   <MapPin className="h-4 w-4 mr-1 text-primary" /> {project.emplacement}
+                                </span>
+                              )}
+                              {project.reference && (
+                                <span className="flex items-center">
+                                  <Hash className="h-4 w-4 mr-1 text-primary" /> {project.reference}
                                 </span>
                               )}
                             </div>

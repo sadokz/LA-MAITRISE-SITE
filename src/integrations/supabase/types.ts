@@ -365,6 +365,7 @@ export type Database = {
           is_visible: boolean
           long_description: string | null
           position: number
+          reference: string | null
           title: string
           updated_at: string
         }
@@ -382,6 +383,7 @@ export type Database = {
           is_visible?: boolean
           long_description?: string | null
           position?: number
+          reference?: string | null
           title: string
           updated_at?: string
         }
@@ -399,6 +401,7 @@ export type Database = {
           is_visible?: boolean
           long_description?: string | null
           position?: number
+          reference?: string | null
           title?: string
           updated_at?: string
         }

@@ -80,6 +80,7 @@ export interface Realisation {
   is_featured: boolean;
   date_text?: string; // New: Date text for the realization
   emplacement?: string; // New: Emplacement for the realization
+  reference?: string; // New: Reference for the realization
 }
 
 export const useSiteTexts = () => {
