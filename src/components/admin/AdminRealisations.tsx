@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -6,11 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin, Hash } from 'lucide-react';
+import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin, Hash, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
+import { useRealisations, useDomaines, Realisation, RealisationImage } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
-import { Switch } from '@/components/ui/switch'; // Import Switch
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+type ImageMode = 'auto' | 'url' | 'upload';
 
 const AdminRealisations = () => {
   const { realisations, fetchRealisations } = useRealisations();
@@ -19,19 +23,23 @@ const AdminRealisations = () => {
   const [editingRealisation, setEditingRealisation] = useState<Realisation | null>(null);
   const [form, setForm] = useState({
     title: '',
-    description: '', // Short description
-    long_description: '', // Long description
+    description: '',
+    long_description: '',
     category: '',
-    image_url: '',
-    image_mode: 'auto' as 'auto' | 'url' | 'upload',
-    image_file: '',
+    image_url: '', // Main image URL
+    image_mode: 'auto' as ImageMode, // Main image mode
+    image_file: '', // Main image file
     is_visible: true,
     is_featured: false,
-    date_text: '', // New: Date text
-    emplacement: '', // New: Emplacement
-    reference: '', // New: Reference
+    date_text: '',
+    emplacement: '',
+    reference: '',
   });
-  const [uploading, setUploading] = useState(false);
+  const [additionalImages, setAdditionalImages] = useState<RealisationImage[]>([]);
+  const [uploadingMainImage, setUploadingMainImage] = useState(false);
+  const [uploadingAdditionalImage, setUploadingAdditionalImage] = useState(false);
+  const mainImageFileInputRef = useRef<HTMLInputElement>(null);
+  const additionalImageFileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const resetForm = () => {
@@ -45,64 +53,120 @@ const AdminRealisations = () => {
       image_file: '', 
       is_visible: true, 
       is_featured: false,
-      date_text: '', // Reset new fields
-      emplacement: '', // Reset new fields
-      reference: '', // Reset new field
+      date_text: '',
+      emplacement: '',
+      reference: '',
     });
+    setAdditionalImages([]);
     setEditingRealisation(null);
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type and size
     const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      toast({
-        title: 'Erreur',
-        description: 'Type de fichier non supporté. Utilisez PNG, JPG ou WebP.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Erreur', description: 'Type de fichier non supporté. Utilisez PNG, JPG ou WebP.', variant: 'destructive' });
       return;
     }
-
     if (file.size > 2 * 1024 * 1024) {
-      toast({
-        title: 'Erreur',
-        description: 'Le fichier est trop volumineux (max 2 Mo).',
-        variant: 'destructive',
-      });
+      toast({ title: 'Erreur', description: 'Le fichier est trop volumineux (max 2 Mo).', variant: 'destructive' });
       return;
     }
 
-    setUploading(true);
+    setUploadingMainImage(true);
     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('realisation-images')
-      .upload(fileName, file);
-
+    const { error: uploadError } = await supabase.storage.from('realisation-images').upload(fileName, file);
     if (uploadError) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de téléverser l\'image.',
-        variant: 'destructive',
-      });
-      setUploading(false);
+      toast({ title: 'Erreur', description: 'Impossible de téléverser l\'image principale.', variant: 'destructive' });
+      setUploadingMainImage(false);
       return;
     }
 
-    const { data: publicData } = supabase.storage
-      .from('realisation-images')
-      .getPublicUrl(fileName);
-
+    const { data: publicData } = supabase.storage.from('realisation-images').getPublicUrl(fileName);
     setForm({ ...form, image_file: publicData.publicUrl, image_mode: 'upload' });
-    setUploading(false);
+    setUploadingMainImage(false);
+    toast({ title: 'Succès', description: 'Image principale téléversée avec succès.', });
+  };
 
-    toast({
-      title: 'Succès',
-      description: 'Image téléversée avec succès.',
+  const handleAdditionalImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Erreur', description: 'Type de fichier non supporté. Utilisez PNG, JPG ou WebP.', variant: 'destructive' });
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ title: 'Erreur', description: 'Le fichier est trop volumineux (max 2 Mo).', variant: 'destructive' });
+      return;
+    }
+
+    setUploadingAdditionalImage(true);
+    const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+
+    const { error: uploadError } = await supabase.storage.from('realisation-additional-images').upload(fileName, file);
+    if (uploadError) {
+      toast({ title: 'Erreur', description: 'Impossible de téléverser l\'image supplémentaire.', variant: 'destructive' });
+      setUploadingAdditionalImage(false);
+      return;
+    }
+
+    const { data: publicData } = supabase.storage.from('realisation-additional-images').getPublicUrl(fileName);
+    
+    const newImage: RealisationImage = {
+      id: `new-${Date.now()}`, // Temporary ID for new images
+      realisation_id: editingRealisation?.id || '',
+      image_url: null,
+      image_file: publicData.publicUrl,
+      image_mode: 'upload',
+      position: additionalImages.length > 0 ? Math.max(...additionalImages.map(img => img.position)) + 1 : 0,
+    };
+    setAdditionalImages(prev => [...prev, newImage]);
+    setUploadingAdditionalImage(false);
+    if (additionalImageFileInputRef.current) additionalImageFileInputRef.current.value = '';
+    toast({ title: 'Succès', description: 'Image supplémentaire téléversée avec succès.', });
+  };
+
+  const handleAddAdditionalImageFromUrl = (url: string) => {
+    if (!url.trim()) return;
+    const newImage: RealisationImage = {
+      id: `new-${Date.now()}`,
+      realisation_id: editingRealisation?.id || '',
+      image_url: url.trim(),
+      image_file: null,
+      image_mode: 'url',
+      position: additionalImages.length > 0 ? Math.max(...additionalImages.map(img => img.position)) + 1 : 0,
+    };
+    setAdditionalImages(prev => [...prev, newImage]);
+    toast({ title: 'Succès', description: 'Image supplémentaire ajoutée via URL.', });
+  };
+
+  const handleRemoveAdditionalImage = (id: string) => {
+    setAdditionalImages(prev => prev.filter(img => img.id !== id));
+    toast({ title: 'Supprimé', description: 'Image supplémentaire retirée.', });
+  };
+
+  const handleMoveAdditionalImage = (id: string, direction: 'up' | 'down') => {
+    setAdditionalImages(prevImages => {
+      const newImages = [...prevImages].sort((a, b) => a.position - b.position);
+      const currentIndex = newImages.findIndex(img => img.id === id);
+      if (currentIndex === -1) return prevImages;
+
+      const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+      if (targetIndex < 0 || targetIndex >= newImages.length) return prevImages;
+
+      // Swap positions
+      const currentImage = newImages[currentIndex];
+      const targetImage = newImages[targetIndex];
+
+      newImages[currentIndex] = { ...targetImage, position: currentImage.position };
+      newImages[targetIndex] = { ...currentImage, position: targetImage.position };
+      
+      return newImages.sort((a, b) => a.position - b.position);
     });
   };
 
@@ -119,46 +183,55 @@ const AdminRealisations = () => {
       image_file: form.image_mode === 'upload' ? form.image_file : null,
       is_visible: form.is_visible,
       is_featured: form.is_featured,
-      date_text: form.date_text || null, // Save new fields
-      emplacement: form.emplacement || null, // Save new fields
-      reference: form.reference || null, // Save new field
+      date_text: form.date_text || null,
+      emplacement: form.emplacement || null,
+      reference: form.reference || null,
     };
 
+    let realisationId = editingRealisation?.id;
     if (editingRealisation) {
-      const { error } = await supabase
-        .from('realisations')
-        .update(payload)
-        .eq('id', editingRealisation.id);
-
-      if (error) {
-        toast({
-          title: 'Erreur',
-          description: 'Impossible de mettre à jour la réalisation',
-          variant: 'destructive',
-        });
-        return;
-      }
+      const { error } = await supabase.from('realisations').update(payload).eq('id', realisationId);
+      if (error) { toast({ title: 'Erreur', description: 'Impossible de mettre à jour la réalisation', variant: 'destructive' }); return; }
     } else {
       const maxPosition = Math.max(...realisations.map(r => r.position), 0);
-      const { error } = await supabase
-        .from('realisations')
-        .insert({ ...payload, position: maxPosition + 1 });
+      const { data, error } = await supabase.from('realisations').insert({ ...payload, position: maxPosition + 1 }).select('id').single();
+      if (error) { toast({ title: 'Erreur', description: 'Impossible de créer la réalisation', variant: 'destructive' }); return; }
+      realisationId = data.id;
+    }
 
-      if (error) {
-        toast({
-          title: 'Erreur',
-          description: 'Impossible de créer la réalisation',
-          variant: 'destructive',
-        });
-        return;
+    // Handle additional images
+    if (realisationId) {
+      // Delete existing additional images not in the current list
+      const existingImageIds = additionalImages.filter(img => !img.id.startsWith('new-')).map(img => img.id);
+      const { error: deleteError } = await supabase
+        .from('realisation_images')
+        .delete()
+        .eq('realisation_id', realisationId)
+        .not('id', 'in', `(${existingImageIds.map(id => `'${id}'`).join(',') || 'NULL'})`); // Handle empty array
+
+      if (deleteError) { console.error('Error deleting old images:', deleteError); }
+
+      // Insert/Update additional images
+      for (const img of additionalImages) {
+        const imgPayload = {
+          realisation_id: realisationId,
+          image_url: img.image_mode === 'url' ? img.image_url : null,
+          image_file: img.image_mode === 'upload' ? img.image_file : null,
+          image_mode: img.image_mode,
+          position: img.position,
+        };
+
+        if (img.id.startsWith('new-')) {
+          // Insert new image
+          await supabase.from('realisation_images').insert(imgPayload);
+        } else {
+          // Update existing image
+          await supabase.from('realisation_images').update(imgPayload).eq('id', img.id);
+        }
       }
     }
 
-    toast({
-      title: 'Succès',
-      description: editingRealisation ? 'Réalisation mise à jour' : 'Réalisation créée',
-    });
-
+    toast({ title: 'Succès', description: editingRealisation ? 'Réalisation mise à jour' : 'Réalisation créée', });
     setIsDialogOpen(false);
     resetForm();
     fetchRealisations();
@@ -176,37 +249,21 @@ const AdminRealisations = () => {
       image_file: realisation.image_file || '',
       is_visible: realisation.is_visible,
       is_featured: realisation.is_featured,
-      date_text: realisation.date_text || '', // Load new fields
-      emplacement: realisation.emplacement || '', // Load new fields
-      reference: realisation.reference || '', // Load new field
+      date_text: realisation.date_text || '',
+      emplacement: realisation.emplacement || '',
+      reference: realisation.reference || '',
     });
+    setAdditionalImages(realisation.images || []);
     setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette réalisation ?')) {
-      return;
-    }
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette réalisation ?')) { return; }
 
-    const { error } = await supabase
-      .from('realisations')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('realisations').delete().eq('id', id);
+    if (error) { toast({ title: 'Erreur', description: 'Impossible de supprimer la réalisation', variant: 'destructive' }); return; }
 
-    if (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de supprimer la réalisation',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    toast({
-      title: 'Succès',
-      description: 'Réalisation supprimée',
-    });
-
+    toast({ title: 'Succès', description: 'Réalisation supprimée', });
     fetchRealisations();
   };
 
@@ -214,41 +271,21 @@ const AdminRealisations = () => {
     const sortedRealisations = [...realisations].sort((a, b) => a.position - b.position);
     const currentIndex = sortedRealisations.findIndex(r => r.id === realisation.id);
     
-    if (
-      (direction === 'up' && currentIndex === 0) ||
-      (direction === 'down' && currentIndex === sortedRealisations.length - 1)
-    ) {
-      return;
-    }
+    if ((direction === 'up' && currentIndex === 0) || (direction === 'down' && currentIndex === sortedRealisations.length - 1)) { return; }
 
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     const targetRealisation = sortedRealisations[targetIndex];
 
-    const { error } = await supabase
-      .from('realisations')
-      .update({ position: targetRealisation.position })
-      .eq('id', realisation.id);
-
+    const { error } = await supabase.from('realisations').update({ position: targetRealisation.position }).eq('id', realisation.id);
     if (!error) {
-      await supabase
-        .from('realisations')
-        .update({ position: realisation.position })
-        .eq('id', targetRealisation.id);
+      await supabase.from('realisations').update({ position: realisation.position }).eq('id', targetRealisation.id);
     }
 
-    if (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de réorganiser les réalisations',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+    if (error) { toast({ title: 'Erreur', description: 'Impossible de réorganiser les réalisations', variant: 'destructive' }); return; }
     fetchRealisations();
   };
 
-  const getDisplayImage = (r: Realisation) => {
+  const getDisplayImage = (r: Realisation | RealisationImage) => {
     if (r.image_mode === 'upload' && r.image_file) return r.image_file;
     if (r.image_mode === 'url' && r.image_url) return r.image_url;
     return null;
@@ -274,12 +311,7 @@ const AdminRealisations = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="title">Titre</Label>
-                <Input
-                  id="title"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  required
-                />
+                <Input id="title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
               </div>
               <div>
                 <Label htmlFor="category">Domaine / Catégorie</Label>
@@ -298,148 +330,159 @@ const AdminRealisations = () => {
               </div>
               <div>
                 <Label htmlFor="date_text">Date (ex: 2023, Q4 2023)</Label>
-                <Input
-                  id="date_text"
-                  value={form.date_text}
-                  onChange={(e) => setForm({ ...form, date_text: e.target.value })}
-                  placeholder="Ex: 2023, Q4 2023"
-                />
+                <Input id="date_text" value={form.date_text} onChange={(e) => setForm({ ...form, date_text: e.target.value })} placeholder="Ex: 2023, Q4 2023" />
               </div>
               <div>
                 <Label htmlFor="emplacement">Emplacement</Label>
-                <Input
-                  id="emplacement"
-                  value={form.emplacement}
-                  onChange={(e) => setForm({ ...form, emplacement: e.target.value })}
-                  placeholder="Ex: Nabeul, Tunisie"
-                />
+                <Input id="emplacement" value={form.emplacement} onChange={(e) => setForm({ ...form, emplacement: e.target.value })} placeholder="Ex: Nabeul, Tunisie" />
               </div>
               <div>
                 <Label htmlFor="reference">Référence (Réf)</Label>
-                <Input
-                  id="reference"
-                  value={form.reference}
-                  onChange={(e) => setForm({ ...form, reference: e.target.value })}
-                  placeholder="Ex: Réf-001, Projet-X"
-                />
+                <Input id="reference" value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} placeholder="Ex: Réf-001, Projet-X" />
               </div>
               <div>
                 <Label htmlFor="description">Description courte (pour la page d'accueil et la page Réalisations)</Label>
-                <Textarea
-                  id="description"
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  required
-                />
+                <Textarea id="description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
               </div>
               <div>
                 <Label htmlFor="long_description">Description longue (uniquement pour la page Réalisations)</Label>
-                <Textarea
-                  id="long_description"
-                  value={form.long_description}
-                  onChange={(e) => setForm({ ...form, long_description: e.target.value })}
-                  placeholder="Description détaillée de la réalisation..."
-                />
+                <Textarea id="long_description" value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} placeholder="Description détaillée de la réalisation..." />
               </div>
 
-              {/* Image Mode Selector */}
-              <div>
-                <Label>Mode d'image</Label>
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={form.image_mode === 'auto' ? 'default' : 'outline'}
-                    onClick={() => setForm({ ...form, image_mode: 'auto' })}
-                  >
-                    <Sparkles className="h-4 w-4 mr-1" />
-                    Auto
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={form.image_mode === 'url' ? 'default' : 'outline'}
-                    onClick={() => setForm({ ...form, image_mode: 'url' })}
-                  >
-                    <Link className="h-4 w-4 mr-1" />
-                    URL
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={form.image_mode === 'upload' ? 'default' : 'outline'}
-                    onClick={() => setForm({ ...form, image_mode: 'upload' })}
-                  >
-                    <Upload className="h-4 w-4 mr-1" />
-                    Téléverser
-                  </Button>
-                </div>
-              </div>
+              {/* Main Image Section */}
+              <Card className="p-4">
+                <CardHeader className="p-0 mb-4">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5" /> Image principale (Page d'accueil & première image de la galerie)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 space-y-4">
+                  <div>
+                    <Label>Mode d'image</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Button type="button" size="sm" variant={form.image_mode === 'auto' ? 'default' : 'outline'} onClick={() => setForm({ ...form, image_mode: 'auto', image_url: '', image_file: '' })}>
+                        <Sparkles className="h-4 w-4 mr-1" /> Auto
+                      </Button>
+                      <Button type="button" size="sm" variant={form.image_mode === 'url' ? 'default' : 'outline'} onClick={() => setForm({ ...form, image_mode: 'url', image_file: '' })}>
+                        <Link className="h-4 w-4 mr-1" /> URL
+                      </Button>
+                      <Button type="button" size="sm" variant={form.image_mode === 'upload' ? 'default' : 'outline'} onClick={() => setForm({ ...form, image_mode: 'upload', image_url: '' })}>
+                        <Upload className="h-4 w-4 mr-1" /> Téléverser
+                      </Button>
+                    </div>
+                  </div>
 
-              {/* URL input */}
-              {form.image_mode === 'url' && (
-                <div>
-                  <Label htmlFor="image_url">URL de l'image</Label>
-                  <Input
-                    id="image_url"
-                    value={form.image_url}
-                    onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                    placeholder="https://..."
-                  />
-                  {form.image_url && (
-                    <div className="mt-2">
-                      <img 
-                        src={form.image_url} 
-                        alt="Aperçu" 
-                        className="w-full h-32 object-cover rounded border"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                      />
+                  {form.image_mode === 'url' && (
+                    <div>
+                      <Label htmlFor="main_image_url">URL de l'image principale</Label>
+                      <Input id="main_image_url" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
+                      {form.image_url && <img src={form.image_url} alt="Aperçu" className="mt-2 w-full h-32 object-cover rounded border" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
                     </div>
                   )}
-                </div>
-              )}
 
-              {/* Upload input */}
-              {form.image_mode === 'upload' && (
-                <div>
-                  <Label htmlFor="image_file">Téléverser une image</Label>
-                  <Input
-                    id="image_file"
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.webp"
-                    onChange={handleFileUpload}
-                    disabled={uploading}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG, WebP (max 2 Mo)</p>
-                  {form.image_file && (
-                    <div className="mt-2">
-                      <img 
-                        src={form.image_file} 
-                        alt="Aperçu" 
-                        className="w-full h-32 object-cover rounded border"
-                      />
+                  {form.image_mode === 'upload' && (
+                    <div>
+                      <Label htmlFor="main_image_file">Téléverser une image principale</Label>
+                      <Input ref={mainImageFileInputRef} id="main_image_file" type="file" accept=".png,.jpg,.jpeg,.webp" onChange={handleMainImageUpload} disabled={uploadingMainImage} />
+                      <p className="text-xs text-muted-foreground mt-1">PNG, JPG, WebP (max 2 Mo)</p>
+                      {form.image_file && <img src={form.image_file} alt="Aperçu" className="mt-2 w-full h-32 object-cover rounded border" />}
                     </div>
                   )}
-                </div>
-              )}
 
-              {/* Auto mode info */}
-              {form.image_mode === 'auto' && (
-                <p className="text-sm text-muted-foreground bg-muted p-3 rounded">
-                  En mode automatique, une image sera générée selon la catégorie de la réalisation.
-                </p>
-              )}
+                  {form.image_mode === 'auto' && (
+                    <p className="text-sm text-muted-foreground bg-muted p-3 rounded">
+                      En mode automatique, une image sera générée selon la catégorie de la réalisation.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Additional Images Section */}
+              <Card className="p-4">
+                <CardHeader className="p-0 mb-4">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5" /> Images supplémentaires (Galerie de la page Réalisations)
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Ces images s'afficheront dans une galerie sur la page de détails de la réalisation.
+                  </p>
+                </CardHeader>
+                <CardContent className="p-0 space-y-4">
+                  {additionalImages.sort((a, b) => a.position - b.position).map((img) => (
+                    <div key={img.id} className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg border">
+                      <div className="flex flex-col gap-1">
+                        <Button size="icon" variant="ghost" onClick={() => handleMoveAdditionalImage(img.id, 'up')} disabled={img.position === 0}>
+                          <ArrowUp className="h-3 w-3" />
+                        </Button>
+                        <Button size="icon" variant="ghost" onClick={() => handleMoveAdditionalImage(img.id, 'down')} disabled={img.position === additionalImages.length - 1}>
+                          <ArrowDown className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      {getDisplayImage(img) ? (
+                        <img src={getDisplayImage(img)!} alt="Miniature" className="w-16 h-16 object-cover rounded" />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+                          No Img
+                        </div>
+                      )}
+                      <span className="flex-1 text-sm truncate">
+                        {img.image_mode === 'url' ? img.image_url : img.image_file?.split('/').pop()}
+                      </span>
+                      <Button size="icon" variant="destructive" onClick={() => handleRemoveAdditionalImage(img.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+
+                  <div className="space-y-2">
+                    <Label>Ajouter une nouvelle image</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.webp"
+                        onChange={handleAdditionalImageUpload}
+                        disabled={uploadingAdditionalImage}
+                        ref={additionalImageFileInputRef}
+                        className="flex-1"
+                      />
+                      {uploadingAdditionalImage && (
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="url"
+                        placeholder="Ou entrez une URL d'image"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddAdditionalImageFromUrl(e.currentTarget.value);
+                            e.currentTarget.value = '';
+                          }
+                        }}
+                        className="flex-1"
+                      />
+                      <Button type="button" onClick={() => {
+                        const input = document.querySelector<HTMLInputElement>('input[type="url"][placeholder="Ou entrez une URL d\'image"]');
+                        if (input) {
+                          handleAddAdditionalImageFromUrl(input.value);
+                          input.value = '';
+                        }
+                      }}>
+                        Ajouter URL
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG, WebP (max 2 Mo)</p>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Visibility Toggle */}
               <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
                 <Label htmlFor="is_visible" className="font-medium">
                   Visible sur le site public
                 </Label>
-                <Switch
-                  id="is_visible"
-                  checked={form.is_visible}
-                  onCheckedChange={(checked) => setForm({ ...form, is_visible: checked })}
-                />
+                <Switch id="is_visible" checked={form.is_visible} onCheckedChange={(checked) => setForm({ ...form, is_visible: checked })} />
               </div>
 
               {/* Featured Toggle */}
@@ -447,14 +490,10 @@ const AdminRealisations = () => {
                 <Label htmlFor="is_featured" className="font-medium">
                   Mettre en avant (Page d'accueil)
                 </Label>
-                <Switch
-                  id="is_featured"
-                  checked={form.is_featured}
-                  onCheckedChange={(checked) => setForm({ ...form, is_featured: checked })}
-                />
+                <Switch id="is_featured" checked={form.is_featured} onCheckedChange={(checked) => setForm({ ...form, is_featured: checked })} />
               </div>
 
-              <Button type="submit" className="w-full" disabled={uploading}>
+              <Button type="submit" className="w-full" disabled={uploadingMainImage || uploadingAdditionalImage}>
                 {editingRealisation ? 'Mettre à jour' : 'Créer'}
               </Button>
             </form>
@@ -470,10 +509,9 @@ const AdminRealisations = () => {
             <TableHead>Domaine</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Emplacement</TableHead>
-            <TableHead>Réf</TableHead> {/* New header */}
+            <TableHead>Réf</TableHead>
             <TableHead>Description courte</TableHead>
-            <TableHead>Description longue</TableHead>
-            <TableHead>Image</TableHead>
+            <TableHead>Images</TableHead> {/* Updated header */}
             <TableHead>Visible</TableHead>
             <TableHead>En avant</TableHead>
             <TableHead>Actions</TableHead>
@@ -483,23 +521,20 @@ const AdminRealisations = () => {
           {realisations
             .sort((a, b) => a.position - b.position)
             .map((realisation) => {
-              const displayImage = getDisplayImage(realisation);
+              const mainDisplayImage = getDisplayImage(realisation);
+              const allImages = [
+                ...(mainDisplayImage ? [{ id: 'main', image_file: mainDisplayImage, image_mode: 'upload', position: -1 }] : []),
+                ...(realisation.images || []),
+              ].sort((a, b) => a.position - b.position);
+
               return (
                 <TableRow key={realisation.id}>
                   <TableCell>
                     <div className="flex space-x-1">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleMovePosition(realisation, 'up')}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'up')}>
                         <ArrowUp className="h-3 w-3" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleMovePosition(realisation, 'down')}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'down')}>
                         <ArrowDown className="h-3 w-3" />
                       </Button>
                     </div>
@@ -512,17 +547,20 @@ const AdminRealisations = () => {
                   </TableCell>
                   <TableCell>{realisation.date_text || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
                   <TableCell>{realisation.emplacement || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
-                  <TableCell>{realisation.reference || <span className="text-muted-foreground italic">N/A</span>}</TableCell> {/* Display new field */}
+                  <TableCell>{realisation.reference || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
                   <TableCell className="max-w-xs truncate">{realisation.description}</TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {realisation.long_description || <span className="text-muted-foreground italic">Non définie</span>}
-                  </TableCell>
                   <TableCell>
-                    {displayImage ? (
-                      <img src={displayImage} alt={realisation.title} className="w-10 h-10 object-cover rounded" />
-                    ) : (
-                      <span className="text-xs text-muted-foreground">Auto</span>
-                    )}
+                    <div className="flex -space-x-2 overflow-hidden">
+                      {allImages.slice(0, 3).map((img, idx) => (
+                        <img key={idx} src={getDisplayImage(img)!} alt="img" className="inline-block h-8 w-8 rounded-full ring-2 ring-background object-cover" />
+                      ))}
+                      {allImages.length > 3 && (
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium ring-2 ring-background">
+                          +{allImages.length - 3}
+                        </span>
+                      )}
+                      {allImages.length === 0 && <span className="text-xs text-muted-foreground">Aucune</span>}
+                    </div>
                   </TableCell>
                   <TableCell>
                     {realisation.is_visible ? (
@@ -540,18 +578,10 @@ const AdminRealisations = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(realisation)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => handleEdit(realisation)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(realisation.id)}
-                      >
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(realisation.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

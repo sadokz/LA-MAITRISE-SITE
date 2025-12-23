@@ -66,21 +66,31 @@ export interface Domaine {
   icon: string; // Now directly stores the text/emoji
 }
 
+export interface RealisationImage {
+  id: string;
+  realisation_id: string;
+  image_url?: string;
+  image_file?: string;
+  image_mode: 'auto' | 'url' | 'upload';
+  position: number;
+}
+
 export interface Realisation {
   id: string;
   title: string;
   description: string;
   long_description?: string; // Added long_description
   category: string;
-  image_url?: string;
-  image_mode: 'auto' | 'url' | 'upload';
-  image_file?: string;
+  image_url?: string; // Main image URL
+  image_mode: 'auto' | 'url' | 'upload'; // Main image mode
+  image_file?: string; // Main image file
   position: number;
   is_visible: boolean;
   is_featured: boolean;
   date_text?: string; // New: Date text for the realization
   emplacement?: string; // New: Emplacement for the realization
   reference?: string; // New: Reference for the realization
+  images?: RealisationImage[]; // New: Array of additional images
 }
 
 export const useSiteTexts = () => {
@@ -230,11 +240,16 @@ export const useRealisations = () => {
   const fetchRealisations = async () => {
     const { data, error } = await supabase
       .from('realisations')
-      .select('*')
+      .select('*, realisation_images(*)') // Fetch related images
       .order('position', { ascending: true });
     
     if (!error && data) {
-      setRealisations(data as Realisation[]);
+      // Sort images by position for each realisation
+      const sortedRealisations = data.map(r => ({
+        ...r,
+        images: r.realisation_images ? [...r.realisation_images].sort((a, b) => a.position - b.position) : [],
+      }));
+      setRealisations(sortedRealisations as Realisation[]);
     }
     setLoading(false);
   };

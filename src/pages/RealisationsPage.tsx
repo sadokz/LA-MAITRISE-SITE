@@ -1,15 +1,17 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, MapPin, Hash } from 'lucide-react'; // Import Hash icon
+import { ArrowLeft, Calendar, MapPin, Hash, ArrowRight, ArrowLeft as ArrowLeftIcon } from 'lucide-react'; // Import new icons
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useRealisations } from '@/hooks/useSupabaseData';
-import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings'; // Import the new hook
+import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
-import heroImage from '@/assets/hero-engineering.jpg'; // Default hero image
+import heroImage from '@/assets/hero-engineering.jpg';
+import useEmblaCarousel from 'embla-carousel-react';
+import { cn } from '@/lib/utils';
 
 // Fallback images by category for auto mode (copied from References.tsx for consistency)
 const fallbackImages: Record<string, string> = {
@@ -26,29 +28,51 @@ const RealisationsPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { realisations, loading: realisationsLoading } = useRealisations();
-  const { realisationsPageSettings } = useRealisationsPageSettings(); // Use the new hook
+  const { realisationsPageSettings } = useRealisationsPageSettings();
 
-  // Scroll to top on component mount
+  // Embla Carousel setup
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Filter realisations to only include visible ones for public display
+  useEffect(() => {
+    if (emblaApi) {
+      const onSelect = () => {
+        setSelectedIndex(emblaApi.selectedScrollSnap());
+      };
+      emblaApi.on('select', onSelect);
+      onSelect(); // Set initial index
+      return () => {
+        emblaApi.off('select', onSelect);
+      };
+    }
+  }, [emblaApi]);
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
   const visibleRealisations = useMemo(() => realisations.filter(r => r.is_visible), [realisations]);
 
-  // Get display image for a realisation (copied from References.tsx for consistency)
-  const getDisplayImage = (r: typeof realisations[0]) => {
+  const getDisplayImage = (r: typeof realisations[0] | { image_mode: string; image_file: string | null; image_url: string | null; category?: string; title?: string }) => {
     if (r.image_mode === 'upload' && r.image_file) {
       return r.image_file;
     }
     if (r.image_mode === 'url' && r.image_url) {
       return r.image_url;
     }
-    // Auto mode: use fallback based on category
-    return fallbackImages[r.category] || fallbackImages['default'];
+    // Auto mode: use fallback based on category or title if available
+    if ('category' in r && r.category) {
+      return fallbackImages[r.category] || fallbackImages['default'];
+    }
+    if ('title' in r && r.title) {
+      return fallbackImages[r.title] || fallbackImages['default'];
+    }
+    return fallbackImages['default'];
   };
 
-  // Determine hero media based on settings
   const getHeroMedia = () => {
     if (!realisationsPageSettings) return { type: 'image', url: heroImage };
     
@@ -60,7 +84,7 @@ const RealisationsPage = () => {
     if (source_type === 'url' && media_url) {
       return { type: media_type, url: media_url };
     }
-    return { type: 'image', url: heroImage }; // Fallback to default hero image
+    return { type: 'image', url: heroImage };
   };
 
   const heroMedia = getHeroMedia();
@@ -127,7 +151,7 @@ const RealisationsPage = () => {
           </div>
 
           {/* Projects Section */}
-          <section className="section-padding bg-white pt-0"> {/* Adjusted padding-top */}
+          <section className="section-padding bg-white pt-0">
             <div className="container mx-auto px-4 lg:px-8">
               {realisationsLoading ? (
                 <div className="flex justify-center items-center py-20">
@@ -146,8 +170,19 @@ const RealisationsPage = () => {
               ) : (
                 <div className="space-y-20">
                   {visibleRealisations.sort((a, b) => a.position - b.position).map((project, index) => {
-                    const isImageLeft = index % 2 === 0; // Alternate layout
-                    const displayImage = getDisplayImage(project);
+                    const isImageLeft = index % 2 === 0;
+                    
+                    // Combine main image and additional images, then sort by position
+                    const allProjectImages = [
+                      ...(project.image_file || project.image_url ? [{ 
+                        id: 'main', 
+                        image_file: project.image_file, 
+                        image_url: project.image_url, 
+                        image_mode: project.image_mode, 
+                        position: -1 // Ensure main image is first
+                      }] : []),
+                      ...(project.images || []),
+                    ].sort((a, b) => a.position - b.position);
 
                     return (
                       <div 
@@ -155,18 +190,68 @@ const RealisationsPage = () => {
                         className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
-                        {/* Image Column */}
+                        {/* Image Gallery Column */}
                         <div className={`${isImageLeft ? 'order-1' : 'order-2'} md:order-none`}>
-                          <img 
-                            src={displayImage} 
-                            alt={project.title} 
-                            className="w-full h-72 object-cover rounded-xl shadow-lg"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = fallbackImages['default'];
-                              console.warn(`Image non disponible pour "${project.title}", fallback utilisé.`);
-                            }}
-                          />
+                          {allProjectImages.length > 0 ? (
+                            <div className="relative">
+                              <div className="embla overflow-hidden rounded-xl shadow-lg" ref={emblaRef}>
+                                <div className="embla__container flex">
+                                  {allProjectImages.map((img, imgIndex) => (
+                                    <div className="embla__slide flex-[0_0_100%] min-w-0" key={img.id || imgIndex}>
+                                      <img 
+                                        src={getDisplayImage({ ...img, category: project.category, title: project.title })} 
+                                        alt={`${project.title} - Image ${imgIndex + 1}`} 
+                                        className="w-full h-72 object-cover rounded-xl"
+                                        onError={(e) => {
+                                          const target = e.target as HTMLImageElement;
+                                          target.src = fallbackImages['default'];
+                                          console.warn(`Image non disponible pour "${project.title}", fallback utilisé.`);
+                                        }}
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              {allProjectImages.length > 1 && (
+                                <>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={scrollPrev} 
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/70 text-gray-dark rounded-full"
+                                  >
+                                    <ArrowLeftIcon className="h-5 w-5" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={scrollNext} 
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white/70 text-gray-dark rounded-full"
+                                  >
+                                    <ArrowRight className="h-5 w-5" />
+                                  </Button>
+                                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
+                                    {allProjectImages.map((_, dotIndex) => (
+                                      <button
+                                        key={dotIndex}
+                                        onClick={() => emblaApi && emblaApi.scrollTo(dotIndex)}
+                                        className={cn(
+                                          'h-2 w-2 rounded-full bg-white/50',
+                                          dotIndex === selectedIndex && 'bg-primary'
+                                        )}
+                                      />
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            <img 
+                              src={fallbackImages['default']} 
+                              alt={project.title} 
+                              className="w-full h-72 object-cover rounded-xl shadow-lg"
+                            />
+                          )}
                         </div>
 
                         {/* Description Column */}
@@ -177,7 +262,6 @@ const RealisationsPage = () => {
                           <p className="text-lg font-medium text-orange mb-2">
                             {project.category}
                           </p>
-                          {/* New: Date, Emplacement, and Reference */}
                           {(project.date_text || project.emplacement || project.reference) && (
                             <div className="flex flex-wrap items-center text-gray-medium text-sm mb-4 gap-x-4 gap-y-2">
                               {project.date_text && (
@@ -198,11 +282,11 @@ const RealisationsPage = () => {
                             </div>
                           )}
                           <p className="text-gray-medium leading-relaxed">
-                            {project.description} {/* Short description */}
+                            {project.description}
                           </p>
                           {project.long_description && (
                             <p className="text-gray-medium leading-relaxed border-t pt-4 mt-4">
-                              {project.long_description} {/* Long description */}
+                              {project.long_description}
                             </p>
                           )}
                         </div>

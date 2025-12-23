@@ -350,6 +350,47 @@ export type Database = {
         }
         Relationships: []
       }
+      realisation_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_file: string | null
+          image_mode: string
+          image_url: string | null
+          position: number
+          realisation_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_file?: string | null
+          image_mode?: string
+          image_url?: string | null
+          position?: number
+          realisation_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_file?: string | null
+          image_mode?: string
+          image_url?: string | null
+          position?: number
+          realisation_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "realisation_images_realisation_id_fkey"
+            columns: ["realisation_id"]
+            isOneToOne: false
+            referencedRelation: "realisations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       realisations: {
         Row: {
           category: string
