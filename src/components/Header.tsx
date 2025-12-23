@@ -1,20 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, ChevronDown } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoLaMaitrise from '@/assets/logo-lamaitrise.png';
-import { useSectionVisibility } from '@/hooks/useSupabaseData';
+import { useSectionVisibility, useCompetences, useDomaines, useRealisations } from '@/hooks/useSupabaseData';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+
+interface NavItem {
+  label: string;
+  id?: string; // For scrolling to section on homepage
+  path?: string; // For navigating to a dedicated page
+  items?: { label: string; id?: string; path?: string }[]; // Dropdown items
+  isVisible: boolean;
+}
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomePage = location.pathname === '/';
-  const { data: visibility, isLoading } = useSectionVisibility();
+
+  const { data: visibility, isLoading: visibilityLoading } = useSectionVisibility();
+  const { competences, loading: competencesLoading } = useCompetences();
+  const { domaines, loading: domainesLoading } = useDomaines();
+  const { realisations, loading: realisationsLoading } = useRealisations();
 
   // Helper to check section visibility
   const isVisible = (section: string) => {
-    if (isLoading || !visibility) return true;
+    if (visibilityLoading || !visibility) return true;
     return visibility[section as keyof typeof visibility] ?? true;
   };
 
@@ -29,22 +50,85 @@ const Header = () => {
 
   const scrollToSection = (sectionId: string) => {
     if (!isHomePage) {
-      // If not on home page, navigate to home first then scroll
-      window.location.href = `/#${sectionId}`;
-      return;
+      navigate(`/#${sectionId}`);
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          if (sectionId === 'accueil') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        if (sectionId === 'accueil') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
     }
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMenuOpen(false);
+    setIsMenuOpen(false); // Close mobile menu after clicking
+  };
+
+  const handleMainNavLinkClick = (item: NavItem) => {
+    if (item.path) {
+      navigate(item.path);
+    } else if (item.id) {
+      scrollToSection(item.id);
     }
   };
 
-  // Dynamic styles based on scroll state
-  const headerBg = isScrolled 
-    ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-border/50' 
-    : 'bg-black/20 backdrop-blur-sm';
-  
+  const handleDropdownItemClick = (subItem: { label: string; id?: string; path?: string }) => {
+    if (subItem.path) {
+      navigate(subItem.path);
+    } else if (subItem.id) {
+      scrollToSection(subItem.id);
+    }
+  };
+
+  const navItems: NavItem[] = [
+    {
+      label: 'Accueil',
+      id: 'accueil',
+      isVisible: isVisible('home'),
+      items: [{ label: 'Aller à l\'accueil', id: 'accueil' }]
+    },
+    {
+      label: 'Compétences',
+      path: '/competences',
+      isVisible: isVisible('skills'),
+      items: competencesLoading ? [] : competences.map(c => ({ label: c.title, path: `/competences` }))
+    },
+    {
+      label: 'Domaines d\'intervention',
+      path: '/domaines',
+      isVisible: isVisible('domains'),
+      items: domainesLoading ? [] : domaines.map(d => ({ label: d.title, path: `/domaines` }))
+    },
+    {
+      label: 'Références',
+      path: '/realisations',
+      isVisible: isVisible('projects'),
+      items: realisationsLoading ? [] : realisations.filter(r => r.is_visible).map(r => ({ label: r.title, path: `/realisations` }))
+    },
+    {
+      label: 'Le Fondateur',
+      id: 'fondateur',
+      isVisible: isVisible('founder'),
+      items: [{ label: 'Découvrir le fondateur', id: 'fondateur' }]
+    },
+    {
+      label: 'Contact',
+      id: 'contact',
+      isVisible: isVisible('contact'),
+      items: [{ label: 'Nous contacter', id: 'contact' }]
+    },
+  ];
+
   const textColor = isScrolled 
     ? 'text-gray-dark hover:text-primary' 
     : 'text-white hover:text-primary drop-shadow-md';
@@ -53,7 +137,7 @@ const Header = () => {
   const logoSubtextColor = isScrolled ? 'text-gray-muted' : 'text-white/80 drop-shadow-md';
 
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${headerBg}`}>
+    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-border/50' : 'bg-black/20 backdrop-blur-sm'}`}>
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
@@ -71,56 +155,41 @@ const Header = () => {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation with Dropdowns */}
           <nav className="hidden lg:flex items-center space-x-8">
-            {isVisible('home') && (
-              <button 
-                onClick={() => scrollToSection('accueil')}
-                className={`${textColor} transition-colors duration-300 font-medium cursor-pointer`}
-              >
-                Accueil
-              </button>
-            )}
-            {isVisible('skills') && (
-              <button 
-                onClick={() => scrollToSection('competences')}
-                className={`${textColor} transition-colors duration-300 font-medium cursor-pointer`}
-              >
-                Compétences
-              </button>
-            )}
-            {isVisible('domains') && (
-              <button 
-                onClick={() => scrollToSection('domaines')}
-                className={`${textColor} transition-colors duration-300 font-medium cursor-pointer`}
-              >
-                Domaines d'intervention
-              </button>
-            )}
-            {isVisible('projects') && (
-              <button 
-                onClick={() => scrollToSection('references')}
-                className={`${textColor} transition-colors duration-300 font-medium cursor-pointer`}
-              >
-                Références
-              </button>
-            )}
-            {isVisible('founder') && (
-              <button 
-                onClick={() => scrollToSection('fondateur')}
-                className={`${textColor} transition-colors duration-300 font-medium cursor-pointer`}
-              >
-                Le Fondateur
-              </button>
-            )}
-            {isVisible('contact') && (
-              <button 
-                onClick={() => scrollToSection('contact')}
-                className={`${textColor} transition-colors duration-300 font-medium cursor-pointer`}
-              >
-                Contact
-              </button>
-            )}
+            {navItems.map((item) => item.isVisible && (
+              <DropdownMenu key={item.label}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={cn(
+                      `${textColor} transition-colors duration-300 font-medium cursor-pointer flex items-center gap-1`,
+                      (location.pathname === item.path || (isHomePage && location.hash === `#${item.id}`)) && 'text-primary'
+                    )}
+                    onClick={() => handleMainNavLinkClick(item)}
+                  >
+                    {item.label}
+                    {item.items && item.items.length > 0 && <ChevronDown className="h-4 w-4" />}
+                  </button>
+                </DropdownMenuTrigger>
+                {item.items && item.items.length > 0 && (
+                  <DropdownMenuContent className="w-56 bg-background border border-border shadow-lg z-50">
+                    {item.items.map((subItem, subIndex) => (
+                      <DropdownMenuItem key={subIndex} asChild>
+                        {subItem.path ? (
+                          <Link to={subItem.path} onClick={() => handleDropdownItemClick(subItem)}>
+                            {subItem.label}
+                          </Link>
+                        ) : (
+                          <button onClick={() => handleDropdownItemClick(subItem)} className="w-full text-left">
+                            {subItem.label}
+                          </button>
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                )}
+              </DropdownMenu>
+            ))}
           </nav>
 
           {/* CTA Button & Login */}
@@ -160,54 +229,50 @@ const Header = () => {
         {isMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-b border-border/50 animate-fade-up shadow-lg">
             <nav className="px-4 py-6 space-y-4">
-              {isVisible('home') && (
-                <button 
-                  onClick={() => scrollToSection('accueil')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
-                >
-                  Accueil
-                </button>
-              )}
-              {isVisible('skills') && (
-                <button 
-                  onClick={() => scrollToSection('competences')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
-                >
-                  Compétences
-                </button>
-              )}
-              {isVisible('domains') && (
-                <button 
-                  onClick={() => scrollToSection('domaines')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
-                >
-                  Domaines d'intervention
-                </button>
-              )}
-              {isVisible('projects') && (
-                <button 
-                  onClick={() => scrollToSection('references')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
-                >
-                  Références
-                </button>
-              )}
-              {isVisible('founder') && (
-                <button 
-                  onClick={() => scrollToSection('fondateur')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
-                >
-                  Le Fondateur
-                </button>
-              )}
-              {isVisible('contact') && (
-                <button 
-                  onClick={() => scrollToSection('contact')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
-                >
-                  Contact
-                </button>
-              )}
+              {navItems.map((item) => item.isVisible && (
+                <React.Fragment key={item.label}>
+                  {item.path ? (
+                    <Link 
+                      to={item.path} 
+                      onClick={() => handleMainNavLinkClick(item)}
+                      className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium"
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <button 
+                      onClick={() => handleMainNavLinkClick(item)}
+                      className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium"
+                    >
+                      {item.label}
+                    </button>
+                  )}
+                  {item.items && item.items.length > 0 && (
+                    <div className="pl-4 space-y-2 border-l border-gray-light ml-2">
+                      {item.items.map((subItem, subIndex) => (
+                        <div key={subIndex}>
+                          {subItem.path ? (
+                            <Link 
+                              to={subItem.path} 
+                              onClick={() => handleDropdownItemClick(subItem)}
+                              className="block w-full text-left py-1 text-gray-medium hover:text-primary transition-colors text-sm"
+                            >
+                              {subItem.label}
+                            </Link>
+                          ) : (
+                            <button 
+                              onClick={() => handleDropdownItemClick(subItem)}
+                              className="block w-full text-left py-1 text-gray-medium hover:text-primary transition-colors text-sm"
+                            >
+                              {subItem.label}
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
               {isVisible('contact') && (
                 <Button 
                   onClick={() => scrollToSection('contact')}
