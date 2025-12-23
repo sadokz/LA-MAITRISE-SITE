@@ -8,7 +8,7 @@ import { useSectionVisibility } from '@/hooks/useSupabaseData';
 import { useAppColors } from '@/hooks/useAppColors'; // Import the new hook
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle, Palette } from 'lucide-react'; // Added Palette icon
+import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle, Palette, RefreshCw } from 'lucide-react'; // Added Palette and RefreshCw icons
 import AdminCompetencesPageHero from './AdminCompetencesPageHero';
 import AdminDomainsPageHero from './AdminDomainsPageHero';
 import AdminRealisationsPageHero from './AdminRealisationsPageHero';
@@ -64,6 +64,13 @@ const AdminSections = () => {
     updateAppColors({
       primary_color_hex: primaryColor,
       secondary_color_hex: secondaryColor,
+    });
+  };
+
+  const handleResetColors = () => {
+    updateAppColors({
+      primary_color_hex: '#2196F3', // Default primary color
+      secondary_color_hex: '#F0F0F0', // Default secondary color
     });
   };
 
@@ -140,9 +147,15 @@ const AdminSections = () => {
               </div>
             </div>
           </div>
-          <Button onClick={handleSaveColors} disabled={isUpdating} className="mt-6">
-            {isUpdating ? 'Sauvegarde...' : 'Sauvegarder les couleurs'}
-          </Button>
+          <div className="flex gap-2 mt-6">
+            <Button onClick={handleSaveColors} disabled={isUpdating}>
+              {isUpdating ? 'Sauvegarde...' : 'Sauvegarder les couleurs'}
+            </Button>
+            <Button variant="outline" onClick={handleResetColors} disabled={isUpdating}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Réinitialiser les couleurs
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
