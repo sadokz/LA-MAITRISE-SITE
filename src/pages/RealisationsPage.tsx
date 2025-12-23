@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, MapPin, Hash, ArrowRight, ArrowLeft as ArrowLeftIcon } from 'lucide-react'; // Import new icons
+import { ArrowLeft, Calendar, MapPin, Hash, ArrowRight, ArrowLeft as ArrowLeftIcon } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useRealisations } from '@/hooks/useSupabaseData';
 import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
