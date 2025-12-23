@@ -90,6 +90,11 @@ const Header = () => {
     }
   };
 
+  // --- DEBUG LOGS ---
+  console.log("Realisations data:", realisations);
+  console.log("Domaines data:", domaines);
+  // --- END DEBUG LOGS ---
+
   const navItems: NavItem[] = [
     {
       label: 'Accueil',
