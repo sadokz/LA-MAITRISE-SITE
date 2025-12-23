@@ -46,8 +46,8 @@ const Header = () => {
     : 'bg-black/20 backdrop-blur-sm';
   
   const textColor = isScrolled 
-    ? 'text-gray-dark hover:text-orange' 
-    : 'text-white hover:text-orange drop-shadow-md';
+    ? 'text-gray-dark hover:text-primary' 
+    : 'text-white hover:text-primary drop-shadow-md';
   
   const logoTextColor = isScrolled ? 'text-gray-dark' : 'text-white drop-shadow-md';
   const logoSubtextColor = isScrolled ? 'text-gray-muted' : 'text-white/80 drop-shadow-md';
@@ -128,7 +128,7 @@ const Header = () => {
             {isVisible('contact') && (
               <Button 
                 onClick={() => scrollToSection('contact')}
-                className="bg-orange text-white hover:bg-orange/90 font-semibold px-6 py-2 rounded-lg shadow-lg"
+                className="bg-primary text-white hover:bg-primary/90 font-semibold px-6 py-2 rounded-lg shadow-lg"
               >
                 Demander un devis
               </Button>
@@ -137,8 +137,8 @@ const Header = () => {
               <Button 
                 className={`font-semibold rounded-lg border bg-transparent ${
                   isScrolled 
-                    ? 'border-orange text-orange hover:bg-orange hover:text-white' 
-                    : 'border-white text-white hover:bg-white hover:text-orange'
+                    ? 'border-primary text-primary hover:bg-primary hover:text-white' 
+                    : 'border-white text-white hover:bg-white hover:text-primary'
                 } transition-colors duration-300`}
               >
                 Connexion
@@ -149,7 +149,7 @@ const Header = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`lg:hidden p-2 ${isScrolled ? 'text-gray-dark' : 'text-white'} hover:text-orange transition-colors`}
+            className={`lg:hidden p-2 ${isScrolled ? 'text-gray-dark' : 'text-white'} hover:text-primary transition-colors`}
             aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -163,7 +163,7 @@ const Header = () => {
               {isVisible('home') && (
                 <button 
                   onClick={() => scrollToSection('accueil')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-orange transition-colors font-medium cursor-pointer"
+                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
                 >
                   Accueil
                 </button>
@@ -171,7 +171,7 @@ const Header = () => {
               {isVisible('skills') && (
                 <button 
                   onClick={() => scrollToSection('competences')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-orange transition-colors font-medium cursor-pointer"
+                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
                 >
                   Compétences
                 </button>
@@ -179,7 +179,7 @@ const Header = () => {
               {isVisible('domains') && (
                 <button 
                   onClick={() => scrollToSection('domaines')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-orange transition-colors font-medium cursor-pointer"
+                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
                 >
                   Domaines d'intervention
                 </button>
@@ -187,7 +187,7 @@ const Header = () => {
               {isVisible('projects') && (
                 <button 
                   onClick={() => scrollToSection('references')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-orange transition-colors font-medium cursor-pointer"
+                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
                 >
                   Références
                 </button>
@@ -195,7 +195,7 @@ const Header = () => {
               {isVisible('founder') && (
                 <button 
                   onClick={() => scrollToSection('fondateur')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-orange transition-colors font-medium cursor-pointer"
+                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
                 >
                   Le Fondateur
                 </button>
@@ -203,7 +203,7 @@ const Header = () => {
               {isVisible('contact') && (
                 <button 
                   onClick={() => scrollToSection('contact')}
-                  className="block w-full text-left py-2 text-gray-dark hover:text-orange transition-colors font-medium cursor-pointer"
+                  className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium cursor-pointer"
                 >
                   Contact
                 </button>
@@ -211,14 +211,14 @@ const Header = () => {
               {isVisible('contact') && (
                 <Button 
                   onClick={() => scrollToSection('contact')}
-                  className="bg-orange text-white hover:bg-orange/90 mt-4 w-full font-semibold"
+                  className="bg-primary text-white hover:bg-primary/90 mt-4 w-full font-semibold"
                 >
                   Demander un devis
                 </Button>
               )}
               <Link to="/login" className="block">
                 <Button 
-                  className="border border-orange text-orange bg-transparent hover:bg-orange hover:text-white rounded-lg mt-2 w-full font-semibold"
+                  className="border border-primary text-primary bg-transparent hover:bg-primary hover:text-white rounded-lg mt-2 w-full font-semibold"
                 >
                   Connexion
                 </Button>

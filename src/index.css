@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* LA MAITRISE ENGINEERING Design System
-Orange corporat, gris sophistiqué, animations fluides
+Blue corporat, gris sophistiqué, animations fluides
 */
 
 @layer base {
@@ -12,11 +12,11 @@ Orange corporat, gris sophistiqué, animations fluides
     --background: 0 0% 100%;
     --foreground: 210 15% 20%;
     
-    /* Corporate Orange Theme */
-    --orange: 25 95% 53%;
-    --orange-light: 25 95% 63%;
-    --orange-dark: 25 95% 43%;
-    --orange-foreground: 0 0% 100%;
+    /* Corporate Blue Theme (formerly Orange) */
+    --blue: 200 80% 60%; /* Base light blue */
+    --blue-light: 200 80% 70%; /* Lighter blue for gradients */
+    --blue-dark: 200 80% 50%; /* Darker blue for hover */
+    --blue-foreground: 0 0% 100%; /* White text on blue */
     
     /* Professional Grays */
     --gray-dark: 210 15% 20%;
@@ -30,9 +30,9 @@ Orange corporat, gris sophistiqué, animations fluides
     --card-hover: 210 10% 98%;
 
     /* Semantic colors */
-    --primary: 25 95% 53%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 25 95% 43%;
+    --primary: var(--blue);
+    --primary-foreground: var(--blue-foreground);
+    --primary-hover: var(--blue-dark);
 
     --secondary: 210 10% 96%;
     --secondary-foreground: 210 15% 20%;
@@ -41,26 +41,26 @@ Orange corporat, gris sophistiqué, animations fluides
     --muted: 210 10% 96%;
     --muted-foreground: 210 8% 60%;
 
-    --accent: 25 95% 95%;
-    --accent-foreground: 25 95% 53%;
+    --accent: 200 80% 95%; /* Adjusted accent to be a very light blue */
+    --accent-foreground: 200 80% 60%; /* Adjusted accent foreground to be the base blue */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 210 15% 90%;
     --input: 210 15% 95%;
-    --ring: 25 95% 53%;
+    --ring: var(--blue);
 
     --radius: 0.75rem;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--orange)), hsl(var(--orange-light)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--orange)) 0%, hsl(var(--orange-dark)) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--blue)), hsl(var(--blue-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--blue)) 0%, hsl(var(--blue-dark)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(var(--background)) 0%, hsl(var(--gray-light)) 100%);
     
     /* Shadows */
     --shadow-elegant: 0 10px 40px -10px hsl(var(--gray-dark) / 0.1);
-    --shadow-hover: 0 20px 50px -10px hsl(var(--orange) / 0.2);
+    --shadow-hover: 0 20px 50px -10px hsl(var(--blue) / 0.2); /* Updated to blue */
     --shadow-card: 0 4px 20px -2px hsl(var(--gray-dark) / 0.08);
     
     /* Animations */
@@ -113,21 +113,16 @@ Orange corporat, gris sophistiqué, animations fluides
 @layer components {
   /* Professional button variants */
   .btn-primary {
-    @apply bg-gradient-to-r from-orange to-orange-light text-orange-foreground font-medium px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-10px_hsl(var(--orange)_/_0.4)] active:scale-95;
+    @apply bg-gradient-to-r from-blue to-blue-light text-blue-foreground font-medium px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-10px_hsl(var(--blue)_/_0.4)] active:scale-95;
   }
   
   .btn-secondary {
     @apply bg-secondary text-secondary-foreground font-medium px-8 py-3 rounded-lg transition-all duration-300 hover:bg-secondary-hover hover:scale-105 border border-border;
   }
   
-  /* Card components */
-  .card-elegant {
-    @apply bg-card rounded-xl p-6 transition-all duration-300 hover:shadow-elegant hover:-translate-y-1 border border-border/50;
-  }
-  
   /* Hero gradient overlay */
   .hero-overlay {
-    @apply absolute inset-0 bg-gradient-to-br from-gray-dark/80 via-gray-dark/60 to-orange/20;
+    @apply absolute inset-0 bg-gradient-to-br from-gray-dark/80 via-gray-dark/60 to-blue/20; /* Updated to blue */
   }
   
   /* Section spacing */
@@ -170,7 +165,7 @@ Orange corporat, gris sophistiqué, animations fluides
   }
   
   /* Gradient text */
-  .text-gradient-orange {
-    @apply bg-gradient-to-r from-orange to-orange-light bg-clip-text text-transparent;
+  .text-gradient-blue { /* Renamed from text-gradient-orange */
+    @apply bg-gradient-to-r from-blue to-blue-light bg-clip-text text-transparent;
   }
 }

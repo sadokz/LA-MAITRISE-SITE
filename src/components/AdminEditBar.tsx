@@ -26,12 +26,12 @@ const AdminEditBar: React.FC = () => {
               id="edit-mode"
               checked={isEditMode}
               onCheckedChange={setEditMode}
-              className="data-[state=checked]:bg-orange"
+              className="data-[state=checked]:bg-primary"
             />
             <label
               htmlFor="edit-mode"
               className={`text-sm font-medium flex items-center gap-1 cursor-pointer ${
-                isEditMode ? 'text-orange' : 'text-white/60'
+                isEditMode ? 'text-primary' : 'text-white/60'
               }`}
             >
               <Pencil className="w-4 h-4" />

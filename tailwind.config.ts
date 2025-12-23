@@ -24,12 +24,12 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         
-        // Corporate Orange Theme
-        orange: {
-          DEFAULT: "hsl(var(--orange))",
-          light: "hsl(var(--orange-light))",
-          dark: "hsl(var(--orange-dark))",
-          foreground: "hsl(var(--orange-foreground))",
+        // Corporate Blue Theme (formerly Orange)
+        blue: { // Renamed from orange
+          DEFAULT: "hsl(var(--blue))",
+          light: "hsl(var(--blue-light))",
+          dark: "hsl(var(--blue-dark))",
+          foreground: "hsl(var(--blue-foreground))",
         },
         
         // Professional Grays

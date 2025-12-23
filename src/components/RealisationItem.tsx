@@ -158,7 +158,7 @@ const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => 
         <h2 className="font-heading font-bold text-3xl text-gray-dark">
           {project.title}
         </h2>
-        <p className="text-lg font-medium text-orange mb-2">
+        <p className="text-lg font-medium text-primary mb-2">
           {project.category}
         </p>
         {(project.date_text || project.emplacement || project.reference) && (

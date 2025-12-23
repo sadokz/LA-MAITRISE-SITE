@@ -12,13 +12,13 @@ const Domains = () => {
   // Configuration des icônes et couleurs pour chaque domaine (fallback)
   // This is now only for fallback if icon is empty
   const defaultColors = [
-    'from-orange-500 to-orange-600',
-    'from-blue-500 to-blue-600',
-    'from-green-500 to-green-600',
-    'from-red-500 to-red-600',
-    'from-yellow-500 to-yellow-600',
-    'from-purple-500 to-purple-600',
+    'from-blue-500 to-blue-600', // Using standard Tailwind blue shades
+    'from-cyan-500 to-cyan-600',
+    'from-teal-500 to-teal-600',
     'from-indigo-500 to-indigo-600',
+    'from-purple-500 to-purple-600',
+    'from-pink-500 to-pink-600',
+    'from-green-500 to-green-600',
   ];
 
   return (
@@ -29,7 +29,7 @@ const Domains = () => {
           <div className="text-center mb-16 animate-fade-up">
             <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
               <EditableText textKey="domains.header.title1" defaultValue={getSiteText('domains', 'header', 'title1', 'Nos')} className="inline" as="span" />{' '}
-              <EditableText textKey="domains.header.title2" defaultValue={getSiteText('domains', 'header', 'title2', "d'Intervention")} className="text-gradient-orange inline" as="span" />
+              <EditableText textKey="domains.header.title2" defaultValue={getSiteText('domains', 'header', 'title2', "d'Intervention")} className="text-gradient-blue inline" as="span" />
             </h2>
             <EditableText textKey="domains.header.description" defaultValue={getSiteText('domains', 'header', 'description', 'Nous adaptons nos solutions aux spécificités de chaque secteur pour offrir des infrastructures fiables, durables et adaptées aux besoins de nos clients.')} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>

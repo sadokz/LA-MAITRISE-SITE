@@ -20,11 +20,11 @@ const Login = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-orange/10 via-background to-orange/5 flex items-center justify-center p-4 pt-24">
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-primary/5 flex items-center justify-center p-4 pt-24">
         <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange to-orange-dark rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-lg flex items-center justify-center">
               <Lock className="h-6 w-6 text-white" />
             </div>
           </div>
@@ -71,7 +71,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full bg-orange text-white hover:bg-orange/90 rounded-lg"
+              className="w-full bg-primary text-white hover:bg-primary/90 rounded-lg"
             >
               Se connecter
             </Button>

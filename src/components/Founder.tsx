@@ -45,7 +45,7 @@ const Founder = () => {
             <div className="animate-fade-up">
               <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
                 Rencontrez{' '}
-                <span className="text-gradient-orange">{founder?.name || 'Ahmed Zgolli'}</span>
+                <span className="text-gradient-blue">{founder?.name || 'Ahmed Zgolli'}</span>
                 <br />Le Fondateur
               </h2>
               
@@ -57,26 +57,26 @@ const Founder = () => {
               {/* Experience Highlights */}
               <div className="space-y-4 mb-8">
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-orange flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-primary flex-shrink-0" />
                   <span className="text-gray-dark font-medium">
                     {founder?.experience_text_1 || 'Ingénieur électricien diplômé depuis'} {founder?.since_year || 1988}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-orange flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-primary flex-shrink-0" />
                   <span className="text-gray-dark font-medium">
                     {founder?.experience_text_2 || 'Fondateur de LA MAITRISE ENGINEERING en'} {founder?.founder_since || 1993}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-orange flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-primary flex-shrink-0" />
                   <span className="text-gray-dark font-medium">
                     {(founder?.experience_text_3 || 'Plus de {years} ans d\'expérience en ingénierie électrique')
                       .replace('{years}', String(new Date().getFullYear() - (founder?.since_year || 1988)))}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-orange flex-shrink-0" />
+                  <CheckCircle className="w-6 h-6 text-primary flex-shrink-0" />
                   <span className="text-gray-dark font-medium">
                     {founder?.experience_text_4 || 'Expert reconnu en BIM et technologies innovantes'}
                   </span>
@@ -85,11 +85,11 @@ const Founder = () => {
 
               {/* Quote */}
               {founder?.quote && (
-                <div className="bg-gradient-card rounded-xl p-6 border-l-4 border-orange">
+                <div className="bg-gradient-card rounded-xl p-6 border-l-4 border-primary">
                   <blockquote className="text-lg text-gray-dark italic mb-4">
                     "{founder.quote}"
                   </blockquote>
-                  <cite className="text-orange font-medium">- {founder.name}, Fondateur</cite>
+                  <cite className="text-primary font-medium">- {founder.name}, Fondateur</cite>
                 </div>
               )}
             </div>

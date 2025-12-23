@@ -137,7 +137,7 @@ const EditableText: React.FC<EditableTextProps> = ({
   // Admin and edit mode on
   if (isEditing) {
     const inputClassName = cn(
-      'w-full bg-white/90 text-gray-dark rounded px-2 py-1 outline-none ring-2 ring-orange',
+      'w-full bg-white/90 text-gray-dark rounded px-2 py-1 outline-none ring-2 ring-primary',
       className
     );
 
@@ -175,13 +175,13 @@ const EditableText: React.FC<EditableTextProps> = ({
       className={cn(
         className,
         'relative group cursor-pointer inline-block',
-        'ring-2 ring-transparent hover:ring-orange/50 rounded transition-all duration-200',
-        'bg-orange/5 hover:bg-orange/10'
+        'ring-2 ring-transparent hover:ring-primary/50 rounded transition-all duration-200',
+        'bg-primary/5 hover:bg-primary/10'
       )}
       onClick={() => setIsEditing(true)}
     >
       {value}
-      <span className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-orange text-white p-1 rounded-full shadow-lg">
+      <span className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-primary text-white p-1 rounded-full shadow-lg">
         <Pencil className="w-3 h-3" />
       </span>
     </Component>

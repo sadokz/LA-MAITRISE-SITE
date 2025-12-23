@@ -121,7 +121,7 @@ const Contact = () => {
             <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
               {getContactText('header_title', 'Contactez notre équipe').split(' ').map((word, index, array) => 
                 index === array.length - 2 ? (
-                  <span key={index} className="text-gradient-orange">{word} </span>
+                  <span key={index} className="text-gradient-blue">{word} </span>
                 ) : word + ' '
               )}
             </h2>
@@ -262,7 +262,7 @@ const Contact = () => {
                             <div key={phone.id} className="flex items-center gap-2">
                               <a 
                                 href={`tel:${phone.value.replace(/\s+/g, '')}`}
-                                className="text-orange hover:text-orange-dark transition-colors"
+                                className="text-primary hover:text-blue-dark transition-colors"
                               >
                                 {phone.value}
                               </a>
@@ -319,7 +319,7 @@ const Contact = () => {
                             <div key={email.id} className="flex items-center gap-2">
                               <a 
                                 href={`mailto:${email.value}`}
-                                className="text-orange hover:text-orange-dark transition-colors"
+                                className="text-primary hover:text-blue-dark transition-colors"
                               >
                                 {email.value}
                               </a>
@@ -346,7 +346,7 @@ const Contact = () => {
                       </h4>
                       <a 
                         href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
-                        className="text-orange hover:text-orange-dark transition-colors"
+                        className="text-primary hover:text-blue-dark transition-colors"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
