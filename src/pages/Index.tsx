@@ -12,6 +12,7 @@ import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
 import Chatbot from '@/components/Chatbot'; // Import the new Chatbot component
+import TunisiaMap from '@/components/TunisiaMap'; // Import the new TunisiaMap component
 
 const Index = () => {
   const { isAdmin } = useEditMode();
@@ -47,6 +48,9 @@ const Index = () => {
         
         {/* References Section */}
         {isVisible('projects') && <References />}
+        
+        {/* Tunisia Map Section */}
+        <TunisiaMap />
         
         {/* Founder Section */}
         {isVisible('founder') && <Founder />}
