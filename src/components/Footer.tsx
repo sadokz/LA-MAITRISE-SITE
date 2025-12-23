@@ -17,23 +17,41 @@ const Footer = () => {
   const isHomePage = location.pathname === '/';
 
   const scrollToSection = (sectionId: string) => {
-    if (!isHomePage) {
-      // If not on home page, navigate to home first then scroll
-      navigate(`/#${sectionId}`);
-    } else {
-      // If already on home page, just scroll
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+    if (sectionId === 'accueil') {
+      if (!isHomePage) {
+        // If not on home page, navigate to home and then scroll to top
+        navigate('/');
+        // Use a small delay to ensure the page has rendered before scrolling
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100); 
       } else {
-        // Fallback to scroll to top of the page if element not found (e.g., 'accueil' is usually at top)
+        // If already on home page, just scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      // For other sections, use scrollIntoView
+      if (!isHomePage) {
+        // If not on home page, navigate to home with hash, then scroll
+        navigate(`/#${sectionId}`);
+        setTimeout(() => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      } else {
+        // If already on home page, just scroll
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     }
   };
 
   const quickLinks = [
-    { label: 'Accueil', id: 'accueil', type: 'scroll' }, // Changed to type 'scroll' and added id
+    { label: 'Accueil', id: 'accueil', type: 'scroll' },
     { label: 'Compétences', path: '/competences', type: 'page' },
     { label: 'Domaines', path: '/domaines', type: 'page' },
     { label: 'Références', path: '/realisations', type: 'page' },
