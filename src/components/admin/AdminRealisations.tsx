@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin, Hash, Image as ImageIcon } from 'lucide-react';
+import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin, Hash, Image as ImageIcon, LayoutGrid, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useRealisations, useDomaines, Realisation, RealisationImage } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
@@ -14,8 +14,10 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
+import { cn } from '@/lib/utils';
 
 type ImageMode = 'auto' | 'url' | 'upload';
+type LayoutMode = 'list' | 'grid';
 
 const AdminRealisations = () => {
   const { realisations, fetchRealisations } = useRealisations();
@@ -43,8 +45,8 @@ const AdminRealisations = () => {
   const additionalImageFileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // New state for domain filter
   const [selectedDomainFilter, setSelectedDomainFilter] = useState<string>('all');
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('list'); // New state for layout mode
 
   const resetForm = () => {
     setForm({ 
@@ -516,54 +518,190 @@ const AdminRealisations = () => {
         </Dialog>
       </div>
 
-      {/* Filter for projects */}
-      <div className="flex items-center gap-2 mb-4">
-        <Label htmlFor="domain-filter" className="sr-only">Filtrer par domaine</Label>
-        <Select value={selectedDomainFilter} onValueChange={setSelectedDomainFilter}>
-          <SelectTrigger id="domain-filter" className="w-[200px]">
-            <SelectValue placeholder="Filtrer par domaine" />
-          </SelectTrigger>
-          <SelectContent className="bg-background border border-border z-50">
-            <SelectItem value="all">Tous les domaines</SelectItem>
-            {domaines.map((domaine) => (
-              <SelectItem key={domaine.id} value={domaine.title}>
-                {domaine.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Filter and Layout Selector */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+        {/* Filter for projects */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Label htmlFor="domain-filter" className="sr-only">Filtrer par domaine</Label>
+          <Select value={selectedDomainFilter} onValueChange={setSelectedDomainFilter}>
+            <SelectTrigger id="domain-filter" className="w-full sm:w-[200px]">
+              <SelectValue placeholder="Filtrer par domaine" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border border-border z-50">
+              <SelectItem value="all">Tous les domaines</SelectItem>
+              {domaines.map((domaine) => (
+                <SelectItem key={domaine.id} value={domaine.title}>
+                  {domaine.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Layout Selector */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant={layoutMode === 'list' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setLayoutMode('list')}
+            aria-label="Afficher en liste"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={layoutMode === 'grid' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setLayoutMode('grid')}
+            aria-label="Afficher en grille"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Position</TableHead>
-            <TableHead>Titre</TableHead>
-            <TableHead>Domaine</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Emplacement</TableHead>
-            <TableHead>Réf</TableHead>
-            <TableHead>Description courte</TableHead>
-            <TableHead>Images</TableHead> {/* Updated header */}
-            <TableHead>Visible</TableHead>
-            <TableHead>En avant</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      {layoutMode === 'list' ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Position</TableHead>
+              <TableHead>Titre</TableHead>
+              <TableHead>Domaine</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Emplacement</TableHead>
+              <TableHead>Réf</TableHead>
+              <TableHead>Description courte</TableHead>
+              <TableHead>Images</TableHead>
+              <TableHead>Visible</TableHead>
+              <TableHead>En avant</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredRealisations
+              .sort((a, b) => a.position - b.position)
+              .map((realisation) => {
+                const mainDisplayImage = getDisplayImage(realisation);
+                const allImages = [
+                  ...(mainDisplayImage ? [{ id: 'main', image_file: mainDisplayImage, image_mode: 'upload', position: -1 }] : []),
+                  ...(realisation.images || []),
+                ].sort((a, b) => a.position - b.position);
+
+                return (
+                  <TableRow key={realisation.id}>
+                    <TableCell>
+                      <div className="flex space-x-1">
+                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'up')}>
+                          <ArrowUp className="h-3 w-3" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'down')}>
+                          <ArrowDown className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">{realisation.title}</TableCell>
+                    <TableCell>
+                      <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">
+                        {realisation.category}
+                      </span>
+                    </TableCell>
+                    <TableCell>{realisation.date_text || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                    <TableCell>{realisation.emplacement || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                    <TableCell>{realisation.reference || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                    <TableCell className="max-w-xs truncate">{realisation.description}</TableCell>
+                    <TableCell>
+                      <div className="flex -space-x-2 overflow-hidden">
+                        {allImages.slice(0, 3).map((img, idx) => (
+                          <img key={idx} src={getDisplayImage(img)!} alt="img" className="inline-block h-8 w-8 rounded-full ring-2 ring-background object-cover" />
+                        ))}
+                        {allImages.length > 3 && (
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium ring-2 ring-background">
+                            +{allImages.length - 3}
+                          </span>
+                        )}
+                        {allImages.length === 0 && <span className="text-xs text-muted-foreground">Aucune</span>}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {realisation.is_visible ? (
+                        <Eye className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <EyeOff className="h-5 w-5 text-red-500" />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {realisation.is_featured ? (
+                        <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                      ) : (
+                        <Star className="h-5 w-5 text-gray-400" />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(realisation)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(realisation.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredRealisations
             .sort((a, b) => a.position - b.position)
             .map((realisation) => {
               const mainDisplayImage = getDisplayImage(realisation);
-              const allImages = [
-                ...(mainDisplayImage ? [{ id: 'main', image_file: mainDisplayImage, image_mode: 'upload', position: -1 }] : []),
-                ...(realisation.images || []),
-              ].sort((a, b) => a.position - b.position);
-
               return (
-                <TableRow key={realisation.id}>
-                  <TableCell>
-                    <div className="flex space-x-1">
+                <Card key={realisation.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200">
+                  <div className="relative h-48 w-full">
+                    <img
+                      src={mainDisplayImage || getRelevantFallbackImage('default')}
+                      alt={realisation.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = getRelevantFallbackImage('default');
+                      }}
+                    />
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      {realisation.is_visible ? (
+                        <span className="bg-green-500 text-white p-1 rounded-full text-xs" title="Visible"><Eye className="h-3 w-3" /></span>
+                      ) : (
+                        <span className="bg-red-500 text-white p-1 rounded-full text-xs" title="Masquée"><EyeOff className="h-3 w-3" /></span>
+                      )}
+                      {realisation.is_featured && (
+                        <span className="bg-yellow-500 text-white p-1 rounded-full text-xs" title="Mise en avant"><Star className="h-3 w-3 fill-white" /></span>
+                      )}
+                    </div>
+                  </div>
+                  <CardContent className="p-4 flex-1 flex flex-col">
+                    <h4 className="font-semibold text-lg mb-1">{realisation.title}</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      <span className="px-2 py-0.5 bg-secondary text-secondary-foreground rounded text-xs">
+                        {realisation.category}
+                      </span>
+                    </p>
+                    <p className="text-sm text-gray-medium line-clamp-2 mb-3">{realisation.description}</p>
+                    <div className="flex items-center text-xs text-gray-muted mb-3 gap-x-2">
+                      {realisation.date_text && (
+                        <span className="flex items-center"><Calendar className="h-3 w-3 mr-1" /> {realisation.date_text}</span>
+                      )}
+                      {realisation.emplacement && (
+                        <span className="flex items-center"><MapPin className="h-3 w-3 mr-1" /> {realisation.emplacement}</span>
+                      )}
+                    </div>
+                    <div className="flex mt-auto space-x-2 pt-4 border-t border-border">
+                      <Button size="sm" variant="outline" onClick={() => handleEdit(realisation)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(realisation.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                       <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'up')}>
                         <ArrowUp className="h-3 w-3" />
                       </Button>
@@ -571,59 +709,12 @@ const AdminRealisations = () => {
                         <ArrowDown className="h-3 w-3" />
                       </Button>
                     </div>
-                  </TableCell>
-                  <TableCell className="font-medium">{realisation.title}</TableCell>
-                  <TableCell>
-                    <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">
-                      {realisation.category}
-                    </span>
-                  </TableCell>
-                  <TableCell>{realisation.date_text || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
-                  <TableCell>{realisation.emplacement || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
-                  <TableCell>{realisation.reference || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
-                  <TableCell className="max-w-xs truncate">{realisation.description}</TableCell>
-                  <TableCell>
-                    <div className="flex -space-x-2 overflow-hidden">
-                      {allImages.slice(0, 3).map((img, idx) => (
-                        <img key={idx} src={getDisplayImage(img)!} alt="img" className="inline-block h-8 w-8 rounded-full ring-2 ring-background object-cover" />
-                      ))}
-                      {allImages.length > 3 && (
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium ring-2 ring-background">
-                          +{allImages.length - 3}
-                        </span>
-                      )}
-                      {allImages.length === 0 && <span className="text-xs text-muted-foreground">Aucune</span>}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {realisation.is_visible ? (
-                      <Eye className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <EyeOff className="h-5 w-5 text-red-500" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {realisation.is_featured ? (
-                      <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                    ) : (
-                      <Star className="h-5 w-5 text-gray-400" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline" onClick={() => handleEdit(realisation)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(realisation.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                  </CardContent>
+                </Card>
               );
             })}
-        </TableBody>
-      </Table>
+        </div>
+      )}
     </div>
   );
 };
