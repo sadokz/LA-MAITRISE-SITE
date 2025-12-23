@@ -9,21 +9,34 @@ import {
   Clock
 } from 'lucide-react';
 import logoLaMaitrise from '@/assets/logo-lamaitrise.png';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // Import Link, useLocation, useNavigate
 
 const Footer = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isHomePage = location.pathname === '/';
+
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (!isHomePage) {
+      // If not on home page, navigate to home first then scroll
+      navigate(`/#${sectionId}`);
+    } else {
+      // If already on home page, just scroll
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        // Fallback to scroll to top of the page if element not found (e.g., 'accueil' is usually at top)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   };
 
   const quickLinks = [
-    { label: 'Accueil', path: '/', type: 'link' }, // Changed type to 'link' and added path
+    { label: 'Accueil', id: 'accueil', type: 'scroll' }, // Changed to type 'scroll' and added id
     { label: 'Compétences', path: '/competences', type: 'page' },
     { label: 'Domaines', path: '/domaines', type: 'page' },
-    { label: 'Références', path: '/realisations', type: 'page' }, // Changed to /realisations page
+    { label: 'Références', path: '/realisations', type: 'page' },
     { label: 'Contact', id: 'contact', type: 'scroll' }
   ];
 
