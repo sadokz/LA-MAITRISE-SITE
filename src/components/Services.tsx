@@ -24,7 +24,7 @@ const Services = () => {
                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-200">
                   {competence.icon}
                 </div>
-                <CardTitle className="text-xl text-primary group-hover:text-primary/80 transition-colors">
+                <CardTitle className="text-xl text-gray-dark"> {/* Changed to text-gray-dark */}
                   {competence.title}
                 </CardTitle>
               </CardHeader>
