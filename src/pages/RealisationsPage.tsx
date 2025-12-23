@@ -115,16 +115,19 @@ const RealisationsPage = () => {
             </div>
           </section>
 
-          {/* Back to Home Button and Filter Buttons */}
-          <div className="container mx-auto px-4 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <Button asChild variant="outline" className="group w-full sm:w-auto">
+          {/* Back to Home Button */}
+          <div className="container mx-auto px-4 lg:px-8 py-8">
+            <Button asChild variant="outline" className="group">
               <Link to="/">
                 <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                 Accueil
               </Link>
             </Button>
+          </div>
 
-            <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+          {/* Filter Buttons */}
+          <div className="container mx-auto px-4 lg:px-8 pb-8">
+            <div className="flex flex-wrap justify-center gap-2 w-full">
               <Button
                 variant={selectedCategory === 'all' ? 'default' : 'outline'}
                 onClick={() => setSelectedCategory('all')}
