@@ -119,9 +119,12 @@ const TunisiaMap = () => {
 
           {locationsWithProjects.length > 0 && (
             <div className="mt-16 text-center">
-              <h3 className="font-heading font-bold text-2xl text-gray-dark mb-6">
-                Villes avec projets
-              </h3>
+              <EditableText 
+                textKey="tunisiaMap.cities.title" 
+                defaultValue={getSiteText('tunisiaMap', 'cities', 'title', 'Villes avec projets')} 
+                className="font-heading font-bold text-2xl text-gray-dark mb-6 inline-block" 
+                as="h3" 
+              />
               <div className="flex flex-wrap justify-center gap-4">
                 {locationsWithProjects.sort().map(location => (
                   <div key={location} className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm text-gray-dark text-sm font-medium">
@@ -135,7 +138,7 @@ const TunisiaMap = () => {
 
           {locationsWithProjects.length === 0 && (
             <div className="text-center py-12 text-gray-medium">
-              <p>Aucun projet avec une localisation définie n'est disponible pour le moment.</p>
+              <p>Aucun projet avec une localisation définie n'is disponible pour le moment.</p>
             </div>
           )}
         </div>
