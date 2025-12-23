@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, MapPin, Hash, ArrowRight, ArrowLeft as ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Hash, ArrowRight, ArrowLeft as ArrowLeftIcon } from 'lucide-react'; // Import new icons
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useRealisations } from '@/hooks/useSupabaseData';
 import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
@@ -12,6 +12,7 @@ import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
 import useEmblaCarousel from 'embla-carousel-react';
 import { cn } from '@/lib/utils';
+import { useInterval } from '@/hooks/useInterval'; // Import the new hook
 
 // Fallback images by category for auto mode (copied from References.tsx for consistency)
 const fallbackImages: Record<string, string> = {
@@ -30,29 +31,10 @@ const RealisationsPage = () => {
   const { realisations, loading: realisationsLoading } = useRealisations();
   const { realisationsPageSettings } = useRealisationsPageSettings();
 
-  // Embla Carousel setup
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
+  // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  useEffect(() => {
-    if (emblaApi) {
-      const onSelect = () => {
-        setSelectedIndex(emblaApi.selectedScrollSnap());
-      };
-      emblaApi.on('select', onSelect);
-      onSelect(); // Set initial index
-      return () => {
-        emblaApi.off('select', onSelect);
-      };
-    }
-  }, [emblaApi]);
-
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
 
   const visibleRealisations = useMemo(() => realisations.filter(r => r.is_visible), [realisations]);
 
@@ -183,6 +165,33 @@ const RealisationsPage = () => {
                       }] : []),
                       ...(project.images || []),
                     ].sort((a, b) => a.position - b.position);
+
+                    // Embla Carousel setup for each project
+                    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+                    const [selectedIndex, setSelectedIndex] = useState(0);
+
+                    useEffect(() => {
+                      if (emblaApi) {
+                        const onSelect = () => {
+                          setSelectedIndex(emblaApi.selectedScrollSnap());
+                        };
+                        emblaApi.on('select', onSelect);
+                        onSelect(); // Set initial index
+                        return () => {
+                          emblaApi.off('select', onSelect);
+                        };
+                      }
+                    }, [emblaApi]);
+
+                    const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+                    const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+                    // Auto-swipe logic
+                    useInterval(() => {
+                      if (emblaApi && allProjectImages.length > 1) {
+                        emblaApi.scrollNext();
+                      }
+                    }, allProjectImages.length > 1 ? 5000 : null); // 5 seconds delay, or null to disable
 
                     return (
                       <div 
