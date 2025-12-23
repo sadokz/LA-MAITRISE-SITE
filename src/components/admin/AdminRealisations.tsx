@@ -11,10 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch'; // Import Switch
-import { useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
 
 const AdminRealisations = () => {
-  const { data: realisations = [], isLoading: realisationsLoading, refetch: fetchRealisations } = useRealisations();
+  const { realisations, fetchRealisations } = useRealisations();
   const { domaines } = useDomaines();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRealisation, setEditingRealisation] = useState<Realisation | null>(null);
@@ -34,7 +33,6 @@ const AdminRealisations = () => {
   });
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
-  const queryClient = useQueryClient(); // Initialize query client
 
   const resetForm = () => {
     setForm({ 
@@ -163,7 +161,7 @@ const AdminRealisations = () => {
 
     setIsDialogOpen(false);
     resetForm();
-    queryClient.invalidateQueries({ queryKey: ['realisations'] }); // Invalidate to refetch everywhere
+    fetchRealisations();
   };
 
   const handleEdit = (realisation: Realisation) => {
@@ -209,7 +207,7 @@ const AdminRealisations = () => {
       description: 'Réalisation supprimée',
     });
 
-    queryClient.invalidateQueries({ queryKey: ['realisations'] }); // Invalidate to refetch everywhere
+    fetchRealisations();
   };
 
   const handleMovePosition = async (realisation: Realisation, direction: 'up' | 'down') => {
@@ -247,7 +245,7 @@ const AdminRealisations = () => {
       return;
     }
 
-    queryClient.invalidateQueries({ queryKey: ['realisations'] }); // Invalidate to refetch everywhere
+    fetchRealisations();
   };
 
   const getDisplayImage = (r: Realisation) => {
@@ -255,14 +253,6 @@ const AdminRealisations = () => {
     if (r.image_mode === 'url' && r.image_url) return r.image_url;
     return null;
   };
-
-  if (realisationsLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">

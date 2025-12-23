@@ -143,47 +143,6 @@ Orange corporat, gris sophistiqué, animations fluides
   .animate-scale-in {
     animation: scaleIn 0.4s ease-out forwards;
   }
-
-  /* Embla Carousel specific styles */
-  .embla {
-    position: relative;
-  }
-
-  .embla__container {
-    display: flex;
-    margin-left: -16px; /* Compensate for slide spacing */
-  }
-
-  .embla__slide {
-    flex: 0 0 auto;
-    padding-left: 16px; /* Spacing between slides */
-  }
-
-  /* Responsive adjustments for Embla slides */
-  @media (min-width: 768px) {
-    .embla__container {
-      margin-left: -24px;
-    }
-    .embla__slide {
-      padding-left: 24px;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .embla__container {
-      margin-left: -32px;
-    }
-    .embla__slide {
-      padding-left: 32px;
-    }
-  }
-
-  .embla__button {
-    @apply transition-all duration-300;
-  }
-  .embla__button:disabled {
-    @apply opacity-50 cursor-not-allowed;
-  }
 }
 
 @layer utilities {

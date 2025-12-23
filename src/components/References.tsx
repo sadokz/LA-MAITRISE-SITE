@@ -1,12 +1,9 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSiteTexts, useRealisations, useDomaines } from '@/hooks/useSupabaseData';
 import EditableText from '@/components/EditableText';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, ArrowLeft, ArrowRight } from 'lucide-react'; // Import new icons
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
-import { cn } from '@/lib/utils';
+import { Calendar, MapPin } from 'lucide-react'; // Import new icons
 
 // Fallback images by category for auto mode
 const fallbackImages: Record<string, string> = {
@@ -37,35 +34,6 @@ const References = () => {
     [...featuredAndVisibleRealisations].sort((a, b) => a.position - b.position),
     [featuredAndVisibleRealisations]
   );
-
-  // Embla Carousel setup
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    {
-      loop: true,
-      align: 'start',
-      slides: {
-        perView: 1, // Default for mobile
-        spacing: 16, // Gap between slides
-      },
-      breakpoints: {
-        '(min-width: 768px)': {
-          slides: { perView: 2, spacing: 24 }, // Tablet
-        },
-        '(min-width: 1024px)': {
-          slides: { perView: 3, spacing: 32 }, // Desktop
-        },
-      },
-    },
-    [Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: true })]
-  );
-
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
 
   // Get display image for a realisation
   const getDisplayImage = (r: typeof realisations[0]) => {
@@ -110,96 +78,74 @@ const References = () => {
             <EditableText textKey="references.header.description" defaultValue={getSiteText('references', 'header', 'description', "Découvrez nos projets illustrant notre savoir-faire et notre capacité d'innovation dans l'ingénierie électrique et le BIM.")} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>
 
-          {/* Projects Carousel */}
-          {projectsToDisplay.length > 0 ? (
-            <div className="relative mb-16">
-              <div className="embla overflow-hidden" ref={emblaRef}>
-                <div className="embla__container flex touch-pan-y">
-                  {projectsToDisplay.map((project, index) => {
-                    const displayImage = getDisplayImage(project);
-                    return (
-                      <div
-                        key={project.id}
-                        className="embla__slide flex-shrink-0 min-w-0"
-                      >
-                        <div
-                          className="group relative aspect-[4/3] rounded-xl overflow-hidden shadow-card cursor-pointer"
-                        >
-                          {/* Background Image */}
-                          <img
-                            src={displayImage}
-                            alt={project.title}
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = fallbackImages['default'];
-                              console.warn(`Image admin non disponible pour "${project.title}", fallback utilisé.`);
-                            }}
-                          />
-                          
-                          {/* Dark Overlay - Always visible on mobile, hover on desktop */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-gray-dark/90 via-gray-dark/40 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
-                          
-                          {/* Content - Always visible on mobile, hover on desktop */}
-                          <div className="absolute inset-0 flex flex-col justify-end p-5 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 ease-out">
-                            {/* Category Badge */}
-                            <span className="inline-block self-start bg-orange/90 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2 uppercase tracking-wide">
-                              {project.category}
-                            </span>
-                            {/* Title */}
-                            <h3 className="font-heading font-bold text-xl text-white mb-1 leading-tight">
-                              {project.title}
-                            </h3>
-                            {/* Date and Emplacement */}
-                            {(project.date_text || project.emplacement) && (
-                              <div className="flex items-center text-white/80 text-sm mb-2">
-                                {project.date_text && (
-                                  <span className="flex items-center mr-3">
-                                    <Calendar className="h-3 w-3 mr-1" /> {project.date_text}
-                                  </span>
-                                )}
-                                {project.emplacement && (
-                                  <span className="flex items-center">
-                                    <MapPin className="h-3 w-3 mr-1" /> {project.emplacement}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                            {/* Short Description */}
-                            <p className="text-white/70 text-sm leading-relaxed line-clamp-2">
-                              {truncateDescription(project.description)}
-                            </p>
-                          </div>
-                        </div>
+          {/* Projects Grid - Image Cards with Hover Overlay */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-16">
+            {projectsToDisplay.map((project, index) => {
+              const displayImage = getDisplayImage(project);
+              return (
+                <div
+                  key={project.id}
+                  className="group relative aspect-[4/3] rounded-xl overflow-hidden shadow-card cursor-pointer animate-scale-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {/* Background Image */}
+                  <img
+                    src={displayImage}
+                    alt={project.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = fallbackImages['default'];
+                      console.warn(`Image admin non disponible pour "${project.title}", fallback utilisé.`);
+                    }}
+                  />
+                  
+                  {/* Dark Overlay - Always visible on mobile, hover on desktop */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-dark/90 via-gray-dark/40 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Content - Always visible on mobile, hover on desktop */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-5 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 ease-out">
+                    {/* Category Badge */}
+                    <span className="inline-block self-start bg-orange/90 text-white text-xs font-semibold px-3 py-1 rounded-full mb-2 uppercase tracking-wide">
+                      {project.category}
+                    </span>
+                    {/* Title */}
+                    <h3 className="font-heading font-bold text-xl text-white mb-1 leading-tight">
+                      {project.title}
+                    </h3>
+                    {/* Date and Emplacement */}
+                    {(project.date_text || project.emplacement) && (
+                      <div className="flex items-center text-white/80 text-sm mb-2">
+                        {project.date_text && (
+                          <span className="flex items-center mr-3">
+                            <Calendar className="h-3 w-3 mr-1" /> {project.date_text}
+                          </span>
+                        )}
+                        {project.emplacement && (
+                          <span className="flex items-center">
+                            <MapPin className="h-3 w-3 mr-1" /> {project.emplacement}
+                          </span>
+                        )}
                       </div>
-                    );
-                  })}
+                    )}
+                    {/* Short Description */}
+                    <p className="text-white/70 text-sm leading-relaxed line-clamp-2">
+                      {truncateDescription(project.description)}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              );
+            })}
+          </div>
 
-              {/* Navigation Arrows */}
-              <Button
-                className="embla__button embla__button--prev absolute top-1/2 -translate-y-1/2 left-4 bg-white/80 hover:bg-white text-gray-dark p-2 rounded-full shadow-md hidden md:flex items-center justify-center z-10"
-                onClick={scrollPrev}
-                size="icon"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <Button
-                className="embla__button embla__button--next absolute top-1/2 -translate-y-1/2 right-4 bg-white/80 hover:bg-white text-gray-dark p-2 rounded-full shadow-md hidden md:flex items-center justify-center z-10"
-                onClick={scrollNext}
-                size="icon"
-              >
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </div>
-          ) : (
+          {/* Empty state */}
+          {projectsToDisplay.length === 0 && (
             <div className="text-center py-12 text-gray-medium">
-              <p>Aucune réalisation mise en avant n'est disponible pour le moment.</p>
+              <p>Aucune réalisation trouvée pour cette catégorie.</p>
             </div>
           )}
 
-          {/* Button "En Savoir Plus" */}
+          {/* Button moved here - directly under the projects list */}
           <div className="text-center mb-16">
             <Button 
               asChild 
