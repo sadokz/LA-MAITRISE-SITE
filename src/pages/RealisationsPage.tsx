@@ -3,15 +3,14 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react'; // Import ArrowRight for the new button
 import EditableText from '@/components/EditableText';
-import { useSiteTexts, useRealisations, useDomaines } from '@/hooks/useSupabaseData';
+import { useSiteTexts, useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
 import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
 import RealisationItem from '@/components/RealisationItem';
-// Removed Select import as it's no longer needed
 
 const RealisationsPage = () => {
   const { getSiteText } = useSiteTexts();
@@ -31,12 +30,54 @@ const RealisationsPage = () => {
     [realisations]
   );
 
+  // Group all visible realisations by category for easy access
+  const groupedVisibleRealisations = useMemo(() => {
+    const grouped: { [key: string]: Realisation[] } = {};
+    visibleRealisations.forEach(r => {
+      if (!grouped[r.category]) {
+        grouped[r.category] = [];
+      }
+      grouped[r.category].push(r);
+    });
+    return grouped;
+  }, [visibleRealisations]);
+
+  // Determine which categories have more than 2 projects
+  const categoriesWithMoreProjects = useMemo(() => {
+    const categories: Set<string> = new Set();
+    for (const category in groupedVisibleRealisations) {
+      if (groupedVisibleRealisations[category].length > 2) {
+        categories.add(category);
+      }
+    }
+    return categories;
+  }, [groupedVisibleRealisations]);
+
   const filteredRealisations = useMemo(() => {
     if (selectedCategory === 'all') {
-      return visibleRealisations;
+      let limitedProjects: Realisation[] = [];
+      
+      // Sort categories for consistent display (e.g., by the year of their first project)
+      const sortedCategories = Object.keys(groupedVisibleRealisations).sort((catA, catB) => {
+        const firstProjectA = groupedVisibleRealisations[catA][0];
+        const firstProjectB = groupedVisibleRealisations[catB][0];
+        if (firstProjectA && firstProjectB) {
+          // Sort by year (newest first), then by original position
+          if (firstProjectA.parsed_year !== firstProjectB.parsed_year) {
+            return (firstProjectB.parsed_year || 0) - (firstProjectA.parsed_year || 0);
+          }
+          return firstProjectA.position - firstProjectB.position;
+        }
+        return 0; 
+      });
+
+      sortedCategories.forEach(category => {
+        limitedProjects = limitedProjects.concat(groupedVisibleRealisations[category].slice(0, 2));
+      });
+      return limitedProjects;
     }
     return visibleRealisations.filter(r => r.category === selectedCategory);
-  }, [visibleRealisations, selectedCategory]);
+  }, [visibleRealisations, selectedCategory, groupedVisibleRealisations]);
 
   const categoryCounts = useMemo(() => {
     const counts: { [key: string]: number } = { all: visibleRealisations.length };
@@ -172,9 +213,58 @@ const RealisationsPage = () => {
                 </div>
               ) : (
                 <div className="space-y-20">
-                  {filteredRealisations.map((project, index) => (
-                    <RealisationItem key={project.id} project={project} index={index} />
-                  ))}
+                  {selectedCategory === 'all' ? (
+                    // Group the already filtered (limited) realisations by category for display
+                    (() => {
+                      const groupedForDisplay: { [key: string]: Realisation[] } = {};
+                      filteredRealisations.forEach(r => {
+                        if (!groupedForDisplay[r.category]) {
+                          groupedForDisplay[r.category] = [];
+                        }
+                        groupedForDisplay[r.category].push(r);
+                      });
+
+                      // Sort categories for consistent display, similar to how `limitedProjects` were formed
+                      const sortedCategories = Object.keys(groupedForDisplay).sort((catA, catB) => {
+                        const firstProjectA = groupedForDisplay[catA][0];
+                        const firstProjectB = groupedForDisplay[catB][0];
+                        if (firstProjectA && firstProjectB) {
+                          if (firstProjectA.parsed_year !== firstProjectB.parsed_year) {
+                            return (firstProjectB.parsed_year || 0) - (firstProjectA.parsed_year || 0);
+                          }
+                          return firstProjectA.position - firstProjectB.position;
+                        }
+                        return 0;
+                      });
+
+                      return sortedCategories.map(category => (
+                        <React.Fragment key={category}>
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                            {groupedForDisplay[category].map((project, index) => (
+                              <RealisationItem key={project.id} project={project} index={index} />
+                            ))}
+                          </div>
+                          {categoriesWithMoreProjects.has(category) && (
+                            <div className="text-center mt-4 mb-12">
+                              <Button 
+                                onClick={() => setSelectedCategory(category)}
+                                className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3"
+                              >
+                                Plus de Projets {category} <ArrowRight className="ml-2 h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </React.Fragment>
+                      ));
+                    })()
+                  ) : (
+                    // Existing rendering for a single selected category
+                    <div className="space-y-20">
+                      {filteredRealisations.map((project, index) => (
+                        <RealisationItem key={project.id} project={project} index={index} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
