@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
+import { useQuery } from '@tanstack/react-query'; // Removed useQueryClient
 import { supabase } from '@/integrations/supabase/client';
 import { RealisationsPageSettings } from './useRealisationsPageSettings'; // Import the new interface
 
@@ -220,7 +220,7 @@ export const useHeroSettings = () => {
 };
 
 export const useRealisations = () => {
-  const queryClient = useQueryClient(); // Initialize useQueryClient
+  // Removed useQueryClient as it was not directly used in this hook
   return useQuery<Realisation[], Error>({
     queryKey: ['realisations'],
     queryFn: async () => {
