@@ -12,10 +12,19 @@ Blue corporat, gris sophistiqué, animations fluides
     --background: 0 0% 100%;
     --foreground: 210 15% 20%;
     
-    /* Corporate Blue Theme (formerly Orange) */
-    --blue: 200 80% 60%; /* Base light blue */
-    --blue-light: 200 80% 70%; /* Lighter blue for gradients */
-    --blue-dark: 200 80% 50%; /* Darker blue for hover */
+    /* Dynamic App Colors (set by JS from DB) */
+    --app-primary-hue: 200;
+    --app-primary-saturation: 80%;
+    --app-primary-lightness: 60%;
+
+    --app-secondary-hue: 210;
+    --app-secondary-saturation: 10%;
+    --app-secondary-lightness: 96%;
+    
+    /* Corporate Blue Theme (derived from dynamic primary) */
+    --blue: var(--app-primary-hue) var(--app-primary-saturation) var(--app-primary-lightness);
+    --blue-light: var(--app-primary-hue) var(--app-primary-saturation) calc(var(--app-primary-lightness) + 10%); /* Lighter blue for gradients */
+    --blue-dark: var(--app-primary-hue) var(--app-primary-saturation) calc(var(--app-primary-lightness) - 10%); /* Darker blue for hover */
     --blue-foreground: 0 0% 100%; /* White text on blue */
     
     /* Professional Grays */
@@ -34,15 +43,15 @@ Blue corporat, gris sophistiqué, animations fluides
     --primary-foreground: var(--blue-foreground);
     --primary-hover: var(--blue-dark);
 
-    --secondary: 210 10% 96%;
+    --secondary: var(--app-secondary-hue) var(--app-secondary-saturation) var(--app-secondary-lightness);
     --secondary-foreground: 210 15% 20%;
     --secondary-hover: 210 10% 90%;
 
     --muted: 210 10% 96%;
     --muted-foreground: 210 8% 60%;
 
-    --accent: 200 80% 95%; /* Adjusted accent to be a very light blue */
-    --accent-foreground: 200 80% 60%; /* Adjusted accent foreground to be the base blue */
+    --accent: var(--app-primary-hue) var(--app-primary-saturation) 95%; /* Adjusted accent to be a very light blue */
+    --accent-foreground: var(--blue); /* Adjusted accent foreground to be the base blue */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;

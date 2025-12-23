@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_colors: {
+        Row: {
+          created_at: string
+          id: number
+          primary_color_hex: string
+          secondary_color_hex: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          primary_color_hex?: string
+          secondary_color_hex?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          primary_color_hex?: string
+          secondary_color_hex?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       competences: {
         Row: {
           created_at: string

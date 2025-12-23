@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
+import { useAppColors } from '@/hooks/useAppColors'; // Import the new hook
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle } from 'lucide-react'; // Added MessageCircle
+import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle, Palette } from 'lucide-react'; // Added Palette icon
 import AdminCompetencesPageHero from './AdminCompetencesPageHero';
 import AdminDomainsPageHero from './AdminDomainsPageHero';
 import AdminRealisationsPageHero from './AdminRealisationsPageHero';
@@ -29,6 +32,16 @@ const sections: SectionConfig[] = [
 
 const AdminSections = () => {
   const { data: visibility, isLoading, refetch } = useSectionVisibility();
+  const { appColors, loading: colorsLoading, updateAppColors, isUpdating } = useAppColors();
+  const [primaryColor, setPrimaryColor] = useState<string>('#2196F3'); // Default light blue
+  const [secondaryColor, setSecondaryColor] = useState<string>('#F0F0F0'); // Default light gray
+
+  useEffect(() => {
+    if (appColors) {
+      setPrimaryColor(appColors.primary_color_hex);
+      setSecondaryColor(appColors.secondary_color_hex);
+    }
+  }, [appColors]);
 
   const handleToggle = async (sectionKey: string, newValue: boolean) => {
     try {
@@ -47,15 +60,22 @@ const AdminSections = () => {
     }
   };
 
-  if (isLoading) {
+  const handleSaveColors = () => {
+    updateAppColors({
+      primary_color_hex: primaryColor,
+      secondary_color_hex: secondaryColor,
+    });
+  };
+
+  if (isLoading || colorsLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Visibilité des sections</CardTitle>
+          <CardTitle>Chargement des paramètres...</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
-            {[...Array(8)].map((_, i) => ( // Adjusted array size for new chatbot section
+            {[...Array(10)].map((_, i) => (
               <div key={i} className="h-12 bg-muted rounded" />
             ))}
           </div>
@@ -66,6 +86,66 @@ const AdminSections = () => {
 
   return (
     <div className="space-y-6">
+      {/* Color Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Palette className="h-5 w-5" />
+            Paramètres des couleurs de l'application
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Personnalisez les couleurs principales de votre site.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Label htmlFor="primary-color" className="block text-sm font-medium text-gray-dark mb-2">
+                Couleur Primaire
+              </Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="primary-color"
+                  type="color"
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  className="w-12 h-12 p-0 border-none cursor-pointer"
+                />
+                <Input
+                  type="text"
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="secondary-color" className="block text-sm font-medium text-gray-dark mb-2">
+                Couleur Secondaire
+              </Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="secondary-color"
+                  type="color"
+                  value={secondaryColor}
+                  onChange={(e) => setSecondaryColor(e.target.value)}
+                  className="w-12 h-12 p-0 border-none cursor-pointer"
+                />
+                <Input
+                  type="text"
+                  value={secondaryColor}
+                  onChange={(e) => setSecondaryColor(e.target.value)}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          </div>
+          <Button onClick={handleSaveColors} disabled={isUpdating} className="mt-6">
+            {isUpdating ? 'Sauvegarde...' : 'Sauvegarder les couleurs'}
+          </Button>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

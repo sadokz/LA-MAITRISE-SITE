@@ -13,11 +13,47 @@ import { EditModeProvider } from "@/contexts/EditModeContext";
 import DomainsPage from "./pages/DomainsPage";
 import CompetencesPage from "./pages/CompetencesPage";
 import RealisationsPage from "./pages/RealisationsPage";
+import { useAppColors } from "@/hooks/useAppColors";
+import { hexToHsl } from "@/lib/colorUtils";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const AppContent = () => {
+  const { appColors, loading: colorsLoading } = useAppColors();
+
+  useEffect(() => {
+    if (appColors) {
+      const root = document.documentElement;
+
+      // Set primary color variables
+      const primaryHsl = hexToHsl(appColors.primary_color_hex);
+      if (primaryHsl) {
+        root.style.setProperty('--app-primary-hue', primaryHsl.h.toString());
+        root.style.setProperty('--app-primary-saturation', `${primaryHsl.s}%`);
+        root.style.setProperty('--app-primary-lightness', `${primaryHsl.l}%`);
+      }
+
+      // Set secondary color variables
+      const secondaryHsl = hexToHsl(appColors.secondary_color_hex);
+      if (secondaryHsl) {
+        root.style.setProperty('--app-secondary-hue', secondaryHsl.h.toString());
+        root.style.setProperty('--app-secondary-saturation', `${secondaryHsl.s}%`);
+        root.style.setProperty('--app-secondary-lightness', `${secondaryHsl.l}%`);
+      }
+    }
+  }, [appColors]);
+
+  if (colorsLoading) {
+    // Optionally render a loading spinner or placeholder while colors are fetched
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
     <AuthProvider>
       <EditModeProvider>
         <TooltipProvider>
@@ -39,6 +75,12 @@ const App = () => (
         </TooltipProvider>
       </EditModeProvider>
     </AuthProvider>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AppContent />
   </QueryClientProvider>
 );
 
