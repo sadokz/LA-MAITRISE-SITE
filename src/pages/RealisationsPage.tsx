@@ -1,29 +1,39 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import EditableText from '@/components/EditableText';
-import { useSiteTexts, useRealisations } from '@/hooks/useSupabaseData';
+import { useSiteTexts, useRealisations, useDomaines } from '@/hooks/useSupabaseData';
 import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
-import RealisationItem from '@/components/RealisationItem'; // Import the new component
+import RealisationItem from '@/components/RealisationItem';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const RealisationsPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { realisations, loading: realisationsLoading } = useRealisations();
+  const { domaines, loading: domainesLoading } = useDomaines(); // Fetch domains for filtering
   const { realisationsPageSettings } = useRealisationsPageSettings();
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('all'); // State for filter
 
   // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const visibleRealisations = useMemo(() => realisations.filter(r => r.is_visible), [realisations]);
+  const filteredRealisations = useMemo(() => {
+    const visible = realisations.filter(r => r.is_visible);
+    if (selectedCategory === 'all') {
+      return visible;
+    }
+    return visible.filter(r => r.category === selectedCategory);
+  }, [realisations, selectedCategory]);
 
   const getHeroMedia = () => {
     if (!realisationsPageSettings) return { type: 'image', url: heroImage };
@@ -41,6 +51,8 @@ const RealisationsPage = () => {
 
   const heroMedia = getHeroMedia();
   const isVideo = heroMedia.type === 'video' && heroMedia.url;
+
+  const allLoading = realisationsLoading || domainesLoading;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -92,36 +104,49 @@ const RealisationsPage = () => {
             </div>
           </section>
 
-          {/* Back to Home Button */}
-          <div className="container mx-auto px-4 lg:px-8 py-8">
-            <Button asChild variant="outline" className="group">
+          {/* Back to Home Button and Filter */}
+          <div className="container mx-auto px-4 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <Button asChild variant="outline" className="group w-full sm:w-auto">
               <Link to="/">
                 <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                 Accueil
               </Link>
             </Button>
+
+            <div className="w-full sm:w-auto">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory} disabled={allLoading}>
+                <SelectTrigger className="w-full sm:w-[200px]">
+                  <SelectValue placeholder="Filtrer par domaine" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border border-border z-50">
+                  <SelectItem value="all">Tous les projets</SelectItem>
+                  {domaines.sort((a, b) => a.title.localeCompare(b.title)).map((domaine) => (
+                    <SelectItem key={domaine.id} value={domaine.title}>
+                      {domaine.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Projects Section */}
           <section className="section-padding bg-white pt-0">
             <div className="container mx-auto px-4 lg:px-8">
-              {realisationsLoading ? (
+              {allLoading ? (
                 <div className="flex justify-center items-center py-20">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
-              ) : visibleRealisations.length === 0 ? (
+              ) : filteredRealisations.length === 0 ? (
                 <div className="text-center py-20 text-gray-medium">
-                  <p>Aucune réalisation n'est disponible pour le moment.</p>
-                  <Button asChild className="mt-8">
-                    <Link to="/" className="inline-flex items-center">
-                      <ArrowLeft className="mr-2 h-4 w-4" /> 
-                      Retour à l'accueil
-                    </Link>
+                  <p>Aucune réalisation n'est disponible pour le moment ou ne correspond à votre filtre.</p>
+                  <Button onClick={() => setSelectedCategory('all')} className="mt-8">
+                    Voir tous les projets
                   </Button>
                 </div>
               ) : (
                 <div className="space-y-20">
-                  {visibleRealisations.sort((a, b) => a.position - b.position).map((project, index) => (
+                  {filteredRealisations.map((project, index) => (
                     <RealisationItem key={project.id} project={project} index={index} />
                   ))}
                 </div>
