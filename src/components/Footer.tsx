@@ -20,7 +20,7 @@ const Footer = () => {
   };
 
   const quickLinks = [
-    { label: 'Accueil', id: 'accueil', type: 'scroll' },
+    { label: 'Accueil', path: '/', type: 'link' }, // Changed type to 'link' and added path
     { label: 'Compétences', path: '/competences', type: 'page' },
     { label: 'Domaines', path: '/domaines', type: 'page' },
     { label: 'Références', path: '/realisations', type: 'page' }, // Changed to /realisations page
