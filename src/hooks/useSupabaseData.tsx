@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
 import { supabase } from '@/integrations/supabase/client';
 import { RealisationsPageSettings } from './useRealisationsPageSettings'; // Import the new interface
 
@@ -220,26 +220,23 @@ export const useHeroSettings = () => {
 };
 
 export const useRealisations = () => {
-  const [realisations, setRealisations] = useState<Realisation[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchRealisations();
-  }, []);
-
-  const fetchRealisations = async () => {
-    const { data, error } = await supabase
-      .from('realisations')
-      .select('*')
-      .order('position', { ascending: true });
-    
-    if (!error && data) {
-      setRealisations(data as Realisation[]);
-    }
-    setLoading(false);
-  };
-
-  return { realisations, loading, fetchRealisations };
+  const queryClient = useQueryClient(); // Initialize useQueryClient
+  return useQuery<Realisation[], Error>({
+    queryKey: ['realisations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('realisations')
+        .select('*')
+        .order('position', { ascending: true });
+      
+      if (error) throw error;
+      return data as Realisation[];
+    },
+    // Add staleTime to control how long data is considered fresh
+    // For frequently updated data, you might want a shorter staleTime or no staleTime (default is 0)
+    // For this case, a short staleTime is fine, or let it refetch on mount
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 };
 
 export const useFounder = () => {
