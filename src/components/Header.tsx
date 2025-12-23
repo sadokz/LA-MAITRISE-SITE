@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronDown } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react'; // Removed ChevronDown import
+import { Link, useLocation, useNavigate } => 'react-router-dom';
 import logoLaMaitrise from '@/assets/logo-lamaitrise.png';
 import { useSectionVisibility, useCompetences, useDomaines, useRealisations } from '@/hooks/useSupabaseData';
 import { Button } from '@/components/ui/button';
@@ -198,7 +198,7 @@ const Header = () => {
                     onClick={() => handleMainNavLinkClick(item)}
                   >
                     {item.label}
-                    {item.items && item.items.length > 0 && <ChevronDown className="h-4 w-4" />}
+                    {/* Removed ChevronDown icon */}
                   </button>
                 </DropdownMenuTrigger>
                 {item.items && item.items.length > 0 && (
