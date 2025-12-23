@@ -3,15 +3,14 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, PlusCircle, MinusCircle } from 'lucide-react'; // Added PlusCircle and MinusCircle
 import EditableText from '@/components/EditableText';
-import { useSiteTexts, useRealisations, useDomaines } from '@/hooks/useSupabaseData';
+import { useSiteTexts, useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
 import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
 import RealisationItem from '@/components/RealisationItem';
-// Removed Select import as it's no longer needed
 
 const RealisationsPage = () => {
   const { getSiteText } = useSiteTexts();
@@ -21,6 +20,7 @@ const RealisationsPage = () => {
   const { realisationsPageSettings } = useRealisationsPageSettings();
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set()); // State to track expanded domains
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -31,20 +31,40 @@ const RealisationsPage = () => {
     [realisations]
   );
 
+  const groupedRealisations = useMemo(() => {
+    const groups: { [category: string]: Realisation[] } = {};
+    visibleRealisations.forEach(r => {
+      if (!groups[r.category]) {
+        groups[r.category] = [];
+      }
+      groups[r.category].push(r);
+    });
+    // Sort projects within each category by parsed_year (newest first) then position
+    for (const category in groups) {
+      groups[category].sort((a, b) => {
+        if (a.parsed_year !== b.parsed_year) {
+          return (b.parsed_year || 0) - (a.parsed_year || 0);
+        }
+        return a.position - b.position;
+      });
+    }
+    return groups;
+  }, [visibleRealisations]);
+
   const filteredRealisations = useMemo(() => {
     if (selectedCategory === 'all') {
-      return visibleRealisations;
+      return []; // When 'all' is selected, we'll render grouped projects
     }
-    return visibleRealisations.filter(r => r.category === selectedCategory);
-  }, [visibleRealisations, selectedCategory]);
+    return groupedRealisations[selectedCategory] || [];
+  }, [visibleRealisations, selectedCategory, groupedRealisations]);
 
   const categoryCounts = useMemo(() => {
     const counts: { [key: string]: number } = { all: visibleRealisations.length };
     domaines.forEach(domaine => {
-      counts[domaine.title] = visibleRealisations.filter(r => r.category === domaine.title).length;
+      counts[domaine.title] = (groupedRealisations[domaine.title] || []).length;
     });
     return counts;
-  }, [visibleRealisations, domaines]);
+  }, [visibleRealisations, domaines, groupedRealisations]);
 
   const getHeroMedia = () => {
     if (!realisationsPageSettings) return { type: 'image', url: heroImage };
@@ -64,6 +84,18 @@ const RealisationsPage = () => {
   const isVideo = heroMedia.type === 'video' && heroMedia.url;
 
   const allLoading = realisationsLoading || domainesLoading;
+
+  const toggleExpand = (category: string) => {
+    setExpandedDomains(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -163,19 +195,77 @@ const RealisationsPage = () => {
                 <div className="flex justify-center items-center py-20">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
-              ) : filteredRealisations.length === 0 ? (
-                <div className="text-center py-20 text-gray-medium">
-                  <p>Aucune réalisation n'est disponible pour le moment ou ne correspond à votre filtre.</p>
-                  <Button onClick={() => setSelectedCategory('all')} className="mt-8">
-                    Voir tous les projets
-                  </Button>
-                </div>
               ) : (
-                <div className="space-y-20">
-                  {filteredRealisations.map((project, index) => (
-                    <RealisationItem key={project.id} project={project} index={index} />
-                  ))}
-                </div>
+                <>
+                  {selectedCategory === 'all' ? (
+                    // Display grouped projects when 'all' is selected
+                    Object.keys(groupedRealisations).length === 0 ? (
+                      <div className="text-center py-20 text-gray-medium">
+                        <p>Aucune réalisation n'est disponible pour le moment.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-20">
+                        {domaines.sort((a, b) => a.position - b.position).map(domaine => {
+                          const projectsInDomain = groupedRealisations[domaine.title] || [];
+                          const isExpanded = expandedDomains.has(domaine.title);
+                          const projectsToShow = isExpanded ? projectsInDomain : projectsInDomain.slice(0, 3);
+
+                          if (projectsInDomain.length === 0) return null;
+
+                          return (
+                            <div key={domaine.id} className="space-y-8">
+                              <h2 className="font-heading font-bold text-3xl text-gray-dark border-b pb-4 mb-8">
+                                {domaine.title}
+                              </h2>
+                              <div className="space-y-20"> {/* Nested space-y-20 for individual project items */}
+                                {projectsToShow.map((project, index) => (
+                                  <RealisationItem key={project.id} project={project} index={index} />
+                                ))}
+                              </div>
+                              {projectsInDomain.length > 3 && (
+                                <div className="text-center mt-8">
+                                  <Button 
+                                    variant="outline" 
+                                    onClick={() => toggleExpand(domaine.title)}
+                                    className="group"
+                                  >
+                                    {isExpanded ? (
+                                      <>
+                                        <MinusCircle className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                                        Afficher moins
+                                      </>
+                                    ) : (
+                                      <>
+                                        <PlusCircle className="mr-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        Afficher plus ({projectsInDomain.length - 3} de plus)
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )
+                  ) : (
+                    // Display filtered projects for a specific category
+                    filteredRealisations.length === 0 ? (
+                      <div className="text-center py-20 text-gray-medium">
+                        <p>Aucune réalisation n'est disponible pour cette catégorie.</p>
+                        <Button onClick={() => setSelectedCategory('all')} className="mt-8">
+                          Voir tous les projets
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-20">
+                        {filteredRealisations.map((project, index) => (
+                          <RealisationItem key={project.id} project={project} index={index} />
+                        ))}
+                      </div>
+                    )
+                  )}
+                </>
               )}
             </div>
           </section>
