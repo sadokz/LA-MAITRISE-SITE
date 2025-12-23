@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -42,6 +42,9 @@ const AdminRealisations = () => {
   const mainImageFileInputRef = useRef<HTMLInputElement>(null);
   const additionalImageFileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // New state for domain filter
+  const [selectedDomainFilter, setSelectedDomainFilter] = useState<string>('all');
 
   const resetForm = () => {
     setForm({ 
@@ -295,6 +298,14 @@ const AdminRealisations = () => {
     return getRelevantFallbackImage(searchString, (r as Realisation).category?.toLowerCase() || 'default');
   };
 
+  // Filtered realisations based on selectedDomainFilter
+  const filteredRealisations = useMemo(() => {
+    if (selectedDomainFilter === 'all') {
+      return realisations;
+    }
+    return realisations.filter(r => r.category === selectedDomainFilter);
+  }, [realisations, selectedDomainFilter]);
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -505,6 +516,24 @@ const AdminRealisations = () => {
         </Dialog>
       </div>
 
+      {/* Filter for projects */}
+      <div className="flex items-center gap-2 mb-4">
+        <Label htmlFor="domain-filter" className="sr-only">Filtrer par domaine</Label>
+        <Select value={selectedDomainFilter} onValueChange={setSelectedDomainFilter}>
+          <SelectTrigger id="domain-filter" className="w-[200px]">
+            <SelectValue placeholder="Filtrer par domaine" />
+          </SelectTrigger>
+          <SelectContent className="bg-background border border-border z-50">
+            <SelectItem value="all">Tous les domaines</SelectItem>
+            {domaines.map((domaine) => (
+              <SelectItem key={domaine.id} value={domaine.title}>
+                {domaine.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -522,7 +551,7 @@ const AdminRealisations = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {realisations
+          {filteredRealisations
             .sort((a, b) => a.position - b.position)
             .map((realisation) => {
               const mainDisplayImage = getDisplayImage(realisation);
