@@ -14,7 +14,10 @@ const Services = () => {
     <section id="competences" className="py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <EditableText textKey="services.title.main" defaultValue={getSiteText('services', 'title', 'main', 'Nos Compétences en ingénierie électrique')} className="text-3xl md:text-4xl font-bold text-primary mb-6" as="h2" />
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-dark mb-6">
+            <EditableText textKey="services.title.part1" defaultValue={getSiteText('services', 'title', 'part1', 'Nos Compétences')} className="inline" as="span" />{' '}
+            <EditableText textKey="services.title.part2" defaultValue={getSiteText('services', 'title', 'part2', 'en ingénierie électrique')} className="text-gradient-blue inline" as="span" />
+          </h2>
           <EditableText textKey="services.description.main" defaultValue={getSiteText('services', 'description', 'main', "Notre équipe intervient sur toutes les phases d'un projet (APD, DCE, EXE, DOE) avec des solutions techniques et innovantes, adaptées aux besoins de nos clients.")} className="text-lg text-muted-foreground max-w-3xl mx-auto" as="p" multiline />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -24,13 +27,13 @@ const Services = () => {
                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-200">
                   {competence.icon}
                 </div>
-                <CardTitle className="text-xl text-gray-dark"> {/* Changed to text-gray-dark */}
+                <CardTitle className="text-xl text-gray-dark">
                   {competence.title}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
-                  {competence.description} {/* This will now be the short description */}
+                  {competence.description}
                 </p>
               </CardContent>
             </Card>
