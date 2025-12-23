@@ -16,7 +16,7 @@ interface NavItem {
   label: string;
   id?: string; // For scrolling to section on homepage
   path?: string; // For navigating to a dedicated page
-  items?: { label: string; id?: string; path?: string }[]; // Dropdown items
+  items?: { label: string; id?: string; path?: string; category?: string }[]; // Dropdown items, added category
   isVisible: boolean;
 }
 
@@ -109,9 +109,13 @@ const Header = () => {
     setOpenDropdown(null); // Close dropdown on click
   };
 
-  const handleDropdownItemClick = (subItem: { label: string; id?: string; path?: string }) => {
+  const handleDropdownItemClick = (subItem: { label: string; id?: string; path?: string; category?: string }) => {
     if (subItem.path) {
-      navigate(subItem.path);
+      if (subItem.category) {
+        navigate(subItem.path, { state: { category: subItem.category } });
+      } else {
+        navigate(subItem.path);
+      }
     } else if (subItem.id) {
       scrollToSection(subItem.id);
     }
@@ -141,7 +145,10 @@ const Header = () => {
       label: 'Références',
       path: '/realisations',
       isVisible: isVisible('projects'),
-      items: realisationsLoading ? [] : realisations.filter(r => r.is_visible).map(r => ({ label: r.title, path: `/realisations` }))
+      items: [
+        { label: 'Tous les projets', path: '/realisations', category: 'all' },
+        ...(domainesLoading ? [] : domaines.map(d => ({ label: d.title, path: `/realisations`, category: d.title })))
+      ]
     },
     {
       label: 'Le Fondateur',

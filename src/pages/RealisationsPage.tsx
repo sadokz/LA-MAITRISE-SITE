@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom'; // Import useLocation
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, PlusCircle, MinusCircle } from 'lucide-react'; // Added PlusCircle and MinusCircle
+import { ArrowLeft, PlusCircle, MinusCircle } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
 import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
@@ -18,13 +18,29 @@ const RealisationsPage = () => {
   const { realisations, loading: realisationsLoading } = useRealisations();
   const { domaines, loading: domainesLoading } = useDomaines();
   const { realisationsPageSettings } = useRealisationsPageSettings();
+  const location = useLocation(); // Initialize useLocation
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set()); // State to track expanded domains
+  // Read initial category from location state
+  const initialCategoryFromState = (location.state as { category?: string })?.category || 'all';
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFromState);
+  const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Update selectedCategory if location state changes (e.g., user navigates from header)
+  useEffect(() => {
+    const categoryFromState = (location.state as { category?: string })?.category;
+    if (categoryFromState && categoryFromState !== selectedCategory) {
+      setSelectedCategory(categoryFromState);
+      setExpandedDomains(new Set()); // Collapse all when a new category is selected
+    } else if (!categoryFromState && selectedCategory !== 'all') {
+      // If no category in state, but one was previously selected, reset to 'all'
+      setSelectedCategory('all');
+      setExpandedDomains(new Set());
+    }
+  }, [location.state, selectedCategory]); // Depend on location.state and selectedCategory
 
   const visibleRealisations = useMemo(() => 
     realisations.filter(r => r.is_visible), 
@@ -56,7 +72,7 @@ const RealisationsPage = () => {
       return []; // When 'all' is selected, we'll render grouped projects
     }
     return groupedRealisations[selectedCategory] || [];
-  }, [visibleRealisations, selectedCategory, groupedRealisations]);
+  }, [selectedCategory, groupedRealisations]); // Removed visibleRealisations from dependency as it's covered by groupedRealisations
 
   const categoryCounts = useMemo(() => {
     const counts: { [key: string]: number } = { all: visibleRealisations.length };
