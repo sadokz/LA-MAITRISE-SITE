@@ -10,6 +10,7 @@ import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Image }
 import { supabase } from '@/integrations/supabase/client';
 import { useCompetences, Competence } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
+import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
 type ImageMode = 'auto' | 'url' | 'upload';
 
@@ -248,7 +249,10 @@ const AdminCompetences = () => {
   const getDisplayImage = (c: Competence) => {
     if (c.image_mode === 'upload' && c.image_file) return c.image_file;
     if (c.image_mode === 'url' && c.image_url) return c.image_url;
-    return null;
+    
+    // For auto mode, use keyword-based fallback
+    const searchString = `${c.title} ${c.description} ${c.long_description || ''}`;
+    return getRelevantFallbackImage(searchString, c.title.toLowerCase());
   };
 
   return (

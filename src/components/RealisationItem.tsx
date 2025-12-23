@@ -5,17 +5,7 @@ import { ArrowLeft as ArrowLeftIcon, ArrowRight, Calendar, MapPin, Hash } from '
 import { cn } from '@/lib/utils';
 import { useInterval } from '@/hooks/useInterval';
 import { Realisation } from '@/hooks/useSupabaseData';
-
-// Fallback images by category for auto mode
-const fallbackImages: Record<string, string> = {
-  'CFO': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-  'CFA': 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop',
-  'Éclairage Public': 'https://images.unsplash.com/photo-1545558014_8692077e9b5c?w=600&h=400&fit=crop',
-  'SSI': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
-  'Ascenseurs': 'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&h=400&fit=crop',
-  'Photovoltaïque': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
-  'default': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-};
+import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
 interface RealisationItemProps {
   project: Realisation;
@@ -67,21 +57,16 @@ const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => 
     }
   }, allProjectImages.length > 1 ? 5000 : null); // 5 seconds delay, or null to disable
 
-  const getDisplayImage = (r: { image_mode: string; image_file: string | null; image_url: string | null; category?: string; title?: string }) => {
+  const getDisplayImage = (r: { image_mode: string; image_file: string | null; image_url: string | null; category?: string; title?: string; description?: string }) => {
     if (r.image_mode === 'upload' && r.image_file) {
       return r.image_file;
     }
     if (r.image_mode === 'url' && r.image_url) {
       return r.image_url;
     }
-    // Auto mode: use fallback based on category or title if available
-    if (r.category) {
-      return fallbackImages[r.category] || fallbackImages['default'];
-    }
-    if (r.title) {
-      return fallbackImages[r.title] || fallbackImages['default'];
-    }
-    return fallbackImages['default'];
+    // Auto mode: use keyword-based fallback
+    const searchString = `${r.title || ''} ${r.description || ''} ${r.category || ''} ${project.emplacement || ''}`;
+    return getRelevantFallbackImage(searchString, r.category?.toLowerCase() || 'default');
   };
 
   return (
@@ -98,12 +83,12 @@ const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => 
                 {allProjectImages.map((img, imgIndex) => (
                   <div className="embla__slide flex-[0_0_100%] min-w-0" key={img.id || imgIndex}>
                     <img 
-                      src={getDisplayImage({ ...img, category: project.category, title: project.title })} 
+                      src={getDisplayImage({ ...img, category: project.category, title: project.title, description: project.description })} 
                       alt={`${project.title} - Image ${imgIndex + 1}`} 
                       className="w-full h-72 object-cover rounded-xl"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = fallbackImages['default'];
+                        target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
                         console.warn(`Image non disponible pour "${project.title}", fallback utilisé.`);
                       }}
                     />
@@ -146,9 +131,14 @@ const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => 
           </div>
         ) : (
           <img 
-            src={fallbackImages['default']} 
+            src={getRelevantFallbackImage(`${project.title} ${project.description} ${project.category} ${project.emplacement}`)} 
             alt={project.title} 
             className="w-full h-72 object-cover rounded-xl shadow-lg"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
+              console.warn(`Image non disponible pour "${project.title}", fallback utilisé.`);
+            }}
           />
         )}
       </div>

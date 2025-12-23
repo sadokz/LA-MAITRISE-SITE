@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
 type ImageMode = 'auto' | 'url' | 'upload';
 
@@ -288,7 +289,10 @@ const AdminRealisations = () => {
   const getDisplayImage = (r: Realisation | RealisationImage) => {
     if (r.image_mode === 'upload' && r.image_file) return r.image_file;
     if (r.image_mode === 'url' && r.image_url) return r.image_url;
-    return null;
+    
+    // For auto mode, use keyword-based fallback
+    const searchString = `${(r as Realisation).title || ''} ${(r as Realisation).description || ''} ${(r as Realisation).category || ''} ${(r as Realisation).emplacement || ''}`;
+    return getRelevantFallbackImage(searchString, (r as Realisation).category?.toLowerCase() || 'default');
   };
 
   return (

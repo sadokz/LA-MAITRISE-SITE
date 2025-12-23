@@ -10,17 +10,7 @@ import { useCompetencesPageSettings } from '@/hooks/useCompetencesPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
-
-// Fallback images for auto mode
-const fallbackImages: Record<string, string> = {
-  'default': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-  'Électricité Générale': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-  'BIM & Maquettes Numériques': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
-  'Éclairage Public & Urbain': 'https://images.unsplash.com/photo-1545558014_8692077e9b5c?w=600&h=400&fit=crop',
-  'HTA/BT & Postes de Transformation': 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop',
-  'Supervision & Accompagnement Technique': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
-  'Audit & Expertise': 'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&h=400&fit=crop',
-};
+import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
 const CompetencesPage = () => {
   const { getSiteText } = useSiteTexts();
@@ -39,7 +29,9 @@ const CompetencesPage = () => {
     if (c.image_mode === 'url' && c.image_url) {
       return c.image_url;
     }
-    return fallbackImages[c.title] || fallbackImages['default'];
+    // Auto mode: use keyword-based fallback
+    const searchString = `${c.title} ${c.description} ${c.long_description || ''}`;
+    return getRelevantFallbackImage(searchString, c.title.toLowerCase());
   };
 
   const getHeroMedia = () => {
@@ -157,7 +149,7 @@ const CompetencesPage = () => {
                               className="w-full h-72 object-cover rounded-xl shadow-lg"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.src = fallbackImages['default'];
+                                target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
                                 console.warn(`Image non disponible pour "${competence.title}", fallback utilisé.`);
                               }}
                             />

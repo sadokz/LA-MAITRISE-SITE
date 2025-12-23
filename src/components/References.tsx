@@ -3,18 +3,8 @@ import { useSiteTexts, useRealisations, useDomaines } from '@/hooks/useSupabaseD
 import EditableText from '@/components/EditableText';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin } from 'lucide-react'; // Import new icons
-
-// Fallback images by category for auto mode
-const fallbackImages: Record<string, string> = {
-  'CFO': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-  'CFA': 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop',
-  'Éclairage Public': 'https://images.unsplash.com/photo-1545558014_8692077e9b5c?w=600&h=400&fit=crop',
-  'SSI': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
-  'Ascenseurs': 'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&h=400&fit=crop',
-  'Photovoltaïque': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
-  'default': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-};
+import { Calendar, MapPin } from 'lucide-react';
+import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
 const References = () => {
   const { getSiteText } = useSiteTexts();
@@ -43,8 +33,9 @@ const References = () => {
     if (r.image_mode === 'url' && r.image_url) {
       return r.image_url;
     }
-    // Auto mode: use fallback based on category
-    return fallbackImages[r.category] || fallbackImages['default'];
+    // Auto mode: use keyword-based fallback
+    const searchString = `${r.title} ${r.description} ${r.category} ${r.emplacement}`;
+    return getRelevantFallbackImage(searchString, r.category.toLowerCase());
   };
 
   // Truncate description to ~80 characters
@@ -95,8 +86,8 @@ const References = () => {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = fallbackImages['default'];
-                      console.warn(`Image admin non disponible pour "${project.title}", fallback utilisé.`);
+                      target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
+                      console.warn(`Image non disponible pour "${project.title}", fallback utilisé.`);
                     }}
                   />
                   

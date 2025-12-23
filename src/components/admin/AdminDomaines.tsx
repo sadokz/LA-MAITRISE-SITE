@@ -9,19 +9,9 @@ import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Image }
 import { supabase } from '@/integrations/supabase/client';
 import { useDomaines, Domaine } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
+import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
 type ImageMode = 'auto' | 'url' | 'upload';
-
-// Fallback images for auto mode
-const fallbackImages: Record<string, string> = {
-  'default': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-  'Bâtiments Résidentiels': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-  'Bâtiments Tertiaires': 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop',
-  'Industrie': 'https://images.unsplash.com/photo-1545558014_8692077e9b5c?w=600&h=400&fit=crop',
-  'Infrastructures': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
-  'Énergie': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
-  'Santé': 'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&h=400&fit=crop',
-};
 
 const AdminDomaines = () => {
   const { domaines, fetchDomaines } = useDomaines();
@@ -282,7 +272,10 @@ const AdminDomaines = () => {
   const getDomaineDisplayImage = (domaine: Domaine) => {
     if (domaine.image_mode === 'upload' && domaine.image_file) return domaine.image_file;
     if (domaine.image_mode === 'url' && domaine.image_url) return domaine.image_url;
-    return fallbackImages[domaine.title] || fallbackImages['default'];
+    
+    // For auto mode, use keyword-based fallback
+    const searchString = `${domaine.title} ${domaine.description} ${domaine.long_description || ''}`;
+    return getRelevantFallbackImage(searchString, domaine.title.toLowerCase());
   };
 
   const imagePreview = getImagePreview();
@@ -485,7 +478,7 @@ const AdminDomaines = () => {
                     {domaine.long_description || <span className="text-muted-foreground italic">Non définie</span>}
                   </TableCell>
                   <TableCell>
-                    {displayImage && displayImage !== fallbackImages['default'] ? (
+                    {displayImage ? (
                       <img src={displayImage} alt={domaine.title} className="w-10 h-10 object-cover rounded" />
                     ) : (
                       <span className="text-xs text-muted-foreground">Auto</span>

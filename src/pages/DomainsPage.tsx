@@ -10,17 +10,7 @@ import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings'; // Impo
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg'; // Default hero image
-
-// Fallback images for auto mode (consistent with AdminDomaines)
-const fallbackImages: Record<string, string> = {
-  'default': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-  'Bâtiments Résidentiels': 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop',
-  'Bâtiments Tertiaires': 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop',
-  'Industrie': 'https://images.unsplash.com/photo-1545558014_8692077e9b5c?w=600&h=400&fit=crop',
-  'Infrastructures': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
-  'Énergie': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
-  'Santé': 'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&h=400&fit=crop',
-};
+import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
 const DomainsPage = () => {
   const { getSiteText } = useSiteTexts();
@@ -41,8 +31,9 @@ const DomainsPage = () => {
     if (domaine.image_mode === 'url' && domaine.image_url) {
       return domaine.image_url;
     }
-    // Auto mode: use fallback based on title
-    return fallbackImages[domaine.title] || fallbackImages['default'];
+    // Auto mode: use keyword-based fallback
+    const searchString = `${domaine.title} ${domaine.description} ${domaine.long_description || ''}`;
+    return getRelevantFallbackImage(searchString, domaine.title.toLowerCase());
   };
 
   // Determine hero media based on settings
@@ -161,7 +152,7 @@ const DomainsPage = () => {
                               className="w-full h-72 object-cover rounded-xl shadow-lg"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.src = fallbackImages['default'];
+                                target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
                                 console.warn(`Image non disponible pour "${domaine.title}", fallback utilisé.`);
                               }}
                             />
