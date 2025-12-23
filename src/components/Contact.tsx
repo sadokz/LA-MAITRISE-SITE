@@ -131,8 +131,9 @@ const Contact = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Form */}
-            <div className="animate-fade-up">
+            {/* Left Column: Contact Form and Business Hours */}
+            <div className="animate-fade-up space-y-8">
+              {/* Contact Form */}
               <div className="card-elegant bg-white">
                 <h3 className="font-heading font-semibold text-2xl text-gray-dark mb-6">
                   {getContactText('form_header', 'Demander un devis')}
@@ -211,9 +212,37 @@ const Contact = () => {
                   </Button>
                 </form>
               </div>
+
+              {/* Business Hours (Moved here) */}
+              <div className="card-elegant bg-white">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-heading font-semibold text-gray-dark mb-3">
+                      {getContactText('hours_title', 'Horaires d\'ouverture')}
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-muted">Lundi - Vendredi</span>
+                        <span className="text-gray-dark font-medium">8h00 - 17h00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-muted">Samedi</span>
+                        <span className="text-gray-dark font-medium">8h00 - 12h00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-muted">Dimanche</span>
+                        <span className="text-gray-dark font-medium">Fermé</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Contact Info */}
+            {/* Right Column: Contact Info Cards and WhatsApp CTA */}
             <div className="space-y-8 animate-scale-in">
               {/* Contact Cards */}
               <div className="space-y-4">
@@ -323,34 +352,6 @@ const Contact = () => {
                       >
                         {address}
                       </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Business Hours */}
-              <div className="card-elegant bg-white">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-heading font-semibold text-gray-dark mb-3">
-                      {getContactText('hours_title', 'Horaires d\'ouverture')}
-                    </h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-muted">Lundi - Vendredi</span>
-                        <span className="text-gray-dark font-medium">8h00 - 17h00</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-muted">Samedi</span>
-                        <span className="text-gray-dark font-medium">8h00 - 12h00</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-muted">Dimanche</span>
-                        <span className="text-gray-dark font-medium">Fermé</span>
-                      </div>
                     </div>
                   </div>
                 </div>
