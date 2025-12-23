@@ -13,20 +13,24 @@ Blue corporat, gris sophistiqué, animations fluides
     --foreground: 210 15% 20%;
     
     /* Dynamic App Colors (set by JS from DB) */
-    --app-primary-hue: 200;
+    --app-primary-hue: 200; /* Default for initial load, will be overwritten by JS */
     --app-primary-saturation: 80%;
     --app-primary-lightness: 60%;
 
-    --app-secondary-hue: 210;
+    --app-secondary-hue: 210; /* Default for initial load, will be overwritten by JS */
     --app-secondary-saturation: 10%;
     --app-secondary-lightness: 96%;
     
-    /* Corporate Blue Theme (derived from dynamic primary) */
-    --blue: var(--app-primary-hue) var(--app-primary-saturation) var(--app-primary-lightness);
-    --blue-light: var(--app-primary-hue) var(--app-primary-saturation) calc(var(--app-primary-lightness) + 10%); /* Lighter blue for gradients */
-    --blue-dark: var(--app-primary-hue) var(--app-primary-saturation) calc(var(--app-primary-lightness) - 10%); /* Darker blue for hover */
-    --blue-foreground: 0 0% 100%; /* White text on blue */
-    
+    /* Semantic colors derived from dynamic app colors */
+    --primary: var(--app-primary-hue) var(--app-primary-saturation) var(--app-primary-lightness);
+    --primary-light: var(--app-primary-hue) var(--app-primary-saturation) calc(var(--app-primary-lightness) + 10%);
+    --primary-dark: var(--app-primary-hue) var(--app-primary-saturation) calc(var(--app-primary-lightness) - 10%);
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+
+    --secondary: var(--app-secondary-hue) var(--app-secondary-saturation) var(--app-secondary-lightness);
+    --secondary-foreground: 210 15% 20%;
+    --secondary-hover: 210 10% 90%;
+
     /* Professional Grays */
     --gray-dark: 210 15% 20%;
     --gray-medium: 210 10% 40%;
@@ -38,38 +42,29 @@ Blue corporat, gris sophistiqué, animations fluides
     --card-foreground: 210 15% 20%;
     --card-hover: 210 10% 98%;
 
-    /* Semantic colors */
-    --primary: var(--blue);
-    --primary-foreground: var(--blue-foreground);
-    --primary-hover: var(--blue-dark);
-
-    --secondary: var(--app-secondary-hue) var(--app-secondary-saturation) var(--app-secondary-lightness);
-    --secondary-foreground: 210 15% 20%;
-    --secondary-hover: 210 10% 90%;
-
     --muted: 210 10% 96%;
     --muted-foreground: 210 8% 60%;
 
-    --accent: var(--app-primary-hue) var(--app-primary-saturation) 95%; /* Adjusted accent to be a very light blue */
-    --accent-foreground: var(--blue); /* Adjusted accent foreground to be the base blue */
+    --accent: var(--app-primary-hue) var(--app-primary-saturation) 95%; /* Adjusted accent to be a very light primary */
+    --accent-foreground: var(--primary); /* Adjusted accent foreground to be the base primary */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 210 15% 90%;
     --input: 210 15% 95%;
-    --ring: var(--blue);
+    --ring: var(--primary);
 
     --radius: 0.75rem;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--blue)), hsl(var(--blue-light)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--blue)) 0%, hsl(var(--blue-dark)) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(var(--background)) 0%, hsl(var(--gray-light)) 100%);
     
     /* Shadows */
     --shadow-elegant: 0 10px 40px -10px hsl(var(--gray-dark) / 0.1);
-    --shadow-hover: 0 20px 50px -10px hsl(var(--blue) / 0.2); /* Updated to blue */
+    --shadow-hover: 0 20px 50px -10px hsl(var(--primary) / 0.2); /* Updated to primary */
     --shadow-card: 0 4px 20px -2px hsl(var(--gray-dark) / 0.08);
     
     /* Animations */
@@ -122,7 +117,7 @@ Blue corporat, gris sophistiqué, animations fluides
 @layer components {
   /* Professional button variants */
   .btn-primary {
-    @apply bg-gradient-to-r from-blue to-blue-light text-blue-foreground font-medium px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-10px_hsl(var(--blue)_/_0.4)] active:scale-95;
+    @apply bg-gradient-to-r from-primary to-primary-light text-primary-foreground font-medium px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-10px_hsl(var(--primary)_/_0.4)] active:scale-95;
   }
   
   .btn-secondary {
@@ -131,7 +126,7 @@ Blue corporat, gris sophistiqué, animations fluides
   
   /* Hero gradient overlay */
   .hero-overlay {
-    @apply absolute inset-0 bg-gradient-to-br from-gray-dark/80 via-gray-dark/60 to-blue/20; /* Updated to blue */
+    @apply absolute inset-0 bg-gradient-to-br from-gray-dark/80 via-gray-dark/60 to-primary/20; /* Updated to primary */
   }
   
   /* Section spacing */
@@ -174,7 +169,7 @@ Blue corporat, gris sophistiqué, animations fluides
   }
   
   /* Gradient text */
-  .text-gradient-blue { /* Renamed from text-gradient-orange */
-    @apply bg-gradient-to-r from-blue to-blue-light bg-clip-text text-transparent;
+  .text-gradient-primary { /* Renamed from text-gradient-blue */
+    @apply bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent;
   }
 }

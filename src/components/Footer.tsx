@@ -60,19 +60,19 @@ const Footer = () => {
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-orange" />
+                <Phone className="w-5 h-5 text-primary" />
                 <a href="tel:+21652949411" className="text-gray-light hover:text-white transition-colors">
                   +216 52 949 411
                 </a>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-orange" />
+                <Mail className="w-5 h-5 text-primary" />
                 <a href="mailto:lamaitrise.engineering@gmail.com" className="text-gray-light hover:text-white transition-colors">
                   lamaitrise.engineering@gmail.com
                 </a>
               </div>
               <div className="flex items-start space-x-3">
-                <MapPin className="w-5 h-5 text-orange flex-shrink-0 mt-0.5" />
+                <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <span className="text-gray-light">
                   45 Avenue Habib Bourguiba<br />
                   8000 Nabeul, Tunisie
@@ -92,14 +92,14 @@ const Footer = () => {
                   {link.type === 'scroll' ? (
                     <button
                       onClick={() => scrollToSection(link.id!)}
-                      className="text-gray-light hover:text-orange transition-colors"
+                      className="text-gray-light hover:text-primary transition-colors"
                     >
                       {link.label}
                     </button>
                   ) : (
                     <Link
                       to={link.path!}
-                      className="text-gray-light hover:text-orange transition-colors"
+                      className="text-gray-light hover:text-primary transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -116,7 +116,7 @@ const Footer = () => {
             </h4>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <Clock className="w-5 h-5 text-orange flex-shrink-0 mt-0.5" />
+                <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div className="text-gray-light text-sm">
                   <div className="mb-2">
                     <strong className="text-white">Lun - Ven:</strong><br />
@@ -144,21 +144,21 @@ const Footer = () => {
               <div className="flex items-center space-x-4">
                 <a
                   href="#"
-                  className="w-10 h-10 bg-gray-medium/20 rounded-full flex items-center justify-center hover:bg-orange transition-colors group"
+                  className="w-10 h-10 bg-gray-medium/20 rounded-full flex items-center justify-center hover:bg-primary transition-colors group"
                   aria-label="Suivez LA MAITRISE ENGINEERING sur LinkedIn"
                 >
                   <Linkedin className="w-5 h-5 text-gray-light group-hover:text-white" />
                 </a>
                 <a
                   href="#"
-                  className="w-10 h-10 bg-gray-medium/20 rounded-full flex items-center justify-center hover:bg-orange transition-colors group"
+                  className="w-10 h-10 bg-gray-medium/20 rounded-full flex items-center justify-center hover:bg-primary transition-colors group"
                   aria-label="Suivez LA MAITRISE ENGINEERING sur Facebook"
                 >
                   <Facebook className="w-5 h-5 text-gray-light group-hover:text-white" />
                 </a>
                 <a
                   href="#"
-                  className="w-10 h-10 bg-gray-medium/20 rounded-full flex items-center justify-center hover:bg-orange transition-colors group"
+                  className="w-10 h-10 bg-gray-medium/20 rounded-full flex items-center justify-center hover:bg-primary transition-colors group"
                   aria-label="Suivez LA MAITRISE ENGINEERING sur YouTube"
                 >
                   <Youtube className="w-5 h-5 text-gray-light group-hover:text-white" />
@@ -168,7 +168,7 @@ const Footer = () => {
 
             <div className="text-center md:text-right">
               <p className="text-gray-light text-sm">
-                Site web : <span className="text-orange font-medium">www.la-maitrise.tn</span>
+                Site web : <span className="text-primary font-medium">www.la-maitrise.tn</span>
               </p>
             </div>
           </div>

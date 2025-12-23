@@ -24,14 +24,6 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         
-        // Corporate Blue Theme (formerly Orange)
-        blue: { // Renamed from orange
-          DEFAULT: "hsl(var(--blue))",
-          light: "hsl(var(--blue-light))",
-          dark: "hsl(var(--blue-dark))",
-          foreground: "hsl(var(--blue-foreground))",
-        },
-        
         // Professional Grays
         gray: {
           dark: "hsl(var(--gray-dark))",
@@ -42,8 +34,10 @@ export default {
         
         primary: {
           DEFAULT: "hsl(var(--primary))",
+          light: "hsl(var(--primary-light))", // Added light shade
+          dark: "hsl(var(--primary-dark))",   // Added dark shade
           foreground: "hsl(var(--primary-foreground))",
-          hover: "hsl(var(--primary-hover))",
+          hover: "hsl(var(--primary-dark))", // Use primary-dark for hover
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

@@ -73,7 +73,7 @@ const References = () => {
           <div className="text-center mb-16 animate-fade-up">
             <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
               <EditableText textKey="references.header.title1" defaultValue={getSiteText('references', 'header', 'title1', 'Nos')} className="inline" as="span" />{' '}
-              <EditableText textKey="references.header.title2" defaultValue={getSiteText('references', 'header', 'title2', 'Réalisations')} className="text-gradient-blue inline" as="span" />
+              <EditableText textKey="references.header.title2" defaultValue={getSiteText('references', 'header', 'title2', 'Réalisations')} className="text-gradient-primary inline" as="span" />
             </h2>
             <EditableText textKey="references.header.description" defaultValue={getSiteText('references', 'header', 'description', "Découvrez nos projets illustrant notre savoir-faire et notre capacité d'innovation dans l'ingénierie électrique et le BIM.")} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>
@@ -165,19 +165,19 @@ const References = () => {
               <EditableText textKey="domains.experience.description" defaultValue={getSiteText('domains', 'experience', 'description', "De la Tunisie à l'Afrique, nous avons développé une expertise reconnue dans tous les secteurs de l'ingénierie électrique et du BIM.")} className="text-lg lg:text-xl mb-8 text-white/90" as="p" multiline />
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
                 <div>
-                  <EditableText textKey="references.stats.projects_count" defaultValue={getSiteText('references', 'stats', 'projects_count', '500+')} className="text-3xl font-bold text-blue-light mb-1" as="div" />
+                  <EditableText textKey="references.stats.projects_count" defaultValue={getSiteText('references', 'stats', 'projects_count', '500+')} className="text-3xl font-bold text-primary-light mb-1" as="div" />
                   <EditableText textKey="references.stats.projects_label" defaultValue={getSiteText('references', 'stats', 'projects_label', 'Projets réalisés')} className="text-sm text-white/80" as="div" />
                 </div>
                 <div>
-                  <EditableText textKey="references.stats.countries_count" defaultValue={getSiteText('references', 'stats', 'countries_count', '5')} className="text-3xl font-bold text-blue-light mb-1" as="div" />
+                  <EditableText textKey="references.stats.countries_count" defaultValue={getSiteText('references', 'stats', 'countries_count', '5')} className="text-3xl font-bold text-primary-light mb-1" as="div" />
                   <EditableText textKey="references.stats.countries_label" defaultValue={getSiteText('references', 'stats', 'countries_label', "Pays d'intervention")} className="text-sm text-white/80" as="div" />
                 </div>
                 <div>
-                  <EditableText textKey="references.stats.clients_satisfaction" defaultValue={getSiteText('references', 'stats', 'clients_satisfaction', '98%')} className="text-3xl font-bold text-blue-light mb-1" as="div" />
+                  <EditableText textKey="references.stats.clients_satisfaction" defaultValue={getSiteText('references', 'stats', 'clients_satisfaction', '98%')} className="text-3xl font-bold text-primary-light mb-1" as="div" />
                   <EditableText textKey="references.stats.clients_label" defaultValue={getSiteText('references', 'stats', 'clients_label', 'Clients satisfaits')} className="text-sm text-white/80" as="div" />
                 </div>
                 <div>
-                  <EditableText textKey="references.stats.experience_years" defaultValue={getSiteText('references', 'stats', 'experience_years', '30')} className="text-3xl font-bold text-blue-light mb-1" as="div" />
+                  <EditableText textKey="references.stats.experience_years" defaultValue={getSiteText('references', 'stats', 'experience_years', '30')} className="text-3xl font-bold text-primary-light mb-1" as="div" />
                   <EditableText textKey="references.stats.experience_label" defaultValue={getSiteText('references', 'stats', 'experience_label', "Années d'expérience")} className="text-sm text-white/80" as="div" />
                 </div>
               </div>

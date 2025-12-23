@@ -45,7 +45,7 @@ const Founder = () => {
             <div className="animate-fade-up">
               <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
                 Rencontrez{' '}
-                <span className="text-gradient-blue">{founder?.name || 'Ahmed Zgolli'}</span>
+                <span className="text-gradient-primary">{founder?.name || 'Ahmed Zgolli'}</span>
                 <br />Le Fondateur
               </h2>
               
