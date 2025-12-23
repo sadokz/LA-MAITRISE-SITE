@@ -30,7 +30,9 @@ const RealisationsPage = () => {
 
   // Effect to update selectedCategory based on location.state
   useEffect(() => {
+    console.log('RealisationsPage useEffect triggered. location.state:', location.state);
     const categoryFromState = (location.state as { category?: string })?.category;
+    console.log('categoryFromState:', categoryFromState);
     if (categoryFromState) {
       setSelectedCategory(categoryFromState);
       setExpandedDomains(new Set()); // Collapse all when a new category is selected
@@ -39,6 +41,11 @@ const RealisationsPage = () => {
       setExpandedDomains(new Set());
     }
   }, [location.state]); // Only re-run when location.state changes
+
+  // Log the current selectedCategory whenever it changes
+  useEffect(() => {
+    console.log('Current selectedCategory state:', selectedCategory);
+  }, [selectedCategory]);
 
   const visibleRealisations = useMemo(() => 
     realisations.filter(r => r.is_visible), 
