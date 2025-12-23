@@ -102,22 +102,14 @@ const Header = () => {
 
   const handleMainNavLinkClick = (item: NavItem) => {
     if (item.path) {
-      navigate(item.path);
+      // For main navigation links, if it's the realisations page, default to 'all' category
+      if (item.path === '/realisations') {
+        navigate(item.path, { state: { category: 'all' } });
+      } else {
+        navigate(item.path);
+      }
     } else if (item.id) {
       scrollToSection(item.id);
-    }
-    setOpenDropdown(null); // Close dropdown on click
-  };
-
-  const handleDropdownItemClick = (subItem: { label: string; id?: string; path?: string; category?: string }) => {
-    if (subItem.path) {
-      if (subItem.category) {
-        navigate(subItem.path, { state: { category: subItem.category } });
-      } else {
-        navigate(subItem.path);
-      }
-    } else if (subItem.id) {
-      scrollToSection(subItem.id);
     }
     setOpenDropdown(null); // Close dropdown on click
   };
@@ -202,10 +194,11 @@ const Header = () => {
                     )}
                     onMouseEnter={() => handleMouseEnter(item.label)}
                     onMouseLeave={handleMouseLeave}
-                    onClick={() => handleMainNavLinkClick(item)}
+                    // For items with sub-menus, the trigger itself doesn't navigate.
+                    // For other items, the main link click is handled by handleMainNavLinkClick.
+                    onClick={() => item.items?.length === 0 && handleMainNavLinkClick(item)}
                   >
                     {item.label}
-                    {/* Removed ChevronDown icon */}
                   </button>
                 </DropdownMenuTrigger>
                 {item.items && item.items.length > 0 && (
@@ -216,15 +209,16 @@ const Header = () => {
                   >
                     {item.items.map((subItem, subIndex) => (
                       <DropdownMenuItem key={subIndex} asChild>
-                        {subItem.path ? (
-                          <Link to={subItem.path} onClick={() => handleDropdownItemClick(subItem)}>
-                            {subItem.label}
-                          </Link>
-                        ) : (
-                          <button onClick={() => handleDropdownItemClick(subItem)} className="w-full text-left">
-                            {subItem.label}
-                          </button>
-                        )}
+                        <Link 
+                          to={subItem.path ? { pathname: subItem.path, state: { category: subItem.category } } : '#'}
+                          onClick={() => {
+                            setIsMenuOpen(false); // Close mobile menu if open (though this is desktop nav)
+                            setOpenDropdown(null); // Close dropdown
+                          }}
+                          className="w-full text-left"
+                        >
+                          {subItem.label}
+                        </Link>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -274,15 +268,22 @@ const Header = () => {
                 <React.Fragment key={item.label}>
                   {item.path ? (
                     <Link 
-                      to={item.path} 
-                      onClick={() => handleMainNavLinkClick(item)}
+                      to={item.path === '/realisations' ? { pathname: item.path, state: { category: 'all' } } : item.path}
+                      onClick={() => {
+                        setIsMenuOpen(false); // Close mobile menu
+                        setOpenDropdown(null); // Close any open dropdown
+                      }}
                       className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium"
                     >
                       {item.label}
                     </Link>
                   ) : (
                     <button 
-                      onClick={() => handleMainNavLinkClick(item)}
+                      onClick={() => {
+                        scrollToSection(item.id!);
+                        setIsMenuOpen(false); // Close mobile menu
+                        setOpenDropdown(null); // Close any open dropdown
+                      }}
                       className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium"
                     >
                       {item.label}
@@ -292,22 +293,16 @@ const Header = () => {
                     <div className="pl-4 space-y-2 border-l border-gray-light ml-2">
                       {item.items.map((subItem, subIndex) => (
                         <div key={subIndex}>
-                          {subItem.path ? (
-                            <Link 
-                              to={subItem.path} 
-                              onClick={() => handleDropdownItemClick(subItem)}
-                              className="block w-full text-left py-1 text-gray-medium hover:text-primary transition-colors text-sm"
-                            >
-                              {subItem.label}
-                            </Link>
-                          ) : (
-                            <button 
-                              onClick={() => handleDropdownItemClick(subItem)}
-                              className="block w-full text-left py-1 text-gray-medium hover:text-primary transition-colors text-sm"
-                            >
-                              {subItem.label}
-                            </button>
-                          )}
+                          <Link 
+                            to={subItem.path ? { pathname: subItem.path, state: { category: subItem.category } } : '#'}
+                            onClick={() => {
+                              setIsMenuOpen(false); // Close mobile menu
+                              setOpenDropdown(null); // Close dropdown
+                            }}
+                            className="block w-full text-left py-1 text-gray-medium hover:text-primary transition-colors text-sm"
+                          >
+                            {subItem.label}
+                          </Link>
                         </div>
                       ))}
                     </div>
