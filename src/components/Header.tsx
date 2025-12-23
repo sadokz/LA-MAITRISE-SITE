@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoLaMaitrise from '@/assets/logo-lamaitrise.png';
@@ -8,7 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
@@ -33,6 +32,10 @@ const Header = () => {
   const { domaines, loading: domainesLoading } = useDomaines();
   const { realisations, loading: realisationsLoading } = useRealisations();
 
+  // State for hover-controlled dropdowns
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Helper to check section visibility
   const isVisible = (section: string) => {
     if (visibilityLoading || !visibility) return true;
@@ -47,6 +50,28 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (dropdownTimeoutRef.current) {
+        clearTimeout(dropdownTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = (label: string) => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+    }
+    setOpenDropdown(label);
+  };
+
+  const handleMouseLeave = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 150); // Small delay to allow moving mouse to dropdown content
+  };
 
   const scrollToSection = (sectionId: string) => {
     if (!isHomePage) {
@@ -72,6 +97,7 @@ const Header = () => {
       }
     }
     setIsMenuOpen(false); // Close mobile menu after clicking
+    setOpenDropdown(null); // Close any open dropdown
   };
 
   const handleMainNavLinkClick = (item: NavItem) => {
@@ -80,6 +106,7 @@ const Header = () => {
     } else if (item.id) {
       scrollToSection(item.id);
     }
+    setOpenDropdown(null); // Close dropdown on click
   };
 
   const handleDropdownItemClick = (subItem: { label: string; id?: string; path?: string }) => {
@@ -88,12 +115,8 @@ const Header = () => {
     } else if (subItem.id) {
       scrollToSection(subItem.id);
     }
+    setOpenDropdown(null); // Close dropdown on click
   };
-
-  // --- DEBUG LOGS ---
-  console.log("Realisations data:", realisations);
-  console.log("Domaines data:", domaines);
-  // --- END DEBUG LOGS ---
 
   const navItems: NavItem[] = [
     {
@@ -163,13 +186,15 @@ const Header = () => {
           {/* Desktop Navigation with Dropdowns */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item) => item.isVisible && (
-              <DropdownMenu key={item.label}>
+              <DropdownMenu key={item.label} open={openDropdown === item.label} onOpenChange={(open) => !open && setOpenDropdown(null)}>
                 <DropdownMenuTrigger asChild>
                   <button
                     className={cn(
                       `${textColor} transition-colors duration-300 font-medium cursor-pointer flex items-center gap-1`,
                       (location.pathname === item.path || (isHomePage && location.hash === `#${item.id}`)) && 'text-primary'
                     )}
+                    onMouseEnter={() => handleMouseEnter(item.label)}
+                    onMouseLeave={handleMouseLeave}
                     onClick={() => handleMainNavLinkClick(item)}
                   >
                     {item.label}
@@ -177,7 +202,11 @@ const Header = () => {
                   </button>
                 </DropdownMenuTrigger>
                 {item.items && item.items.length > 0 && (
-                  <DropdownMenuContent className="w-56 bg-background border border-border shadow-lg z-50">
+                  <DropdownMenuContent
+                    className="w-56 bg-background border border-border shadow-lg z-50"
+                    onMouseEnter={() => handleMouseEnter(item.label)}
+                    onMouseLeave={handleMouseLeave}
+                  >
                     {item.items.map((subItem, subIndex) => (
                       <DropdownMenuItem key={subIndex} asChild>
                         {subItem.path ? (
