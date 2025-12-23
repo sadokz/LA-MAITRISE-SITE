@@ -11,29 +11,40 @@ import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
 import RealisationItem from '@/components/RealisationItem';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// Removed Select import as it's no longer needed
 
 const RealisationsPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { realisations, loading: realisationsLoading } = useRealisations();
-  const { domaines, loading: domainesLoading } = useDomaines(); // Fetch domains for filtering
+  const { domaines, loading: domainesLoading } = useDomaines();
   const { realisationsPageSettings } = useRealisationsPageSettings();
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('all'); // State for filter
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  const visibleRealisations = useMemo(() => 
+    realisations.filter(r => r.is_visible), 
+    [realisations]
+  );
+
   const filteredRealisations = useMemo(() => {
-    const visible = realisations.filter(r => r.is_visible);
     if (selectedCategory === 'all') {
-      return visible;
+      return visibleRealisations;
     }
-    return visible.filter(r => r.category === selectedCategory);
-  }, [realisations, selectedCategory]);
+    return visibleRealisations.filter(r => r.category === selectedCategory);
+  }, [visibleRealisations, selectedCategory]);
+
+  const categoryCounts = useMemo(() => {
+    const counts: { [key: string]: number } = { all: visibleRealisations.length };
+    domaines.forEach(domaine => {
+      counts[domaine.title] = visibleRealisations.filter(r => r.category === domaine.title).length;
+    });
+    return counts;
+  }, [visibleRealisations, domaines]);
 
   const getHeroMedia = () => {
     if (!realisationsPageSettings) return { type: 'image', url: heroImage };
@@ -104,7 +115,7 @@ const RealisationsPage = () => {
             </div>
           </section>
 
-          {/* Back to Home Button and Filter */}
+          {/* Back to Home Button and Filter Buttons */}
           <div className="container mx-auto px-4 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <Button asChild variant="outline" className="group w-full sm:w-auto">
               <Link to="/">
@@ -113,20 +124,32 @@ const RealisationsPage = () => {
               </Link>
             </Button>
 
-            <div className="w-full sm:w-auto">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory} disabled={allLoading}>
-                <SelectTrigger className="w-full sm:w-[200px]">
-                  <SelectValue placeholder="Filtrer par domaine" />
-                </SelectTrigger>
-                <SelectContent className="bg-background border border-border z-50">
-                  <SelectItem value="all">Tous les projets</SelectItem>
-                  {domaines.sort((a, b) => a.title.localeCompare(b.title)).map((domaine) => (
-                    <SelectItem key={domaine.id} value={domaine.title}>
-                      {domaine.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+              <Button
+                variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory('all')}
+                disabled={allLoading}
+                className="flex items-center gap-1"
+              >
+                Tous les projets
+                <span className="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-primary-light text-white">
+                  {categoryCounts.all}
+                </span>
+              </Button>
+              {domaines.sort((a, b) => a.title.localeCompare(b.title)).map((domaine) => (
+                <Button
+                  key={domaine.id}
+                  variant={selectedCategory === domaine.title ? 'default' : 'outline'}
+                  onClick={() => setSelectedCategory(domaine.title)}
+                  disabled={allLoading}
+                  className="flex items-center gap-1"
+                >
+                  {domaine.title}
+                  <span className="ml-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-primary-light text-white">
+                    {categoryCounts[domaine.title] || 0}
+                  </span>
+                </Button>
+              ))}
             </div>
           </div>
 
