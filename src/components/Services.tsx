@@ -16,7 +16,7 @@ const Services = () => {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-dark mb-6">
             <EditableText textKey="services.title.part1" defaultValue={getSiteText('services', 'title', 'part1', 'Nos Compétences')} className="inline" as="span" />{' '}
-            <EditableText textKey="services.title.part2" defaultValue={getSiteText('services', 'title', 'part2', 'en ingénierie électrique')} className="text-gradient-blue inline" as="span" />
+            <EditableText textKey="services.title.part2" defaultValue={getSiteText('services', 'title', 'part2', 'en ingénierie électrique')} className="text-gradient-primary inline" as="span" />
           </h2>
           <EditableText textKey="services.description.main" defaultValue={getSiteText('services', 'description', 'main', "Notre équipe intervient sur toutes les phases d'un projet (APD, DCE, EXE, DOE) avec des solutions techniques et innovantes, adaptées aux besoins de nos clients.")} className="text-lg text-muted-foreground max-w-3xl mx-auto" as="p" multiline />
         </div>
