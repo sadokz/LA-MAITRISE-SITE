@@ -27,7 +27,7 @@ export const useAppColors = () => {
         if (error.code === 'PGRST116') { // No rows found
           const { data: insertData, error: insertError } = await supabase
             .from('app_colors')
-            .insert({ id: 1, primary_color_hex: '#2196F3', secondary_color_hex: '#F0F0F0' })
+            .insert({ id: 1, primary_color_hex: '#FF7F00', secondary_color_hex: '#F0F0F0' }) // Changed default primary to orange
             .select('*')
             .single();
           if (insertError) throw insertError;

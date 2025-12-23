@@ -33,7 +33,7 @@ const sections: SectionConfig[] = [
 const AdminSections = () => {
   const { data: visibility, isLoading, refetch } = useSectionVisibility();
   const { appColors, loading: colorsLoading, updateAppColors, isUpdating } = useAppColors();
-  const [primaryColor, setPrimaryColor] = useState<string>('#2196F3'); // Default light blue
+  const [primaryColor, setPrimaryColor] = useState<string>('#FF7F00'); // Changed default to corporate orange
   const [secondaryColor, setSecondaryColor] = useState<string>('#F0F0F0'); // Default light gray
 
   useEffect(() => {
@@ -69,8 +69,8 @@ const AdminSections = () => {
 
   const handleResetColors = () => {
     updateAppColors({
-      primary_color_hex: '#2196F3', // Default primary color
-      secondary_color_hex: '#F0F0F0', // Default secondary color
+      primary_color_hex: '#FF7F00', // Default primary color (corporate orange)
+      secondary_color_hex: '#F0F0F0', // Default secondary color (light gray)
     });
   };
 
