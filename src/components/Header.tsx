@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X } from 'lucide-react'; // Removed ChevronDown import
-import { Link, useLocation, useNavigate } => 'react-router-dom';
+import { Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoLaMaitrise from '@/assets/logo-lamaitrise.png';
 import { useSectionVisibility, useCompetences, useDomaines, useRealisations } from '@/hooks/useSupabaseData';
 import { Button } from '@/components/ui/button';
