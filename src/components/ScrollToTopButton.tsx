@@ -8,13 +8,13 @@ const ScrollToTopButton: React.FC = () => {
 
   const toggleVisibility = useCallback(() => {
     // Show button if scrolled down more than a certain threshold (e.g., 300px)
-    // And also if the user is near the bottom of the page (e.g., last 500px)
+    // And also if the user is near the bottom of the page (e.g., last 100px)
     const scrolledFromTop = window.scrollY;
     const totalHeight = document.documentElement.scrollHeight;
     const viewportHeight = window.innerHeight;
     const scrolledToBottom = totalHeight - (scrolledFromTop + viewportHeight);
 
-    if (scrolledFromTop > 300 && scrolledToBottom < 500) { // Adjust 500px threshold as needed
+    if (scrolledFromTop > 300 && scrolledToBottom < 100) { // Adjusted threshold to 100px
       setIsVisible(true);
     } else {
       setIsVisible(false);
