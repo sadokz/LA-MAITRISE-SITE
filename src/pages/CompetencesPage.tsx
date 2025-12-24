@@ -11,6 +11,7 @@ import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
 import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
+import CompetenceItem from '@/components/CompetenceItem'; // Import the new component
 
 const CompetencesPage = () => {
   const { getSiteText } = useSiteTexts();
@@ -21,18 +22,6 @@ const CompetencesPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const getDisplayImage = (c: typeof competences[0]) => {
-    if (c.image_mode === 'upload' && c.image_file) {
-      return c.image_file;
-    }
-    if (c.image_mode === 'url' && c.image_url) {
-      return c.image_url;
-    }
-    // Auto mode: use keyword-based fallback
-    const searchString = `${c.title} ${c.description} ${c.long_description || ''}`;
-    return getRelevantFallbackImage(searchString, c.title.toLowerCase());
-  };
 
   const getHeroMedia = () => {
     if (!competencesPageSettings) return { type: 'image', url: heroImage };
@@ -130,54 +119,9 @@ const CompetencesPage = () => {
                 </div>
               ) : (
                 <div className="space-y-20">
-                  {competences.sort((a, b) => a.position - b.position).map((competence, index) => {
-                    const isImageLeft = index % 2 === 0;
-                    const displayImage = getDisplayImage(competence);
-
-                    return (
-                      <div 
-                        key={competence.id} 
-                        className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
-                        style={{ animationDelay: `${index * 0.1}s` }}
-                      >
-                        {/* Image Column */}
-                        {displayImage && (
-                          <div className={`${isImageLeft ? 'order-1' : 'order-2'} md:order-none`}>
-                            <img 
-                              src={displayImage} 
-                              alt={competence.title} 
-                              className="w-full h-72 object-cover rounded-xl shadow-lg"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
-                                console.warn(`Image non disponible pour "${competence.title}", fallback utilisé.`);
-                              }}
-                            />
-                          </div>
-                        )}
-
-                        {/* Text Content Column */}
-                        <div className={`${isImageLeft ? 'order-2' : 'order-1'} md:order-none space-y-4`}>
-                          <div className="flex items-center space-x-4">
-                            <div className="text-3xl text-primary flex-shrink-0">
-                              {competence.icon}
-                            </div>
-                            <h2 className="font-heading font-bold text-3xl text-gray-dark">
-                              {competence.title}
-                            </h2>
-                          </div>
-                          <p className="text-gray-medium leading-relaxed">
-                            {competence.description}
-                          </p>
-                          {competence.long_description && (
-                            <p className="text-gray-medium leading-relaxed border-t pt-4 mt-4">
-                              {competence.long_description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {competences.sort((a, b) => a.position - b.position).map((competence, index) => (
+                    <CompetenceItem key={competence.id} competence={competence} index={index} />
+                  ))}
                 </div>
               )}
             </div>
