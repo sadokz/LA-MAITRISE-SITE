@@ -81,11 +81,11 @@ const TunisiaMap = () => {
             <EditableText textKey="tunisiaMap.header.description" defaultValue={getSiteText('tunisiaMap', 'header', 'description', 'Découvrez les villes où nous avons réalisé des projets, témoignant de notre engagement national.')} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>
 
-          <div className="relative w-full max-w-4xl mx-auto h-[min(600px,75vw)] bg-gray-200 rounded-xl shadow-elegant overflow-hidden min-h-[300px]">
+          <div className="relative w-full max-w-4xl mx-auto aspect-[4/3] bg-gray-200 rounded-xl shadow-elegant overflow-hidden min-h-[300px]">
             <img 
               src={tunisiaMapImage} // Using the local asset
               alt="Carte de la Tunisie" 
-              className="w-full h-full object-contain" // Changed to object-contain to ensure full image is visible
+              className="w-full h-full object-cover" 
             />
             {locationsWithProjects.map(location => {
               const coords = cityCoordinates[location];
