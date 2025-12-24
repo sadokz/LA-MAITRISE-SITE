@@ -6,9 +6,10 @@ import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 interface CompetenceItemProps {
   competence: Competence;
   index: number;
+  ref?: React.Ref<HTMLDivElement>; // Add ref prop
 }
 
-const CompetenceItem: React.FC<CompetenceItemProps> = ({ competence, index }) => {
+const CompetenceItem = React.forwardRef<HTMLDivElement, CompetenceItemProps>(({ competence, index }, ref) => { // Use React.forwardRef
   const isImageLeft = index % 2 === 0; // True for 0, 2, 4... (image on left on desktop)
 
   const getDisplayImage = useMemo(() => {
@@ -24,10 +25,13 @@ const CompetenceItem: React.FC<CompetenceItemProps> = ({ competence, index }) =>
   }, [competence]);
 
   return (
-    <div className={cn(
-      "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
-      index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
-    )}>
+    <div
+      ref={ref} // Apply the ref here
+      className={cn(
+        "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
+        index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
+      )}
+    >
       <div
         className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
         style={{ animationDelay: `${index * 0.1}s` }}
@@ -70,6 +74,8 @@ const CompetenceItem: React.FC<CompetenceItemProps> = ({ competence, index }) =>
       </div>
     </div>
   );
-};
+});
+
+CompetenceItem.displayName = 'CompetenceItem'; // Add display name for forwardRef
 
 export default CompetenceItem;

@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft as ArrowLeftIcon, ArrowRight, Calendar, MapPin, Hash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useInterval } from '@/hooks/useInterval';
-import { Reference } from '@/hooks/useSupabaseData'; // Renamed import
-import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
+import { Reference } from '@/hooks/useSupabaseData';
+import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 
-interface ReferenceItemProps { // Renamed interface
-  project: Reference; // Renamed prop type
+interface ReferenceItemProps {
+  project: Reference;
   index: number;
+  ref?: React.Ref<HTMLDivElement>; // Add ref prop
 }
 
-const ReferenceItem: React.FC<ReferenceItemProps> = ({ project, index }) => { // Renamed component
+const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ project, index }, ref) => { // Use React.forwardRef
   const isImageLeft = index % 2 === 0; // True for 0, 2, 4... (image on left on desktop)
 
   // Combine main image and additional images, then sort by position
@@ -70,10 +71,13 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({ project, index }) => { //
   };
 
   return (
-    <div className={cn(
-      "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
-      index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
-    )}>
+    <div 
+      ref={ref} // Apply the ref here
+      className={cn(
+        "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
+        index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
+      )}
+    >
       <div 
         className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
         style={{ animationDelay: `${index * 0.1}s` }}
@@ -186,6 +190,8 @@ const ReferenceItem: React.FC<ReferenceItemProps> = ({ project, index }) => { //
       </div>
     </div>
   );
-};
+});
+
+ReferenceItem.displayName = 'ReferenceItem'; // Add display name for forwardRef
 
 export default ReferenceItem;

@@ -1,23 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react'; // Import useRef
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react'; // Import ArrowRight for the new button
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useCompetences } from '@/hooks/useSupabaseData';
 import { useCompetencesPageSettings } from '@/hooks/useCompetencesPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
-import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
-import CompetenceItem from '@/components/CompetenceItem'; // Import the new component
+import { getRelevantFallbackImage } from '@/lib/fallbackImages';
+import CompetenceItem from '@/components/CompetenceItem';
+import ScrollToTopButton from '@/components/ScrollToTopButton'; // Import the button
 
 const CompetencesPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { competences, loading: competencesLoading } = useCompetences();
   const { competencesPageSettings } = useCompetencesPageSettings();
+
+  const lastCompetenceRef = useRef<HTMLDivElement>(null); // Create a ref for the last competence
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -101,7 +104,7 @@ const CompetencesPage = () => {
           </div>
 
           {/* Competences Section */}
-          <section className="section-padding bg-white pt-0"> {/* Adjusted padding-top */}
+          <section className="section-padding bg-white pt-0">
             <div className="container mx-auto px-4 lg:px-8">
               {competencesLoading ? (
                 <div className="flex justify-center items-center py-20">
@@ -120,7 +123,12 @@ const CompetencesPage = () => {
               ) : (
                 <div className="space-y-20">
                   {competences.sort((a, b) => a.position - b.position).map((competence, index) => (
-                    <CompetenceItem key={competence.id} competence={competence} index={index} />
+                    <CompetenceItem 
+                      key={competence.id} 
+                      competence={competence} 
+                      index={index} 
+                      ref={index === competences.length - 1 ? lastCompetenceRef : null} // Pass ref only to the last item
+                    />
                   ))}
                 </div>
               )}
@@ -129,6 +137,8 @@ const CompetencesPage = () => {
         </main>
         <Footer />
       </div>
+      {/* Pass the ref to the ScrollToTopButton */}
+      <ScrollToTopButton targetRef={lastCompetenceRef} />
     </div>
   );
 };

@@ -1,28 +1,30 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react'; // Import useRef
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, PlusCircle, MinusCircle } from 'lucide-react';
 import EditableText from '@/components/EditableText';
-import { useSiteTexts, useReferences, useDomaines, Reference } from '@/hooks/useSupabaseData'; // Renamed hook and interface
-import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Renamed hook
+import { useSiteTexts, useReferences, useDomaines, Reference } from '@/hooks/useSupabaseData';
+import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
-import ReferenceItem from '@/components/ReferenceItem'; // Renamed import
+import ReferenceItem from '@/components/ReferenceItem';
+import ScrollToTopButton from '@/components/ScrollToTopButton'; // Import the button
 
-const ReferencesPage = () => { // Renamed component
+const ReferencesPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
-  const { references, loading: referencesLoading } = useReferences(); // Renamed hook
+  const { references, loading: referencesLoading } = useReferences();
   const { domaines, loading: domainesLoading } = useDomaines();
-  const { referencesPageSettings } = useReferencesPageSettings(); // Renamed hook
+  const { referencesPageSettings } = useReferencesPageSettings();
   const location = useLocation();
 
   // Initialize selectedCategory to 'all'
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
+  const lastReferenceRef = useRef<HTMLDivElement>(null); // Create a ref for the last reference
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,7 +32,7 @@ const ReferencesPage = () => { // Renamed component
 
   // Effect to update selectedCategory based on location.state
   useEffect(() => {
-    console.log('ReferencesPage useEffect triggered. location.state:', location.state); // Renamed text
+    console.log('ReferencesPage useEffect triggered. location.state:', location.state);
     const categoryFromState = (location.state as { category?: string })?.category;
     console.log('categoryFromState:', categoryFromState);
     if (categoryFromState) {
@@ -40,21 +42,21 @@ const ReferencesPage = () => { // Renamed component
       setSelectedCategory('all'); // Default to 'all' if no category in state
       setExpandedDomains(new Set());
     }
-  }, [location.state]); // Only re-run when location.state changes
+  }, [location.state]);
 
   // Log the current selectedCategory whenever it changes
   useEffect(() => {
     console.log('Current selectedCategory state:', selectedCategory);
   }, [selectedCategory]);
 
-  const visibleReferences = useMemo(() => // Renamed variable
+  const visibleReferences = useMemo(() =>
     references.filter(r => r.is_visible), 
     [references]
   );
 
-  const groupedReferences = useMemo(() => { // Renamed variable
-    const groups: { [category: string]: Reference[] } = {}; // Renamed interface
-    visibleReferences.forEach(r => { // Renamed variable
+  const groupedReferences = useMemo(() => {
+    const groups: { [category: string]: Reference[] } = {};
+    visibleReferences.forEach(r => {
       if (!groups[r.category]) {
         groups[r.category] = [];
       }
@@ -70,29 +72,29 @@ const ReferencesPage = () => { // Renamed component
       });
     }
     return groups;
-  }, [visibleReferences]); // Renamed variable
+  }, [visibleReferences]);
 
-  const filteredReferences = useMemo(() => { // Renamed variable
+  const filteredReferences = useMemo(() => {
     if (selectedCategory === 'all') {
       // When 'all' is selected, we'll render grouped projects, so this memo returns an empty array
       // The rendering logic below handles displaying all grouped projects.
       return []; 
     }
-    return groupedReferences[selectedCategory] || []; // Renamed variable
-  }, [selectedCategory, groupedReferences]); // Renamed variable
+    return groupedReferences[selectedCategory] || [];
+  }, [selectedCategory, groupedReferences]);
 
   const categoryCounts = useMemo(() => {
-    const counts: { [key: string]: number } = { all: visibleReferences.length }; // Renamed variable
+    const counts: { [key: string]: number } = { all: visibleReferences.length };
     domaines.forEach(domaine => {
-      counts[domaine.title] = (groupedReferences[domaine.title] || []).length; // Renamed variable
+      counts[domaine.title] = (groupedReferences[domaine.title] || []).length;
     });
     return counts;
-  }, [visibleReferences, domaines, groupedReferences]); // Renamed variable
+  }, [visibleReferences, domaines, groupedReferences]);
 
   const getHeroMedia = () => {
-    if (!referencesPageSettings) return { type: 'image', url: heroImage }; // Renamed hook
+    if (!referencesPageSettings) return { type: 'image', url: heroImage };
     
-    const { media_type, source_type, media_url, media_file } = referencesPageSettings; // Renamed hook
+    const { media_type, source_type, media_url, media_file } = referencesPageSettings;
 
     if (source_type === 'upload' && media_file) {
       return { type: media_type, url: media_file };
@@ -106,7 +108,7 @@ const ReferencesPage = () => { // Renamed component
   const heroMedia = getHeroMedia();
   const isVideo = heroMedia.type === 'video' && heroMedia.url;
 
-  const allLoading = referencesLoading || domainesLoading; // Renamed hook
+  const allLoading = referencesLoading || domainesLoading;
 
   const toggleExpand = (category: string) => {
     setExpandedDomains(prev => {
@@ -141,7 +143,7 @@ const ReferencesPage = () => { // Renamed component
               ) : (
                 <img 
                   src={heroMedia.url} 
-                  alt="Références en ingénierie électrique" // Renamed alt text
+                  alt="Références en ingénierie électrique"
                   className="w-full h-full object-cover"
                   width="1920"
                   height="1080"
@@ -152,16 +154,16 @@ const ReferencesPage = () => { // Renamed component
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 <EditableText 
-                  textKey="references.page.title" // Renamed text key
-                  defaultValue={getSiteText('references', 'page', 'title', 'Nos Références')} // Renamed text key and default value
+                  textKey="references.page.title"
+                  defaultValue={getSiteText('references', 'page', 'title', 'Nos Références')}
                   className="inline" 
                   as="span" 
                 />
               </h1>
               <p className="text-xl text-white/90 max-w-3xl mx-auto">
                 <EditableText 
-                  textKey="references.page.description" // Renamed text key
-                  defaultValue={getSiteText('references', 'page', 'description', 'Découvrez nos projets et références dans le domaine de l\'ingénierie électrique')} // Renamed text key and default value
+                  textKey="references.page.description"
+                  defaultValue={getSiteText('references', 'page', 'description', 'Découvrez nos projets et références dans le domaine de l\'ingénierie électrique')}
                   className="inline" 
                   as="span" 
                   multiline 
@@ -222,14 +224,14 @@ const ReferencesPage = () => { // Renamed component
                 <>
                   {selectedCategory === 'all' ? (
                     // Display grouped projects when 'all' is selected
-                    Object.keys(groupedReferences).length === 0 ? ( // Renamed variable
+                    Object.keys(groupedReferences).length === 0 ? (
                       <div className="text-center py-20 text-gray-medium">
-                        <p>Aucune référence n'est disponible pour le moment.</p> {/* Renamed text */}
+                        <p>Aucune référence n'est disponible pour le moment.</p>
                       </div>
                     ) : (
                       <div className="space-y-20">
                         {domaines.sort((a, b) => a.position - b.position).map(domaine => {
-                          const projectsInDomain = groupedReferences[domaine.title] || []; // Renamed variable
+                          const projectsInDomain = groupedReferences[domaine.title] || [];
                           const isExpanded = expandedDomains.has(domaine.title);
                           const projectsToShow = isExpanded ? projectsInDomain : projectsInDomain.slice(0, 3);
 
@@ -240,9 +242,14 @@ const ReferencesPage = () => { // Renamed component
                               <h2 className="font-heading font-bold text-3xl text-gray-dark border-b pb-4 mb-8">
                                 {domaine.title}
                               </h2>
-                              <div className="space-y-20"> {/* Nested space-y-20 for individual project items */}
+                              <div className="space-y-20">
                                 {projectsToShow.map((project, index) => (
-                                  <ReferenceItem key={project.id} project={project} index={index} /> // Renamed component and prop
+                                  <ReferenceItem 
+                                    key={project.id} 
+                                    project={project} 
+                                    index={index} 
+                                    ref={index === projectsToShow.length - 1 && domaine.title === domaines[domaines.length - 1].title ? lastReferenceRef : null} // Pass ref only to the very last item
+                                  />
                                 ))}
                               </div>
                               {projectsInDomain.length > 3 && (
@@ -273,17 +280,22 @@ const ReferencesPage = () => { // Renamed component
                     )
                   ) : (
                     // Display filtered projects for a specific category
-                    filteredReferences.length === 0 ? ( // Renamed variable
+                    filteredReferences.length === 0 ? (
                       <div className="text-center py-20 text-gray-medium">
-                        <p>Aucune référence n'est disponible pour cette catégorie.</p> {/* Renamed text */}
+                        <p>Aucune référence n'est disponible pour cette catégorie.</p>
                         <Button onClick={() => setSelectedCategory('all')} className="mt-8">
                           Voir tous les projets
                         </Button>
                       </div>
                     ) : (
                       <div className="space-y-20">
-                        {filteredReferences.map((project, index) => ( // Renamed variable
-                          <ReferenceItem key={project.id} project={project} index={index} /> // Renamed component and prop
+                        {filteredReferences.map((project, index) => (
+                          <ReferenceItem 
+                            key={project.id} 
+                            project={project} 
+                            index={index} 
+                            ref={index === filteredReferences.length - 1 ? lastReferenceRef : null} // Pass ref only to the last item
+                          />
                         ))}
                       </div>
                     )
@@ -295,6 +307,8 @@ const ReferencesPage = () => { // Renamed component
         </main>
         <Footer />
       </div>
+      {/* Pass the ref to the ScrollToTopButton */}
+      <ScrollToTopButton targetRef={lastReferenceRef} />
     </div>
   );
 };
