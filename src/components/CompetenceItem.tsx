@@ -6,11 +6,11 @@ import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 interface CompetenceItemProps {
   competence: Competence;
   index: number;
-  ref?: React.Ref<HTMLDivElement>; // Add ref prop
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const CompetenceItem = React.forwardRef<HTMLDivElement, CompetenceItemProps>(({ competence, index }, ref) => { // Use React.forwardRef
-  const isImageLeft = index % 2 === 0; // True for 0, 2, 4... (image on left on desktop)
+const CompetenceItem = React.forwardRef<HTMLDivElement, CompetenceItemProps>(({ competence, index }, ref) => {
+  const isImageLeft = index % 2 === 0;
 
   const getDisplayImage = useMemo(() => {
     if (competence.image_mode === 'upload' && competence.image_file) {
@@ -19,24 +19,22 @@ const CompetenceItem = React.forwardRef<HTMLDivElement, CompetenceItemProps>(({ 
     if (competence.image_mode === 'url' && competence.image_url) {
       return competence.image_url;
     }
-    // Auto mode: use keyword-based fallback
     const searchString = `${competence.title} ${competence.description} ${competence.long_description || ''}`;
     return getRelevantFallbackImage(searchString, competence.title.toLowerCase());
   }, [competence]);
 
   return (
     <div
-      ref={ref} // Apply the ref here
+      ref={ref}
       className={cn(
-        "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
-        index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
+        "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]",
+        index % 2 === 0 ? "bg-white" : "bg-muted/50"
       )}
     >
       <div
         className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
         style={{ animationDelay: `${index * 0.1}s` }}
       >
-        {/* Image Column */}
         {getDisplayImage && (
           <div className={isImageLeft ? 'md:order-1' : 'md:order-2'}>
             <img
@@ -45,14 +43,13 @@ const CompetenceItem = React.forwardRef<HTMLDivElement, CompetenceItemProps>(({ 
               className="w-full h-72 object-cover rounded-xl shadow-lg"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
+                target.src = getRelevantFallbackImage('default');
                 console.warn(`Image non disponible pour "${competence.title}", fallback utilisé.`);
               }}
             />
           </div>
         )}
 
-        {/* Text Content Column */}
         <div className={isImageLeft ? 'md:order-2' : 'md:order-1'} >
           <div className="flex items-center space-x-4 mb-4">
             <div className="text-3xl text-primary flex-shrink-0">
@@ -76,6 +73,6 @@ const CompetenceItem = React.forwardRef<HTMLDivElement, CompetenceItemProps>(({ 
   );
 });
 
-CompetenceItem.displayName = 'CompetenceItem'; // Add display name for forwardRef
+CompetenceItem.displayName = 'CompetenceItem';
 
 export default CompetenceItem;

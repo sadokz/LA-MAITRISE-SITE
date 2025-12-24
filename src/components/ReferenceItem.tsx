@@ -10,13 +10,12 @@ import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 interface ReferenceItemProps {
   project: Reference;
   index: number;
-  ref?: React.Ref<HTMLDivElement>; // Add ref prop
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ project, index }, ref) => { // Use React.forwardRef
-  const isImageLeft = index % 2 === 0; // True for 0, 2, 4... (image on left on desktop)
+const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ project, index }, ref) => {
+  const isImageLeft = index % 2 === 0;
 
-  // Combine main image and additional images, then sort by position
   const allProjectImages = useMemo(() => {
     const images = [
       ...(project.image_file || project.image_url ? [{ 
@@ -24,14 +23,13 @@ const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ pr
         image_file: project.image_file, 
         image_url: project.image_url, 
         image_mode: project.image_mode, 
-        position: -1 // Ensure main image is first
+        position: -1
       }] : []),
       ...(project.images || []),
     ].sort((a, b) => a.position - b.position);
     return images;
   }, [project.image_file, project.image_url, project.image_mode, project.images]);
 
-  // Embla Carousel setup for each project
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -41,7 +39,7 @@ const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ pr
         setSelectedIndex(emblaApi.selectedScrollSnap());
       };
       emblaApi.on('select', onSelect);
-      onSelect(); // Set initial index
+      onSelect();
       return () => {
         emblaApi.off('select', onSelect);
       };
@@ -51,12 +49,11 @@ const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ pr
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
 
-  // Auto-swipe logic
   useInterval(() => {
     if (emblaApi && allProjectImages.length > 1) {
       emblaApi.scrollNext();
     }
-  }, allProjectImages.length > 1 ? 5000 : null); // 5 seconds delay, or null to disable
+  }, allProjectImages.length > 1 ? 5000 : null);
 
   const getDisplayImage = (r: { image_mode: string; image_file: string | null; image_url: string | null; category?: string; title?: string; description?: string }) => {
     if (r.image_mode === 'upload' && r.image_file) {
@@ -65,24 +62,22 @@ const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ pr
     if (r.image_mode === 'url' && r.image_url) {
       return r.image_url;
     }
-    // Auto mode: use keyword-based fallback
     const searchString = `${r.title || ''} ${r.description || ''} ${r.category || ''} ${project.emplacement || ''}`;
     return getRelevantFallbackImage(searchString, r.category?.toLowerCase() || 'default');
   };
 
   return (
     <div 
-      ref={ref} // Apply the ref here
+      ref={ref}
       className={cn(
-        "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
-        index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
+        "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]",
+        index % 2 === 0 ? "bg-white" : "bg-muted/50"
       )}
     >
       <div 
         className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
         style={{ animationDelay: `${index * 0.1}s` }}
       >
-        {/* Image Gallery Column - Always first in source order for mobile stacking */}
         <div className={isImageLeft ? 'md:order-1' : 'md:order-2'}> 
           {allProjectImages.length > 0 ? (
             <div className="relative">
@@ -96,7 +91,7 @@ const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ pr
                         className="w-full h-72 object-cover rounded-xl"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
+                          target.src = getRelevantFallbackImage('default');
                           console.warn(`Image non disponible pour "${project.title}", fallback utilisé.`);
                         }}
                       />
@@ -144,14 +139,13 @@ const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ pr
               className="w-full h-72 object-cover rounded-xl shadow-lg"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
+                target.src = getRelevantFallbackImage('default');
                 console.warn(`Image non disponible pour "${project.title}", fallback utilisé.`);
               }}
             />
           )}
         </div>
 
-        {/* Description Column - Always second in source order for mobile stacking */}
         <div className={isImageLeft ? 'md:order-2' : 'md:order-1'} > 
           <h2 className="font-heading font-bold text-3xl text-gray-dark">
             {project.title}
@@ -192,6 +186,6 @@ const ReferenceItem = React.forwardRef<HTMLDivElement, ReferenceItemProps>(({ pr
   );
 });
 
-ReferenceItem.displayName = 'ReferenceItem'; // Add display name for forwardRef
+ReferenceItem.displayName = 'ReferenceItem';
 
 export default ReferenceItem;
