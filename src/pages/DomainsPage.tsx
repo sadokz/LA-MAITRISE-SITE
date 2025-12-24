@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react'; // Import useRef
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -18,6 +18,8 @@ const DomainsPage = () => {
   const { isAdmin } = useEditMode();
   const { domaines, loading: domainesLoading } = useDomaines();
   const { domainsPageSettings } = useDomainsPageSettings();
+
+  const lastDomainRef = useRef<HTMLDivElement>(null); // Create a ref for the last domain
 
   // Scroll to top on component mount
   useEffect(() => {
@@ -122,7 +124,12 @@ const DomainsPage = () => {
               ) : (
                 <div className="space-y-20">
                   {domaines.sort((a, b) => a.position - b.position).map((domaine, index) => (
-                    <DomainItem key={domaine.id} domaine={domaine} index={index} />
+                    <DomainItem 
+                      key={domaine.id} 
+                      domaine={domaine} 
+                      index={index} 
+                      ref={index === domaines.length - 1 ? lastDomainRef : null} // Pass ref only to the last item
+                    />
                   ))}
                 </div>
               )}
@@ -131,8 +138,8 @@ const DomainsPage = () => {
         </main>
         <Footer />
       </div>
-      {/* ScrollToTopButton moved here, outside main but inside the admin padding div */}
-      <ScrollToTopButton />
+      {/* Pass the ref to the ScrollToTopButton */}
+      <ScrollToTopButton targetRef={lastDomainRef} />
     </div>
   );
 };

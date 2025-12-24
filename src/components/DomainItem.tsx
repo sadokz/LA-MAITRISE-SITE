@@ -6,9 +6,11 @@ import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 interface DomainItemProps {
   domaine: Domaine;
   index: number;
+  // Add ref prop
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const DomainItem: React.FC<DomainItemProps> = ({ domaine, index }) => {
+const DomainItem = React.forwardRef<HTMLDivElement, DomainItemProps>(({ domaine, index, ...props }, ref) => {
   const isImageLeft = index % 2 === 0; // True for 0, 2, 4... (image on left on desktop)
 
   const getDisplayImage = useMemo(() => {
@@ -24,10 +26,13 @@ const DomainItem: React.FC<DomainItemProps> = ({ domaine, index }) => {
   }, [domaine]);
 
   return (
-    <div className={cn(
-      "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
-      index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
-    )}>
+    <div
+      ref={ref} // Apply the ref here
+      className={cn(
+        "group p-8 rounded-2xl shadow-elegant border-2 border-transparent transition-all duration-300 hover:shadow-hover hover:border-primary/20 hover:scale-[1.01]", // Frame styling with hover effects
+        index % 2 === 0 ? "bg-white" : "bg-muted/50" // Alternating background
+      )}
+    >
       <div
         className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
         style={{ animationDelay: `${index * 0.1}s` }}
@@ -70,6 +75,8 @@ const DomainItem: React.FC<DomainItemProps> = ({ domaine, index }) => {
       </div>
     </div>
   );
-};
+});
+
+DomainItem.displayName = 'DomainItem'; // Add display name for forwardRef
 
 export default DomainItem;
