@@ -10,8 +10,8 @@ import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
-import DomainItem from '@/components/DomainItem'; // Import the new component
-import ScrollToTopButton from '@/components/ScrollToTopButton'; // Import the new component
+import DomainItem from '@/components/DomainItem';
+import ScrollToTopButton from '@/components/ScrollToTopButton'; // Import the button
 
 const DomainsPage = () => {
   const { getSiteText } = useSiteTexts();
@@ -128,9 +128,10 @@ const DomainsPage = () => {
               )}
             </div>
           </section>
+          {/* ScrollToTopButton moved here, inside main, after the domains list section */}
+          <ScrollToTopButton />
         </main>
         <Footer />
-        <ScrollToTopButton /> {/* Add the scroll to top button here */}
       </div>
     </div>
   );

@@ -1,26 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const ScrollToTopButton: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  const toggleVisibility = useCallback(() => {
-    // Show button if scrolled down more than a certain threshold (e.g., 300px)
-    // And also if the user is near the bottom of the page (e.g., last 100px)
-    const scrolledFromTop = window.scrollY;
-    const totalHeight = document.documentElement.scrollHeight;
-    const viewportHeight = window.innerHeight;
-    const scrolledToBottom = totalHeight - (scrolledFromTop + viewportHeight);
-
-    if (scrolledFromTop > 300 && scrolledToBottom < 100) { // Adjusted threshold to 100px
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
-  }, []);
-
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -28,24 +11,21 @@ const ScrollToTopButton: React.FC = () => {
     });
   };
 
-  useEffect(() => {
-    window.addEventListener('scroll', toggleVisibility);
-    return () => {
-      window.removeEventListener('scroll', toggleVisibility);
-    };
-  }, [toggleVisibility]);
-
   return (
-    <Button
-      onClick={scrollToTop}
-      className={cn(
-        "fixed bottom-24 left-1/2 -translate-x-1/2 z-40 p-0 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg transition-all duration-300 flex items-center justify-center",
-        isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'
-      )}
-      aria-label="Retour en haut de la page"
-    >
-      <ArrowUp className="h-6 w-6" />
-    </Button>
+    <div className="container mx-auto px-4 lg:px-8"> {/* Add a container for consistent padding */}
+      <Button
+        onClick={scrollToTop}
+        className={cn(
+          "mx-auto block mt-12 mb-12", // Centered block with vertical margins
+          "bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg shadow-lg", // Standard button styling
+          "flex items-center justify-center" // Ensure icon and text are centered
+        )}
+        aria-label="Retour en haut de la page"
+      >
+        <ArrowUp className="h-5 w-5 mr-2" />
+        Retour en haut
+      </Button>
+    </div>
   );
 };
 
