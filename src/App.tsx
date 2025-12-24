@@ -53,6 +53,8 @@ const AppContent = () => {
     );
   }
 
+  const primaryColorHex = appColors?.primary_color_hex || '#FF7F00'; // Get the color here
+
   return (
     <AuthProvider>
       <EditModeProvider>
@@ -61,7 +63,7 @@ const AppContent = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Index primaryColorHex={primaryColorHex} />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<Admin />} />

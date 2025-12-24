@@ -15,7 +15,11 @@ import Chatbot from '@/components/Chatbot';
 import TunisiaMap from '@/components/TunisiaMap';
 import FloatingPointsBackground from '@/components/FloatingPoints'; // New import
 
-const Index = () => {
+interface IndexProps {
+  primaryColorHex: string;
+}
+
+const Index: React.FC<IndexProps> = ({ primaryColorHex }) => {
   const { isAdmin } = useEditMode();
   const { data: visibility, isLoading } = useSectionVisibility();
 
@@ -43,7 +47,7 @@ const Index = () => {
           {/* It should start from the top of this div (which is right after Hero) and cover its height */}
           {!isAdmin && (
             <div className="absolute inset-0 z-0 pointer-events-none">
-              <FloatingPointsBackground />
+              <FloatingPointsBackground primaryColorHex={primaryColorHex} />
             </div>
           )}
 

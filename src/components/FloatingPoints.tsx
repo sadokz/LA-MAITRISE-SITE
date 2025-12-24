@@ -1,10 +1,7 @@
 import React, { useRef, useMemo, useCallback, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
-import { useAppColors } from '@/hooks/useAppColors'; // Keep import for type inference if needed, but won't be called here
 import * as THREE from 'three'; // Import THREE for Vector3
-import { QueryClientProvider } from '@tanstack/react-query'; // Keep import for type inference if needed, but won't be called here
-import { queryClient } from '@/App'; // Keep import for type inference if needed, but won't be called here
 
 interface FloatingPointsProps {
   primaryColorHex: string;
@@ -110,14 +107,10 @@ const FloatingPoints: React.FC<FloatingPointsProps> = ({ primaryColorHex }) => {
 };
 
 // Wrapper component for the 3D canvas
-const FloatingPointsBackground = () => {
-  const { appColors } = useAppColors(); // Call useAppColors here
-  const primaryColorHex = appColors?.primary_color_hex || '#FF7F00'; // Default to corporate orange
-
+const FloatingPointsBackground = ({ primaryColorHex }: { primaryColorHex: string }) => {
   return (
     <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
       {/* Background color is handled by the parent div's CSS */}
-      {/* QueryClientProvider is no longer needed here as useAppColors is called above */}
       <FloatingPoints primaryColorHex={primaryColorHex} />
     </Canvas>
   );
