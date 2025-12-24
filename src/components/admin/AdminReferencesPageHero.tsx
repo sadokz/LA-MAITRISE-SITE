@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Link, Image, Video, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast'; // Updated import
 import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Renamed import
 
 const AdminReferencesPageHero = () => { // Renamed component

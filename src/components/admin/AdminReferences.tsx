@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin, Hash, Image as ImageIcon, LayoutGrid, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useReferences, useDomaines, Reference, ReferenceImage } from '@/hooks/useSupabaseData';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast'; // Updated import
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';

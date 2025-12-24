@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Pencil } from 'lucide-react';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast'; // Updated import
 import { cn } from '@/lib/utils';
 
 interface EditableTextProps {

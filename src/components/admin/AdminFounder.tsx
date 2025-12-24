@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Save, Upload, User, ImageIcon, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useFounder, Founder } from '@/hooks/useSupabaseData';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast'; // Updated import
 
 const AdminFounder = () => {
   const { founder, fetchFounder, loading } = useFounder();

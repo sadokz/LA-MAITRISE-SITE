@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Save, Edit, X, Phone, Mail, MapPin, MessageSquare, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useContactTexts, ContactText } from '@/hooks/useSupabaseData';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast'; // Updated import
 import AdminCoordinates from './AdminCoordinates';
 
 const AdminContact = () => {

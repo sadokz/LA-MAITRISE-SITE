@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useDomaines, Domaine } from '@/hooks/useSupabaseData';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast'; // Updated import
 import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
 type ImageMode = 'auto' | 'url' | 'upload';

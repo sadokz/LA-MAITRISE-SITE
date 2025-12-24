@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2, Phone, Mail, Printer, Save, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/components/ui/use-toast'; // Updated import
 
 interface Coordinate {
   id: string;
@@ -27,6 +27,7 @@ const AdminCoordinates = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ value: '', label: '' });
   const [newItem, setNewItem] = useState<{ type: 'phone' | 'fax' | 'email'; value: string; label: string } | null>(null);
+  const { toast } = useToast(); // Use shadcn/ui toast
 
   useEffect(() => {
     fetchCoordinates();
@@ -52,7 +53,7 @@ const AdminCoordinates = () => {
 
   const handleSaveNew = async () => {
     if (!newItem || !newItem.value.trim()) {
-      toast.error('La valeur est requise');
+      toast({ title: 'Erreur', description: 'La valeur est requise', variant: 'destructive' });
       return;
     }
 
@@ -70,11 +71,11 @@ const AdminCoordinates = () => {
       });
 
     if (error) {
-      toast.error('Erreur lors de l\'ajout');
+      toast({ title: 'Erreur', description: 'Erreur lors de l\'ajout', variant: 'destructive' });
       return;
     }
 
-    toast.success('Coordonnée ajoutée');
+    toast({ title: 'Succès', description: 'Coordonnée ajoutée' });
     setNewItem(null);
     fetchCoordinates();
   };
@@ -87,7 +88,7 @@ const AdminCoordinates = () => {
 
   const handleSaveEdit = async () => {
     if (!editingId || !editForm.value.trim()) {
-      toast.error('La valeur est requise');
+      toast({ title: 'Erreur', description: 'La valeur est requise', variant: 'destructive' });
       return;
     }
 
@@ -100,11 +101,11 @@ const AdminCoordinates = () => {
       .eq('id', editingId);
 
     if (error) {
-      toast.error('Erreur lors de la mise à jour');
+      toast({ title: 'Erreur', description: 'Erreur lors de la mise à jour', variant: 'destructive' });
       return;
     }
 
-    toast.success('Coordonnée mise à jour');
+    toast({ title: 'Succès', description: 'Coordonnée mise à jour' });
     setEditingId(null);
     fetchCoordinates();
   };
@@ -116,11 +117,11 @@ const AdminCoordinates = () => {
       .eq('id', id);
 
     if (error) {
-      toast.error('Erreur lors de la suppression');
+      toast({ title: 'Erreur', description: 'Erreur lors de la suppression', variant: 'destructive' });
       return;
     }
 
-    toast.success('Coordonnée supprimée');
+    toast({ title: 'Succès', description: 'Coordonnée supprimée' });
     fetchCoordinates();
   };
 

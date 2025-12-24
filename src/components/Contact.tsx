@@ -11,7 +11,7 @@ import {
   MessageSquare,
   Printer
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast'; // Updated import
 import { useContactTexts } from '@/hooks/useSupabaseData';
 import { supabase } from '@/integrations/supabase/client';
 
