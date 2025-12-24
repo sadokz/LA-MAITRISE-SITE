@@ -56,33 +56,33 @@ const AppContent = () => {
   const primaryColorHex = appColors?.primary_color_hex || '#FF7F00'; // Get the color here
 
   return (
-    <AuthProvider>
-      <EditModeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index primaryColorHex={primaryColorHex} />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/domaines" element={<DomainsPage />} />
-              <Route path="/competences" element={<CompetencesPage />} />
-              <Route path="/references" element={<ReferencesPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </EditModeProvider>
-    </AuthProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index primaryColorHex={primaryColorHex} />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/domaines" element={<DomainsPage />} />
+          <Route path="/competences" element={<CompetencesPage />} />
+          <Route path="/references" element={<ReferencesPage />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
   );
 };
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AppContent />
+    <AuthProvider>
+      <EditModeProvider>
+        <AppContent />
+      </EditModeProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
