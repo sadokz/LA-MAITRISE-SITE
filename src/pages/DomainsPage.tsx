@@ -128,11 +128,11 @@ const DomainsPage = () => {
               )}
             </div>
           </section>
-          {/* ScrollToTopButton moved here, inside main, after the domains list section */}
-          <ScrollToTopButton />
         </main>
         <Footer />
       </div>
+      {/* ScrollToTopButton moved here, outside main but inside the admin padding div */}
+      <ScrollToTopButton />
     </div>
   );
 };
