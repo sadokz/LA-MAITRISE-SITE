@@ -22,7 +22,7 @@ const ReferencesPage = () => { // Renamed component
 
   // Initialize selectedCategory to 'all'
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
+  const [expandedDomains, setExpandedDomains] = new Set<string>());
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -194,7 +194,7 @@ const ReferencesPage = () => { // Renamed component
                   {categoryCounts.all}
                 </span>
               </Button>
-              {domaines.sort((a, b) => a.position - b.position).map((domaine) => (
+              {domaines.sort((a, b) => a.position - b.position).map(domaine => (
                 <Button
                   key={domaine.id}
                   variant={selectedCategory === domaine.title ? 'default' : 'outline'}

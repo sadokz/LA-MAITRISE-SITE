@@ -85,7 +85,7 @@ const AdminReferencesPageHero = () => { // Renamed component
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } = { publicUrl: '' } } = supabase.storage // Added default value for publicUrl
         .from('references-page-media') // Renamed bucket
         .getPublicUrl(fileName);
 
