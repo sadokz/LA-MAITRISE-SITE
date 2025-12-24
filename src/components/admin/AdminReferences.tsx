@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,8 +20,9 @@ type ImageMode = 'auto' | 'url' | 'upload';
 type LayoutMode = 'list' | 'grid';
 
 const AdminReferences = () => {
-  const { references, fetchReferences, loading: referencesLoading, error: referencesError } = useReferences(); // Added error
-  const { domaines, loading: domainesLoading, error: domainesError } = useDomaines(); // Added error
+  // ALL HOOKS MUST BE DECLARED AT THE TOP LEVEL, UNCONDITIONALLY
+  const { references, fetchReferences, loading: referencesLoading, error: referencesError } = useReferences();
+  const { domaines, loading: domainesLoading, error: domainesError } = useDomaines();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingReference, setEditingReference] = useState<Reference | null>(null);
   const [form, setForm] = useState({
@@ -48,7 +49,22 @@ const AdminReferences = () => {
   const [selectedDomainFilter, setSelectedDomainFilter] = useState<string>('all');
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('list');
 
-  // Display loading state
+  const getDisplayImage = useCallback((r: Reference | ReferenceImage) => {
+    if (r.image_mode === 'upload' && r.image_file) return r.image_file;
+    if (r.image_mode === 'url' && r.image_url) return r.image_url;
+
+    const searchString = `${(r as Reference).title || ''} ${(r as Reference).description || ''} ${(r as Reference).category || ''} ${(r as Reference).emplacement || ''}`;
+    return getRelevantFallbackImage(searchString, (r as Reference).category?.toLowerCase() || 'default');
+  }, []);
+
+  const filteredReferences = useMemo(() => {
+    if (selectedDomainFilter === 'all') {
+      return references;
+    }
+    return references.filter(r => r.category === selectedDomainFilter);
+  }, [references, selectedDomainFilter]);
+
+  // NOW, conditional returns are safe
   if (referencesLoading || domainesLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -57,7 +73,6 @@ const AdminReferences = () => {
     );
   }
 
-  // Display error state
   if (referencesError || domainesError) {
     return (
       <div className="p-8 text-center text-destructive">
@@ -312,21 +327,6 @@ const AdminReferences = () => {
     if (error) { toast({ title: 'Erreur', description: 'Impossible de réorganiser les références', variant: 'destructive' }); return; }
     fetchReferences();
   };
-
-  const getDisplayImage = (r: Reference | ReferenceImage) => {
-    if (r.image_mode === 'upload' && r.image_file) return r.image_file;
-    if (r.image_mode === 'url' && r.image_url) return r.image_url;
-
-    const searchString = `${(r as Reference).title || ''} ${(r as Reference).description || ''} ${(r as Reference).category || ''} ${(r as Reference).emplacement || ''}`;
-    return getRelevantFallbackImage(searchString, (r as Reference).category?.toLowerCase() || 'default');
-  };
-
-  const filteredReferences = useMemo(() => {
-    if (selectedDomainFilter === 'all') {
-      return references;
-    }
-    return references.filter(r => r.category === selectedDomainFilter);
-  }, [references, selectedDomainFilter]);
 
   return (
     <div className="space-y-4">
