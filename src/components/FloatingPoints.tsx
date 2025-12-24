@@ -3,6 +3,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import { useAppColors } from '@/hooks/useAppColors';
 import * as THREE from 'three'; // Import THREE for Vector3
+import { QueryClientProvider } from '@tanstack/react-query'; // Import QueryClientProvider
+import { queryClient } from '@/App'; // Import the exported queryClient
 
 // FloatingPoints component handles the 3D logic
 const FloatingPoints = () => {
@@ -110,7 +112,9 @@ const FloatingPointsBackground = () => {
   return (
     <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
       {/* Background color is handled by the parent div's CSS */}
-      <FloatingPoints />
+      <QueryClientProvider client={queryClient}> {/* Wrap with QueryClientProvider */}
+        <FloatingPoints />
+      </QueryClientProvider>
     </Canvas>
   );
 };

@@ -12,12 +12,12 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { EditModeProvider } from "@/contexts/EditModeContext";
 import DomainsPage from "./pages/DomainsPage";
 import CompetencesPage from "./pages/CompetencesPage";
-import ReferencesPage from "./pages/ReferencesPage"; // Renamed import
+import ReferencesPage from "./pages/ReferencesPage";
 import { useAppColors } from "@/hooks/useAppColors";
 import { hexToHsl } from "@/lib/colorUtils";
 import { useEffect } from "react";
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient(); // Export queryClient
 
 const AppContent = () => {
   const { appColors, loading: colorsLoading } = useAppColors();
@@ -67,7 +67,7 @@ const AppContent = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/domaines" element={<DomainsPage />} />
               <Route path="/competences" element={<CompetencesPage />} />
-              <Route path="/references" element={<ReferencesPage />} /> {/* Renamed route path */}
+              <Route path="/references" element={<ReferencesPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
