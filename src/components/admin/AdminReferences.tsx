@@ -8,37 +8,37 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin, Hash, Image as ImageIcon, LayoutGrid, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useReferences, useDomaines, Reference, ReferenceImage } from '@/hooks/useSupabaseData'; // Renamed imports
+import { useReferences, useDomaines, Reference, ReferenceImage } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
+import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 import { cn } from '@/lib/utils';
 
 type ImageMode = 'auto' | 'url' | 'upload';
 type LayoutMode = 'list' | 'grid';
 
-const AdminReferences = () => { // Renamed component
-  const { references, fetchReferences } = useReferences(); // Renamed hook
-  const { domaines } = useDomaines();
+const AdminReferences = () => {
+  const { references, fetchReferences, loading: referencesLoading } = useReferences();
+  const { domaines, loading: domainesLoading } = useDomaines();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingReference, setEditingReference] = useState<Reference | null>(null); // Renamed state
+  const [editingReference, setEditingReference] = useState<Reference | null>(null);
   const [form, setForm] = useState({
     title: '',
     description: '',
     long_description: '',
     category: '',
-    image_url: '', // Main image URL
-    image_mode: 'auto' as ImageMode, // Main image mode
-    image_file: '', // Main image file
+    image_url: '',
+    image_mode: 'auto' as ImageMode,
+    image_file: '',
     is_visible: true,
     is_featured: false,
     date_text: '',
     emplacement: '',
     reference: '',
   });
-  const [additionalImages, setAdditionalImages] = useState<ReferenceImage[]>([]); // Renamed state
+  const [additionalImages, setAdditionalImages] = useState<ReferenceImage[]>([]);
   const [uploadingMainImage, setUploadingMainImage] = useState(false);
   const [uploadingAdditionalImage, setUploadingAdditionalImage] = useState(false);
   const mainImageFileInputRef = useRef<HTMLInputElement>(null);
@@ -46,25 +46,34 @@ const AdminReferences = () => { // Renamed component
   const { toast } = useToast();
 
   const [selectedDomainFilter, setSelectedDomainFilter] = useState<string>('all');
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('list'); // New state for layout mode
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('list');
+
+  // Add loading check here
+  if (referencesLoading || domainesLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   const resetForm = () => {
-    setForm({ 
-      title: '', 
-      description: '', 
+    setForm({
+      title: '',
+      description: '',
       long_description: '',
-      category: '', 
-      image_url: '', 
-      image_mode: 'auto', 
-      image_file: '', 
-      is_visible: true, 
+      category: '',
+      image_url: '',
+      image_mode: 'auto',
+      image_file: '',
+      is_visible: true,
       is_featured: false,
       date_text: '',
       emplacement: '',
       reference: '',
     });
     setAdditionalImages([]);
-    setEditingReference(null); // Renamed state
+    setEditingReference(null);
   };
 
   const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,14 +93,14 @@ const AdminReferences = () => { // Renamed component
     setUploadingMainImage(true);
     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
 
-    const { error: uploadError } = await supabase.storage.from('reference-images').upload(fileName, file); // Renamed bucket
+    const { error: uploadError } = await supabase.storage.from('reference-images').upload(fileName, file);
     if (uploadError) {
       toast({ title: 'Erreur', description: 'Impossible de téléverser l\'image principale.', variant: 'destructive' });
       setUploadingMainImage(false);
       return;
     }
 
-    const { data: publicData } = supabase.storage.from('reference-images').getPublicUrl(fileName); // Renamed bucket
+    const { data: publicData } = supabase.storage.from('reference-images').getPublicUrl(fileName);
     setForm({ ...form, image_file: publicData.publicUrl, image_mode: 'upload' });
     setUploadingMainImage(false);
     toast({ title: 'Succès', description: 'Image principale téléversée avec succès.', });
@@ -114,18 +123,18 @@ const AdminReferences = () => { // Renamed component
     setUploadingAdditionalImage(true);
     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
 
-    const { error: uploadError } = await supabase.storage.from('reference-additional-images').upload(fileName, file); // Renamed bucket
+    const { error: uploadError } = await supabase.storage.from('reference-additional-images').upload(fileName, file);
     if (uploadError) {
       toast({ title: 'Erreur', description: 'Impossible de téléverser l\'image supplémentaire.', variant: 'destructive' });
       setUploadingAdditionalImage(false);
       return;
     }
 
-    const { data: publicData } = supabase.storage.from('reference-additional-images').getPublicUrl(fileName); // Renamed bucket
-    
-    const newImage: ReferenceImage = { // Renamed interface
-      id: `new-${Date.now()}`, // Temporary ID for new images
-      reference_id: editingReference?.id || '', // Renamed column
+    const { data: publicData } = supabase.storage.from('reference-additional-images').getPublicUrl(fileName);
+
+    const newImage: ReferenceImage = {
+      id: `new-${Date.now()}`,
+      reference_id: editingReference?.id || '',
       image_url: null,
       image_file: publicData.publicUrl,
       image_mode: 'upload',
@@ -139,9 +148,9 @@ const AdminReferences = () => { // Renamed component
 
   const handleAddAdditionalImageFromUrl = (url: string) => {
     if (!url.trim()) return;
-    const newImage: ReferenceImage = { // Renamed interface
+    const newImage: ReferenceImage = {
       id: `new-${Date.now()}`,
-      reference_id: editingReference?.id || '', // Renamed column
+      reference_id: editingReference?.id || '',
       image_url: url.trim(),
       image_file: null,
       image_mode: 'url',
@@ -171,7 +180,7 @@ const AdminReferences = () => { // Renamed component
 
       newImages[currentIndex] = { ...targetImage, position: currentImage.position };
       newImages[targetIndex] = { ...currentImage, position: targetImage.position };
-      
+
       return newImages.sort((a, b) => a.position - b.position);
     });
   };
@@ -194,33 +203,33 @@ const AdminReferences = () => { // Renamed component
       reference: form.reference || null,
     };
 
-    let referenceId = editingReference?.id; // Renamed variable
-    if (editingReference) { // Renamed state
-      const { error } = await supabase.from('references').update(payload).eq('id', referenceId); // Renamed table
-      if (error) { toast({ title: 'Erreur', description: 'Impossible de mettre à jour la référence', variant: 'destructive' }); return; } // Renamed text
+    let referenceId = editingReference?.id;
+    if (editingReference) {
+      const { error } = await supabase.from('references').update(payload).eq('id', referenceId);
+      if (error) { toast({ title: 'Erreur', description: 'Impossible de mettre à jour la référence', variant: 'destructive' }); return; }
     } else {
-      const maxPosition = Math.max(...references.map(r => r.position), 0); // Renamed hook
-      const { data, error } = await supabase.from('references').insert({ ...payload, position: maxPosition + 1 }).select('id').single(); // Renamed table
-      if (error) { toast({ title: 'Erreur', description: 'Impossible de créer la référence', variant: 'destructive' }); return; } // Renamed text
-      referenceId = data.id; // Renamed variable
+      const maxPosition = Math.max(...references.map(r => r.position), 0);
+      const { data, error } = await supabase.from('references').insert({ ...payload, position: maxPosition + 1 }).select('id').single();
+      if (error) { toast({ title: 'Erreur', description: 'Impossible de créer la référence', variant: 'destructive' }); return; }
+      referenceId = data.id;
     }
 
     // Handle additional images
-    if (referenceId) { // Renamed variable
+    if (referenceId) {
       // Delete existing additional images not in the current list
       const existingImageIds = additionalImages.filter(img => !img.id.startsWith('new-')).map(img => img.id);
       const { error: deleteError } = await supabase
-        .from('reference_images') // Renamed table
+        .from('reference_images')
         .delete()
-        .eq('reference_id', referenceId) // Renamed column
-        .not('id', 'in', `(${existingImageIds.map(id => `'${id}'`).join(',') || 'NULL'})`); // Handle empty array
+        .eq('reference_id', referenceId)
+        .not('id', 'in', `(${existingImageIds.map(id => `'${id}'`).join(',') || 'NULL'})`);
 
       if (deleteError) { console.error('Error deleting old images:', deleteError); }
 
       // Insert/Update additional images
       for (const img of additionalImages) {
         const imgPayload = {
-          reference_id: referenceId, // Renamed column
+          reference_id: referenceId,
           image_url: img.image_mode === 'url' ? img.image_url : null,
           image_file: img.image_mode === 'upload' ? img.image_file : null,
           image_mode: img.image_mode,
@@ -229,22 +238,22 @@ const AdminReferences = () => { // Renamed component
 
         if (img.id.startsWith('new-')) {
           // Insert new image
-          await supabase.from('reference_images').insert(imgPayload); // Renamed table
+          await supabase.from('reference_images').insert(imgPayload);
         } else {
           // Update existing image
-          await supabase.from('reference_images').update(imgPayload).eq('id', img.id); // Renamed table
+          await supabase.from('reference_images').update(imgPayload).eq('id', img.id);
         }
       }
     }
 
-    toast({ title: 'Succès', description: editingReference ? 'Référence mise à jour' : 'Référence créée', }); // Renamed text
+    toast({ title: 'Succès', description: editingReference ? 'Référence mise à jour' : 'Référence créée', });
     setIsDialogOpen(false);
     resetForm();
-    fetchReferences(); // Renamed hook
+    fetchReferences();
   };
 
-  const handleEdit = (reference: Reference) => { // Renamed parameter
-    setEditingReference(reference); // Renamed state
+  const handleEdit = (reference: Reference) => {
+    setEditingReference(reference);
     setForm({
       title: reference.title,
       description: reference.description,
@@ -264,65 +273,63 @@ const AdminReferences = () => { // Renamed component
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette référence ?')) { return; } // Renamed text
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette référence ?')) { return; }
 
-    const { error } = await supabase.from('references').delete().eq('id', id); // Renamed table
-    if (error) { toast({ title: 'Erreur', description: 'Impossible de supprimer la référence', variant: 'destructive' }); return; } // Renamed text
+    const { error } = await supabase.from('references').delete().eq('id', id);
+    if (error) { toast({ title: 'Erreur', description: 'Impossible de supprimer la référence', variant: 'destructive' }); return; }
 
-    toast({ title: 'Succès', description: 'Référence supprimée', }); // Renamed text
-    fetchReferences(); // Renamed hook
+    toast({ title: 'Succès', description: 'Référence supprimée', });
+    fetchReferences();
   };
 
-  const handleMovePosition = async (reference: Reference, direction: 'up' | 'down') => { // Renamed parameter
-    const sortedReferences = [...references].sort((a, b) => a.position - b.position); // Renamed hook
+  const handleMovePosition = async (reference: Reference, direction: 'up' | 'down') => {
+    const sortedReferences = [...references].sort((a, b) => a.position - b.position);
     const currentIndex = sortedReferences.findIndex(r => r.id === reference.id);
-    
+
     if ((direction === 'up' && currentIndex === 0) || (direction === 'down' && currentIndex === sortedReferences.length - 1)) { return; }
 
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    const targetReference = sortedReferences[targetIndex]; // Renamed variable
+    const targetReference = sortedReferences[targetIndex];
 
-    const { error } = await supabase.from('references').update({ position: targetReference.position }).eq('id', reference.id); // Renamed table
+    const { error } = await supabase.from('references').update({ position: targetReference.position }).eq('id', reference.id);
     if (!error) {
-      await supabase.from('references').update({ position: reference.position }).eq('id', targetReference.id); // Renamed table
+      await supabase.from('references').update({ position: reference.position }).eq('id', targetReference.id);
     }
 
-    if (error) { toast({ title: 'Erreur', description: 'Impossible de réorganiser les références', variant: 'destructive' }); return; } // Renamed text
-    fetchReferences(); // Renamed hook
+    if (error) { toast({ title: 'Erreur', description: 'Impossible de réorganiser les références', variant: 'destructive' }); return; }
+    fetchReferences();
   };
 
-  const getDisplayImage = (r: Reference | ReferenceImage) => { // Renamed interface
+  const getDisplayImage = (r: Reference | ReferenceImage) => {
     if (r.image_mode === 'upload' && r.image_file) return r.image_file;
     if (r.image_mode === 'url' && r.image_url) return r.image_url;
-    
-    // For auto mode, use keyword-based fallback
-    const searchString = `${(r as Reference).title || ''} ${(r as Reference).description || ''} ${(r as Reference).category || ''} ${(r as Reference).emplacement || ''}`; // Renamed interface
-    return getRelevantFallbackImage(searchString, (r as Reference).category?.toLowerCase() || 'default'); // Renamed interface
+
+    const searchString = `${(r as Reference).title || ''} ${(r as Reference).description || ''} ${(r as Reference).category || ''} ${(r as Reference).emplacement || ''}`;
+    return getRelevantFallbackImage(searchString, (r as Reference).category?.toLowerCase() || 'default');
   };
 
-  // Filtered references based on selectedDomainFilter
-  const filteredReferences = useMemo(() => { // Renamed variable
+  const filteredReferences = useMemo(() => {
     if (selectedDomainFilter === 'all') {
-      return references; // Renamed hook
+      return references;
     }
-    return references.filter(r => r.category === selectedDomainFilter); // Renamed hook
-  }, [references, selectedDomainFilter]); // Renamed hook
+    return references.filter(r => r.category === selectedDomainFilter);
+  }, [references, selectedDomainFilter]);
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Liste des références</h3> {/* Renamed text */}
+        <h3 className="text-lg font-semibold">Liste des références</h3>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => resetForm()}>
               <Plus className="h-4 w-4 mr-2" />
               Ajouter une référence
-            </Button> {/* Renamed text */}
+            </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingReference ? 'Modifier la référence' : 'Ajouter une référence'} {/* Renamed text */}
+                {editingReference ? 'Modifier la référence' : 'Ajouter une référence'}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -358,12 +365,12 @@ const AdminReferences = () => { // Renamed component
                 <Input id="reference" value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} placeholder="Ex: Réf-001, Projet-X" />
               </div>
               <div>
-                <Label htmlFor="description">Description courte (pour la page d'accueil et la page Références)</Label> {/* Renamed text */}
+                <Label htmlFor="description">Description courte (pour la page d'accueil et la page Références)</Label>
                 <Textarea id="description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
               </div>
               <div>
-                <Label htmlFor="long_description">Description longue (uniquement pour la page Références)</Label> {/* Renamed text */}
-                <Textarea id="long_description" value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} placeholder="Description détaillée de la référence..." /> {/* Renamed text */}
+                <Label htmlFor="long_description">Description longue (uniquement pour la page Références)</Label>
+                <Textarea id="long_description" value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} placeholder="Description détaillée de la référence..." />
               </div>
 
               {/* Main Image Section */}
@@ -408,7 +415,7 @@ const AdminReferences = () => { // Renamed component
 
                   {form.image_mode === 'auto' && (
                     <p className="text-sm text-muted-foreground bg-muted p-3 rounded">
-                      En mode automatique, une image sera générée selon la catégorie de la référence. {/* Renamed text */}
+                      En mode automatique, une image sera générée selon la catégorie de la référence.
                     </p>
                   )}
                 </CardContent>
@@ -418,10 +425,10 @@ const AdminReferences = () => { // Renamed component
               <Card className="p-4">
                 <CardHeader className="p-0 mb-4">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <ImageIcon className="h-5 w-5" /> Images supplémentaires (Galerie de la page Références) {/* Renamed text */}
+                    <ImageIcon className="h-5 w-5" /> Images supplémentaires (Galerie de la page Références)
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    Ces images s'afficheront dans une galerie sur la page de détails de la référence. {/* Renamed text */}
+                    Ces images s'afficheront dans une galerie sur la page de détails de la référence.
                   </p>
                 </CardHeader>
                 <CardContent className="p-0 space-y-4">
@@ -511,7 +518,7 @@ const AdminReferences = () => { // Renamed component
               </div>
 
               <Button type="submit" className="w-full" disabled={uploadingMainImage || uploadingAdditionalImage}>
-                {editingReference ? 'Mettre à jour' : 'Créer'} {/* Renamed text */}
+                {editingReference ? 'Mettre à jour' : 'Créer'}
               </Button>
             </form>
           </DialogContent>
@@ -577,9 +584,9 @@ const AdminReferences = () => { // Renamed component
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredReferences // Renamed variable
+            {filteredReferences
               .sort((a, b) => a.position - b.position)
-              .map((reference) => { // Renamed parameter
+              .map((reference) => {
                 const mainDisplayImage = getDisplayImage(reference);
                 const allImages = [
                   ...(mainDisplayImage ? [{ id: 'main', image_file: mainDisplayImage, image_mode: 'upload', position: -1 }] : []),
@@ -590,10 +597,18 @@ const AdminReferences = () => { // Renamed component
                   <TableRow key={reference.id}>
                     <TableCell>
                       <div className="flex space-x-1">
-                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(reference, 'up')}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleMovePosition(reference, 'up')}
+                        >
                           <ArrowUp className="h-3 w-3" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(reference, 'down')}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleMovePosition(reference, 'down')}
+                        >
                           <ArrowDown className="h-3 w-3" />
                         </Button>
                       </div>
@@ -652,9 +667,9 @@ const AdminReferences = () => { // Renamed component
         </Table>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredReferences // Renamed variable
+          {filteredReferences
             .sort((a, b) => a.position - b.position)
-            .map((reference) => { // Renamed parameter
+            .map((reference) => {
               const mainDisplayImage = getDisplayImage(reference);
               return (
                 <Card key={reference.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200">
