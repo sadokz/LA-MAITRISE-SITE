@@ -13,7 +13,7 @@ import { useEditMode } from '@/contexts/EditModeContext';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
 import Chatbot from '@/components/Chatbot';
 import TunisiaMap from '@/components/TunisiaMap';
-import FloatingPointsBackground from '@/components/FloatingPoints'; // New import
+// import FloatingPointsBackground from '@/components/FloatingPoints'; // Temporarily commented out
 
 interface IndexProps {
   primaryColorHex: string;
@@ -45,11 +45,11 @@ const Index: React.FC<IndexProps> = ({ primaryColorHex }) => {
         <div className="relative z-10 bg-background"> 
           {/* Floating Points Background - positioned absolutely behind other content */}
           {/* It should start from the top of this div (which is right after Hero) and cover its height */}
-          {!isAdmin && (
+          {/* {!isAdmin && (
             <div className="absolute inset-0 z-0 pointer-events-none">
               <FloatingPointsBackground primaryColorHex={primaryColorHex} />
             </div>
-          )}
+          )} */}
 
           {/* All other sections */}
           <div className="relative z-10"> 
