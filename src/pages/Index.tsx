@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react'; // Import useRef
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import About from '@/components/About';
@@ -6,13 +6,14 @@ import Services from '@/components/Services';
 import Domains from '@/components/Domains';
 import References from '@/components/References';
 import Founder from '@/components/Founder';
-import Contact from '@/components/Contact';
+import Contact from '@/components/Contact'; // Import Contact
 import Footer from '@/components/Footer';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
 import Chatbot from '@/components/Chatbot';
 import TunisiaMap from '@/components/TunisiaMap';
+import ScrollToTopButton from '@/components/ScrollToTopButton'; // Import ScrollToTopButton
 // import FloatingPointsBackground from '@/components/FloatingPoints'; // Temporarily commented out
 
 interface IndexProps {
@@ -22,6 +23,8 @@ interface IndexProps {
 const Index: React.FC<IndexProps> = ({ primaryColorHex }) => {
   const { isAdmin } = useEditMode();
   const { data: visibility, isLoading } = useSectionVisibility();
+
+  const contactRef = useRef<HTMLElement>(null); // Create a ref for the Contact section
 
   const isVisible = (section: string) => {
     if (isLoading || !visibility) return true;
@@ -59,13 +62,15 @@ const Index: React.FC<IndexProps> = ({ primaryColorHex }) => {
             {isVisible('projects') && <References />}
             <TunisiaMap />
             {isVisible('founder') && <Founder />}
-            {isVisible('contact') && <Contact />}
+            {isVisible('contact') && <Contact ref={contactRef} />} {/* Pass the ref to Contact */}
             <Footer />
           </div>
         </div>
         
         {isVisible('chatbot_visible') && <Chatbot />}
       </div>
+      {/* Pass the ref to the ScrollToTopButton */}
+      <ScrollToTopButton targetRef={contactRef} />
     </main>
   );
 };

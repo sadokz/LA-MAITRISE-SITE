@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,7 +23,7 @@ interface Coordinate {
   position: number;
 }
 
-const Contact = () => {
+const Contact = forwardRef<HTMLElement>((props, ref) => { // Use forwardRef here
   const { toast } = useToast();
   const { getContactText, loading } = useContactTexts();
   const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
@@ -113,7 +113,7 @@ const Contact = () => {
   }
 
   return (
-    <section id="contact" className="section-padding bg-gray-light/30">
+    <section id="contact" className="section-padding bg-gray-light/30" ref={ref}> {/* Apply ref here */}
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -408,6 +408,8 @@ const Contact = () => {
       </div>
     </section>
   );
-};
+});
+
+Contact.displayName = 'Contact'; // Add display name for forwardRef
 
 export default Contact;
