@@ -96,7 +96,7 @@ export interface Reference { // Renamed interface
 
 export const useSiteTexts = () => {
   const [siteTexts, setSiteTexts] = useState<SiteText[]>([]);
-  const [loading, setLoading] = true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSiteTexts();
