@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ReferencesPageSettings } from './useReferencesPageSettings'; // Renamed import
+import { ReferencesPageSettings } from './useReferencesPageSettings';
 
 // Section Visibility types
 export interface SectionVisibility {
@@ -10,10 +10,10 @@ export interface SectionVisibility {
   about: boolean;
   skills: boolean;
   domains: boolean;
-  projects: boolean; // Renamed key
+  projects: boolean;
   founder: boolean;
   contact: boolean;
-  chatbot_visible: boolean; // New: Chatbot visibility
+  chatbot_visible: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -66,16 +66,16 @@ export interface Domaine {
   icon: string; // Now directly stores the text/emoji
 }
 
-export interface ReferenceImage { // Renamed interface
+export interface ReferenceImage {
   id: string;
-  reference_id: string; // Renamed column
+  reference_id: string;
   image_url?: string;
   image_file?: string;
   image_mode: 'auto' | 'url' | 'upload';
   position: number;
 }
 
-export interface Reference { // Renamed interface
+export interface Reference {
   id: string;
   title: string;
   description: string;
@@ -90,7 +90,7 @@ export interface Reference { // Renamed interface
   date_text?: string; // New: Date text for the reference
   emplacement?: string; // New: Emplacement for the reference
   reference?: string; // New: Reference for the reference
-  images?: ReferenceImage[]; // New: Array of additional images (Renamed interface)
+  images?: ReferenceImage[]; // New: Array of additional images
   parsed_year?: number; // New: For client-side sorting
 }
 
@@ -230,47 +230,61 @@ export const useHeroSettings = () => {
   return { heroSettings, loading, fetchHeroSettings };
 };
 
-export const useReferences = () => { // Renamed hook
-  const [references, setReferences] = useState<Reference[]>([]); // Renamed state and interface
+export const useReferences = () => {
+  const [references, setReferences] = useState<Reference[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null); // Add error state
 
   useEffect(() => {
-    fetchReferences(); // Renamed function
+    fetchReferences();
   }, []);
 
-  const fetchReferences = async () => { // Renamed function
-    const { data, error } = await supabase
-      .from('references') // Renamed table
-      .select('*, reference_images(*)') // Fetch related images (Renamed table and column)
-      .order('position', { ascending: true }); // Keep initial order for consistency before client-side sort
-    
-    if (!error && data) {
-      const processedReferences = data.map(r => { // Renamed variable
-        // Extract year from date_text for sorting
-        const yearMatch = r.date_text?.match(/\d{4}/);
-        const parsedYear = yearMatch ? parseInt(yearMatch[0]) : 0;
+  const fetchReferences = async () => {
+    setLoading(true);
+    setError(null); // Reset error state
+    try {
+      console.log('Attempting to fetch references...');
+      const { data, error: supabaseError } = await supabase
+        .from('references')
+        .select('*, reference_images(*)')
+        .order('position', { ascending: true });
+      
+      if (supabaseError) {
+        console.error('Supabase fetch references error:', supabaseError);
+        throw supabaseError;
+      }
+      
+      if (data) {
+        console.log('References data fetched successfully:', data);
+        const processedReferences = data.map(r => {
+          const yearMatch = r.date_text?.match(/\d{4}/);
+          const parsedYear = yearMatch ? parseInt(yearMatch[0]) : 0;
 
-        return {
-          ...r,
-          images: r.reference_images ? [...r.reference_images].sort((a, b) => a.position - b.position) : [], // Renamed column
-          parsed_year: parsedYear,
-        };
-      });
+          return {
+            ...r,
+            images: r.reference_images ? [...r.reference_images].sort((a, b) => a.position - b.position) : [],
+            parsed_year: parsedYear,
+          };
+        });
 
-      // Sort by year (newest first), then by original position
-      const sortedReferences = processedReferences.sort((a, b) => { // Renamed variable
-        if (a.parsed_year !== b.parsed_year) {
-          return (b.parsed_year || 0) - (a.parsed_year || 0); // Newest year first
-        }
-        return a.position - b.position; // Maintain original position for same year
-      });
+        const sortedReferences = processedReferences.sort((a, b) => {
+          if (a.parsed_year !== b.parsed_year) {
+            return (b.parsed_year || 0) - (a.parsed_year || 0);
+          }
+          return a.position - b.position;
+        });
 
-      setReferences(sortedReferences as Reference[]); // Renamed state and interface
+        setReferences(sortedReferences as Reference[]);
+      }
+    } catch (err: any) {
+      console.error('Caught error in fetchReferences:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  return { references, loading, fetchReferences }; // Renamed state and function
+  return { references, loading, fetchReferences, error }; // Return error state
 };
 
 export const useFounder = () => {
