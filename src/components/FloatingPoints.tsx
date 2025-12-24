@@ -1,18 +1,20 @@
 import React, { useRef, useMemo, useCallback, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
-import { useAppColors } from '@/hooks/useAppColors';
+import { useAppColors } from '@/hooks/useAppColors'; // Keep import for type inference if needed, but won't be called here
 import * as THREE from 'three'; // Import THREE for Vector3
-import { QueryClientProvider } from '@tanstack/react-query'; // Import QueryClientProvider
-import { queryClient } from '@/App'; // Import the exported queryClient
+import { QueryClientProvider } from '@tanstack/react-query'; // Keep import for type inference if needed, but won't be called here
+import { queryClient } from '@/App'; // Keep import for type inference if needed, but won't be called here
+
+interface FloatingPointsProps {
+  primaryColorHex: string;
+}
 
 // FloatingPoints component handles the 3D logic
-const FloatingPoints = () => {
+const FloatingPoints: React.FC<FloatingPointsProps> = ({ primaryColorHex }) => {
   const ref = useRef<THREE.Points>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const { appColors } = useAppColors();
-  const primaryColorHex = appColors?.primary_color_hex || '#FF7F00'; // Default to corporate orange
-
+  
   const count = 10000; // Number of points
 
   // Generate random initial positions for points
@@ -109,12 +111,14 @@ const FloatingPoints = () => {
 
 // Wrapper component for the 3D canvas
 const FloatingPointsBackground = () => {
+  const { appColors } = useAppColors(); // Call useAppColors here
+  const primaryColorHex = appColors?.primary_color_hex || '#FF7F00'; // Default to corporate orange
+
   return (
     <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
       {/* Background color is handled by the parent div's CSS */}
-      <QueryClientProvider client={queryClient}> {/* Wrap with QueryClientProvider */}
-        <FloatingPoints />
-      </QueryClientProvider>
+      {/* QueryClientProvider is no longer needed here as useAppColors is called above */}
+      <FloatingPoints primaryColorHex={primaryColorHex} />
     </Canvas>
   );
 };
