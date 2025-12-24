@@ -6,35 +6,22 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useDomaines } from '@/hooks/useSupabaseData';
-import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings'; // Import the new hook
+import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
-import heroImage from '@/assets/hero-engineering.jpg'; // Default hero image
-import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
+import heroImage from '@/assets/hero-engineering.jpg';
+import DomainItem from '@/components/DomainItem'; // Import the new component
 
 const DomainsPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
   const { domaines, loading: domainesLoading } = useDomaines();
-  const { domainsPageSettings } = useDomainsPageSettings(); // Use the new hook
+  const { domainsPageSettings } = useDomainsPageSettings();
 
   // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  // Get display image for a domain (for the DomainsPage)
-  const getDisplayImage = (domaine: typeof domaines[0]) => {
-    if (domaine.image_mode === 'upload' && domaine.image_file) {
-      return domaine.image_file;
-    }
-    if (domaine.image_mode === 'url' && domaine.image_url) {
-      return domaine.image_url;
-    }
-    // Auto mode: use keyword-based fallback
-    const searchString = `${domaine.title} ${domaine.description} ${domaine.long_description || ''}`;
-    return getRelevantFallbackImage(searchString, domaine.title.toLowerCase());
-  };
 
   // Determine hero media based on settings
   const getHeroMedia = () => {
@@ -133,54 +120,9 @@ const DomainsPage = () => {
                 </div>
               ) : (
                 <div className="space-y-20">
-                  {domaines.sort((a, b) => a.position - b.position).map((domaine, index) => {
-                    const displayImage = getDisplayImage(domaine);
-                    const isImageLeft = index % 2 === 0; // Alternate layout
-
-                    return (
-                      <div 
-                        key={domaine.id} 
-                        className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center animate-fade-up`}
-                        style={{ animationDelay: `${index * 0.1}s` }}
-                      >
-                        {/* Image Column */}
-                        {displayImage && (
-                          <div className={`${isImageLeft ? 'order-1' : 'order-2'} md:order-none`}>
-                            <img 
-                              src={displayImage} 
-                              alt={domaine.title} 
-                              className="w-full h-72 object-cover rounded-xl shadow-lg"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = getRelevantFallbackImage('default'); // Fallback to generic default on error
-                                console.warn(`Image non disponible pour "${domaine.title}", fallback utilisé.`);
-                              }}
-                            />
-                          </div>
-                        )}
-
-                        {/* Text Content Column */}
-                        <div className={`${isImageLeft ? 'order-2' : 'order-1'} md:order-none space-y-4`}>
-                          <div className="flex items-center space-x-4">
-                            <div className="text-3xl text-primary flex-shrink-0">
-                              {domaine.icon}
-                            </div>
-                            <h2 className="font-heading font-bold text-3xl text-gray-dark">
-                              {domaine.title}
-                            </h2>
-                          </div>
-                          <p className="text-gray-medium leading-relaxed">
-                            {domaine.description}
-                          </p>
-                          {domaine.long_description && (
-                            <p className="text-gray-medium leading-relaxed border-t pt-4 mt-4">
-                              {domaine.long_description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {domaines.sort((a, b) => a.position - b.position).map((domaine, index) => (
+                    <DomainItem key={domaine.id} domaine={domaine} index={index} />
+                  ))}
                 </div>
               )}
             </div>
