@@ -20,8 +20,8 @@ type ImageMode = 'auto' | 'url' | 'upload';
 type LayoutMode = 'list' | 'grid';
 
 const AdminReferences = () => {
-  const { references, fetchReferences, loading: referencesLoading } = useReferences();
-  const { domaines, loading: domainesLoading } = useDomaines();
+  const { references, fetchReferences, loading: referencesLoading, error: referencesError } = useReferences(); // Added error
+  const { domaines, loading: domainesLoading, error: domainesError } = useDomaines(); // Added error
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingReference, setEditingReference] = useState<Reference | null>(null);
   const [form, setForm] = useState({
@@ -48,11 +48,24 @@ const AdminReferences = () => {
   const [selectedDomainFilter, setSelectedDomainFilter] = useState<string>('all');
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('list');
 
-  // Add loading check here
+  // Display loading state
   if (referencesLoading || domainesLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Display error state
+  if (referencesError || domainesError) {
+    return (
+      <div className="p-8 text-center text-destructive">
+        <h3 className="text-xl font-semibold mb-4">Erreur de chargement des données</h3>
+        <p className="mb-2">Un problème est survenu lors du chargement des références ou des domaines.</p>
+        {referencesError && <p className="text-sm">Références: {referencesError.message}</p>}
+        {domainesError && <p className="text-sm">Domaines: {domainesError.message}</p>}
+        <p className="mt-4">Veuillez vérifier la console du navigateur pour plus de détails ou réessayer.</p>
       </div>
     );
   }
@@ -535,12 +548,12 @@ const AdminReferences = () => {
               <SelectValue placeholder="Filtrer par domaine" />
             </SelectTrigger>
             <SelectContent className="bg-background border border-border z-50">
-              <SelectItem value="all">Tous les domaines</SelectItem>
-              {domaines.map((domaine) => (
-                <SelectItem key={domaine.id} value={domaine.title}>
-                  {domaine.title}
-                </SelectItem>
-              ))}
+                <SelectItem value="all">Tous les domaines</SelectItem>
+                {domaines.map((domaine) => (
+                  <SelectItem key={domaine.id} value={domaine.title}>
+                    {domaine.title}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>
