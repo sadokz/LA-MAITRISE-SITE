@@ -22,7 +22,7 @@ const ReferencesPage = () => { // Renamed component
 
   // Initialize selectedCategory to 'all'
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [expandedDomains, setExpandedDomains] = new Set<string>());
+  const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     window.scrollTo(0, 0);
