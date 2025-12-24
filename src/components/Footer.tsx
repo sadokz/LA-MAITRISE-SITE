@@ -54,7 +54,7 @@ const Footer = () => {
     { label: 'Accueil', id: 'accueil', type: 'scroll' },
     { label: 'Compétences', path: '/competences', type: 'page' },
     { label: 'Domaines', path: '/domaines', type: 'page' },
-    { label: 'Références', path: '/realisations', type: 'page' },
+    { label: 'Références', path: '/references', type: 'page' }, // Renamed path
     { label: 'Contact', id: 'contact', type: 'scroll' }
   ];
 

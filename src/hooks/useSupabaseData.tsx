@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { RealisationsPageSettings } from './useRealisationsPageSettings'; // Import the new interface
+import { ReferencesPageSettings } from './useReferencesPageSettings'; // Renamed import
 
 // Section Visibility types
 export interface SectionVisibility {
@@ -10,7 +10,7 @@ export interface SectionVisibility {
   about: boolean;
   skills: boolean;
   domains: boolean;
-  projects: boolean;
+  projects: boolean; // Renamed key
   founder: boolean;
   contact: boolean;
   chatbot_visible: boolean; // New: Chatbot visibility
@@ -66,16 +66,16 @@ export interface Domaine {
   icon: string; // Now directly stores the text/emoji
 }
 
-export interface RealisationImage {
+export interface ReferenceImage { // Renamed interface
   id: string;
-  realisation_id: string;
+  reference_id: string; // Renamed column
   image_url?: string;
   image_file?: string;
   image_mode: 'auto' | 'url' | 'upload';
   position: number;
 }
 
-export interface Realisation {
+export interface Reference { // Renamed interface
   id: string;
   title: string;
   description: string;
@@ -87,10 +87,10 @@ export interface Realisation {
   position: number;
   is_visible: boolean;
   is_featured: boolean;
-  date_text?: string; // New: Date text for the realization
-  emplacement?: string; // New: Emplacement for the realization
-  reference?: string; // New: Reference for the realization
-  images?: RealisationImage[]; // New: Array of additional images
+  date_text?: string; // New: Date text for the reference
+  emplacement?: string; // New: Emplacement for the reference
+  reference?: string; // New: Reference for the reference
+  images?: ReferenceImage[]; // New: Array of additional images (Renamed interface)
   parsed_year?: number; // New: For client-side sorting
 }
 
@@ -230,47 +230,47 @@ export const useHeroSettings = () => {
   return { heroSettings, loading, fetchHeroSettings };
 };
 
-export const useRealisations = () => {
-  const [realisations, setRealisations] = useState<Realisation[]>([]);
+export const useReferences = () => { // Renamed hook
+  const [references, setReferences] = useState<Reference[]>([]); // Renamed state and interface
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchRealisations();
+    fetchReferences(); // Renamed function
   }, []);
 
-  const fetchRealisations = async () => {
+  const fetchReferences = async () => { // Renamed function
     const { data, error } = await supabase
-      .from('realisations')
-      .select('*, realisation_images(*)') // Fetch related images
+      .from('references') // Renamed table
+      .select('*, reference_images(*)') // Fetch related images (Renamed table and column)
       .order('position', { ascending: true }); // Keep initial order for consistency before client-side sort
     
     if (!error && data) {
-      const processedRealisations = data.map(r => {
+      const processedReferences = data.map(r => { // Renamed variable
         // Extract year from date_text for sorting
         const yearMatch = r.date_text?.match(/\d{4}/);
         const parsedYear = yearMatch ? parseInt(yearMatch[0]) : 0;
 
         return {
           ...r,
-          images: r.realisation_images ? [...r.realisation_images].sort((a, b) => a.position - b.position) : [],
+          images: r.reference_images ? [...r.reference_images].sort((a, b) => a.position - b.position) : [], // Renamed column
           parsed_year: parsedYear,
         };
       });
 
       // Sort by year (newest first), then by original position
-      const sortedRealisations = processedRealisations.sort((a, b) => {
+      const sortedReferences = processedReferences.sort((a, b) => { // Renamed variable
         if (a.parsed_year !== b.parsed_year) {
           return (b.parsed_year || 0) - (a.parsed_year || 0); // Newest year first
         }
         return a.position - b.position; // Maintain original position for same year
       });
 
-      setRealisations(sortedRealisations as Realisation[]);
+      setReferences(sortedReferences as Reference[]); // Renamed state and interface
     }
     setLoading(false);
   };
 
-  return { realisations, loading, fetchRealisations };
+  return { references, loading, fetchReferences }; // Renamed state and function
 };
 
 export const useFounder = () => {

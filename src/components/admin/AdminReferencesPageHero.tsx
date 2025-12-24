@@ -6,11 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Upload, Link, Image, Video, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
+import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Renamed import
 
-const AdminRealisationsPageHero = () => {
+const AdminReferencesPageHero = () => { // Renamed component
   const { toast } = useToast();
-  const { realisationsPageSettings, loading, fetchRealisationsPageSettings } = useRealisationsPageSettings();
+  const { referencesPageSettings, loading, fetchReferencesPageSettings } = useReferencesPageSettings(); // Renamed hook
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   
@@ -22,15 +22,15 @@ const AdminRealisationsPageHero = () => {
   });
 
   useEffect(() => {
-    if (realisationsPageSettings) {
+    if (referencesPageSettings) { // Renamed prop
       setForm({
-        media_type: realisationsPageSettings.media_type,
-        source_type: realisationsPageSettings.source_type,
-        media_url: realisationsPageSettings.media_url || '',
-        media_file: realisationsPageSettings.media_file || ''
+        media_type: referencesPageSettings.media_type,
+        source_type: referencesPageSettings.source_type,
+        media_url: referencesPageSettings.media_url || '',
+        media_file: referencesPageSettings.media_file || ''
       });
     }
-  }, [realisationsPageSettings]);
+  }, [referencesPageSettings]); // Renamed prop
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,24 +69,24 @@ const AdminRealisationsPageHero = () => {
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `realisations-page-${Date.now()}.${fileExt}`;
+      const fileName = `references-page-${Date.now()}.${fileExt}`; // Renamed file prefix
 
       // Delete old file if exists
       if (form.media_file) {
         const oldFileName = form.media_file.split('/').pop();
         if (oldFileName) {
-          await supabase.storage.from('realisations-page-media').remove([oldFileName]);
+          await supabase.storage.from('references-page-media').remove([oldFileName]); // Renamed bucket
         }
       }
 
       const { error: uploadError } = await supabase.storage
-        .from('realisations-page-media')
+        .from('references-page-media') // Renamed bucket
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('realisations-page-media')
+        .from('references-page-media') // Renamed bucket
         .getPublicUrl(fileName);
 
       setForm({ ...form, media_file: publicUrl });
@@ -111,7 +111,7 @@ const AdminRealisationsPageHero = () => {
     setSaving(true);
     try {
       const { error } = await supabase
-        .from('realisations_page_settings')
+        .from('references_page_settings') // Renamed table
         .update({
           media_type: form.media_type,
           source_type: form.source_type,
@@ -124,12 +124,12 @@ const AdminRealisationsPageHero = () => {
 
       toast({
         title: "Enregistré",
-        description: "Les paramètres du Hero de la page Réalisations ont été mis à jour"
+        description: "Les paramètres du Hero de la page Références ont été mis à jour" // Renamed text
       });
       
-      fetchRealisationsPageSettings();
+      fetchReferencesPageSettings(); // Renamed hook
     } catch (error) {
-      console.error('Error saving realisations page hero settings:', error);
+      console.error('Error saving references page hero settings:', error); // Renamed text
       toast({
         title: "Erreur",
         description: "Impossible d'enregistrer les paramètres",
@@ -147,12 +147,12 @@ const AdminRealisationsPageHero = () => {
       if (form.media_file) {
         const fileName = form.media_file.split('/').pop();
         if (fileName) {
-          await supabase.storage.from('realisations-page-media').remove([fileName]);
+          await supabase.storage.from('references-page-media').remove([fileName]); // Renamed bucket
         }
       }
 
       const { error } = await supabase
-        .from('realisations_page_settings')
+        .from('references_page_settings') // Renamed table
         .update({
           media_type: 'image',
           source_type: 'upload',
@@ -172,12 +172,12 @@ const AdminRealisationsPageHero = () => {
 
       toast({
         title: "Réinitialisé",
-        description: "Le fond par défaut sera utilisé pour la page Réalisations"
+        description: "Le fond par défaut sera utilisé pour la page Références" // Renamed text
       });
       
-      fetchRealisationsPageSettings();
+      fetchReferencesPageSettings(); // Renamed hook
     } catch (error) {
-      console.error('Error resetting realisations page hero settings:', error);
+      console.error('Error resetting references page hero settings:', error); // Renamed text
       toast({
         title: "Erreur",
         description: "Impossible de réinitialiser",
@@ -213,7 +213,7 @@ const AdminRealisationsPageHero = () => {
       <div className="bg-muted/50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Image className="h-5 w-5" />
-          Média de fond (Page Réalisations)
+          Média de fond (Page Références) {/* Renamed text */}
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -350,10 +350,10 @@ const AdminRealisationsPageHero = () => {
       {/* Current Status */}
       <div className="bg-muted/30 p-4 rounded-lg">
         <h4 className="font-medium mb-2">État actuel</h4>
-        {realisationsPageSettings?.media_file || realisationsPageSettings?.media_url ? (
+        {referencesPageSettings?.media_file || referencesPageSettings?.media_url ? ( // Renamed prop
           <p className="text-sm text-muted-foreground">
-            {realisationsPageSettings.media_type === 'image' ? '🖼️ Image' : '🎬 Vidéo'} personnalisée définie 
-            ({realisationsPageSettings.source_type === 'upload' ? 'téléversée' : 'via URL'})
+            {referencesPageSettings.media_type === 'image' ? '🖼️ Image' : '🎬 Vidéo'} personnalisée définie {/* Renamed prop */}
+            ({referencesPageSettings.source_type === 'upload' ? 'téléversée' : 'via URL'}) {/* Renamed prop */}
           </p>
         ) : (
           <p className="text-sm text-muted-foreground">
@@ -365,4 +365,4 @@ const AdminRealisationsPageHero = () => {
   );
 };
 
-export default AdminRealisationsPageHero;
+export default AdminReferencesPageHero;

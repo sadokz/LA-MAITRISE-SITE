@@ -8,14 +8,10 @@ import { LogOut, Settings, Lightbulb, Building, Trophy, User, Phone, Home, Penci
 import AdminHero from '@/components/admin/AdminHero';
 import AdminCompetences from '@/components/admin/AdminCompetences';
 import AdminDomaines from '@/components/admin/AdminDomaines';
-import AdminRealisations from '@/components/admin/AdminRealisations';
+import AdminReferences from '@/components/admin/AdminReferences'; // Renamed import
 import AdminFounder from '@/components/admin/AdminFounder';
 import AdminContact from '@/components/admin/AdminContact';
 import AdminSections from '@/components/admin/AdminSections';
-// Removed individual page hero imports as they will be integrated into AdminSections
-// import AdminCompetencesPageHero from '@/components/admin/AdminCompetencesPageHero';
-// import AdminDomainsPageHero from '@/components/admin/AdminDomainsPageHero';
-// import AdminRealisationsPageHero from '@/components/admin/AdminRealisationsPageHero';
 
 const Admin = () => {
   const { user, signOut, loading } = useAuth();
@@ -87,7 +83,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="sections" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7"> {/* Adjusted grid columns */}
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="sections" className="flex items-center space-x-2">
               <LayoutGrid className="h-4 w-4" />
               <span>Sections</span>
@@ -104,9 +100,9 @@ const Admin = () => {
               <Building className="h-4 w-4" />
               <span>Domaines</span>
             </TabsTrigger>
-            <TabsTrigger value="realisations" className="flex items-center space-x-2">
+            <TabsTrigger value="references" className="flex items-center space-x-2"> {/* Renamed tab trigger */}
               <Trophy className="h-4 w-4" />
-              <span>Réalisations</span>
+              <span>Références</span> {/* Renamed tab label */}
             </TabsTrigger>
             <TabsTrigger value="founder" className="flex items-center space-x-2">
               <User className="h-4 w-4" />
@@ -119,42 +115,8 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="sections">
-            <AdminSections /> {/* This component will now include the page hero settings */}
+            <AdminSections />
           </TabsContent>
-
-          {/* Removed individual page hero TabsContent */}
-          {/* <TabsContent value="competences-page-hero">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion du Hero de la page Compétences</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AdminCompetencesPageHero />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="domains-page-hero">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion du Hero de la page Domaines</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AdminDomainsPageHero />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="realisations-page-hero">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion du Hero de la page Réalisations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AdminRealisationsPageHero />
-              </CardContent>
-            </Card>
-          </TabsContent> */}
 
           <TabsContent value="hero">
             <Card>
@@ -189,13 +151,13 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="realisations">
+          <TabsContent value="references"> {/* Renamed tab content value */}
             <Card>
               <CardHeader>
-                <CardTitle>Gestion des réalisations</CardTitle>
+                <CardTitle>Gestion des références</CardTitle> {/* Renamed card title */}
               </CardHeader>
               <CardContent>
-                <AdminRealisations />
+                <AdminReferences /> {/* Renamed component */}
               </CardContent>
             </Card>
           </TabsContent>

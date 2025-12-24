@@ -5,19 +5,19 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, PlusCircle, MinusCircle } from 'lucide-react';
 import EditableText from '@/components/EditableText';
-import { useSiteTexts, useRealisations, useDomaines, Realisation } from '@/hooks/useSupabaseData';
-import { useRealisationsPageSettings } from '@/hooks/useRealisationsPageSettings';
+import { useSiteTexts, useReferences, useDomaines, Reference } from '@/hooks/useSupabaseData'; // Renamed hook and interface
+import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Renamed hook
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
-import RealisationItem from '@/components/RealisationItem';
+import ReferenceItem from '@/components/ReferenceItem'; // Renamed import
 
-const RealisationsPage = () => {
+const ReferencesPage = () => { // Renamed component
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
-  const { realisations, loading: realisationsLoading } = useRealisations();
+  const { references, loading: referencesLoading } = useReferences(); // Renamed hook
   const { domaines, loading: domainesLoading } = useDomaines();
-  const { realisationsPageSettings } = useRealisationsPageSettings();
+  const { referencesPageSettings } = useReferencesPageSettings(); // Renamed hook
   const location = useLocation();
 
   // Initialize selectedCategory to 'all'
@@ -30,7 +30,7 @@ const RealisationsPage = () => {
 
   // Effect to update selectedCategory based on location.state
   useEffect(() => {
-    console.log('RealisationsPage useEffect triggered. location.state:', location.state);
+    console.log('ReferencesPage useEffect triggered. location.state:', location.state); // Renamed text
     const categoryFromState = (location.state as { category?: string })?.category;
     console.log('categoryFromState:', categoryFromState);
     if (categoryFromState) {
@@ -47,14 +47,14 @@ const RealisationsPage = () => {
     console.log('Current selectedCategory state:', selectedCategory);
   }, [selectedCategory]);
 
-  const visibleRealisations = useMemo(() => 
-    realisations.filter(r => r.is_visible), 
-    [realisations]
+  const visibleReferences = useMemo(() => // Renamed variable
+    references.filter(r => r.is_visible), 
+    [references]
   );
 
-  const groupedRealisations = useMemo(() => {
-    const groups: { [category: string]: Realisation[] } = {};
-    visibleRealisations.forEach(r => {
+  const groupedReferences = useMemo(() => { // Renamed variable
+    const groups: { [category: string]: Reference[] } = {}; // Renamed interface
+    visibleReferences.forEach(r => { // Renamed variable
       if (!groups[r.category]) {
         groups[r.category] = [];
       }
@@ -70,29 +70,29 @@ const RealisationsPage = () => {
       });
     }
     return groups;
-  }, [visibleRealisations]);
+  }, [visibleReferences]); // Renamed variable
 
-  const filteredRealisations = useMemo(() => {
+  const filteredReferences = useMemo(() => { // Renamed variable
     if (selectedCategory === 'all') {
       // When 'all' is selected, we'll render grouped projects, so this memo returns an empty array
       // The rendering logic below handles displaying all grouped projects.
       return []; 
     }
-    return groupedRealisations[selectedCategory] || [];
-  }, [selectedCategory, groupedRealisations]);
+    return groupedReferences[selectedCategory] || []; // Renamed variable
+  }, [selectedCategory, groupedReferences]); // Renamed variable
 
   const categoryCounts = useMemo(() => {
-    const counts: { [key: string]: number } = { all: visibleRealisations.length };
+    const counts: { [key: string]: number } = { all: visibleReferences.length }; // Renamed variable
     domaines.forEach(domaine => {
-      counts[domaine.title] = (groupedRealisations[domaine.title] || []).length;
+      counts[domaine.title] = (groupedReferences[domaine.title] || []).length; // Renamed variable
     });
     return counts;
-  }, [visibleRealisations, domaines, groupedRealisations]);
+  }, [visibleReferences, domaines, groupedReferences]); // Renamed variable
 
   const getHeroMedia = () => {
-    if (!realisationsPageSettings) return { type: 'image', url: heroImage };
+    if (!referencesPageSettings) return { type: 'image', url: heroImage }; // Renamed hook
     
-    const { media_type, source_type, media_url, media_file } = realisationsPageSettings;
+    const { media_type, source_type, media_url, media_file } = referencesPageSettings; // Renamed hook
 
     if (source_type === 'upload' && media_file) {
       return { type: media_type, url: media_file };
@@ -106,7 +106,7 @@ const RealisationsPage = () => {
   const heroMedia = getHeroMedia();
   const isVideo = heroMedia.type === 'video' && heroMedia.url;
 
-  const allLoading = realisationsLoading || domainesLoading;
+  const allLoading = referencesLoading || domainesLoading; // Renamed hook
 
   const toggleExpand = (category: string) => {
     setExpandedDomains(prev => {
@@ -141,7 +141,7 @@ const RealisationsPage = () => {
               ) : (
                 <img 
                   src={heroMedia.url} 
-                  alt="Réalisations en ingénierie électrique" 
+                  alt="Références en ingénierie électrique" // Renamed alt text
                   className="w-full h-full object-cover"
                   width="1920"
                   height="1080"
@@ -152,16 +152,16 @@ const RealisationsPage = () => {
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 <EditableText 
-                  textKey="realisations.page.title" 
-                  defaultValue={getSiteText('realisations', 'page', 'title', 'Nos Réalisations')} 
+                  textKey="references.page.title" // Renamed text key
+                  defaultValue={getSiteText('references', 'page', 'title', 'Nos Références')} // Renamed text key and default value
                   className="inline" 
                   as="span" 
                 />
               </h1>
               <p className="text-xl text-white/90 max-w-3xl mx-auto">
                 <EditableText 
-                  textKey="realisations.page.description" 
-                  defaultValue={getSiteText('realisations', 'page', 'description', 'Découvrez nos projets et réalisations dans le domaine de l\'ingénierie électrique')} 
+                  textKey="references.page.description" // Renamed text key
+                  defaultValue={getSiteText('references', 'page', 'description', 'Découvrez nos projets et références dans le domaine de l\'ingénierie électrique')} // Renamed text key and default value
                   className="inline" 
                   as="span" 
                   multiline 
@@ -222,14 +222,14 @@ const RealisationsPage = () => {
                 <>
                   {selectedCategory === 'all' ? (
                     // Display grouped projects when 'all' is selected
-                    Object.keys(groupedRealisations).length === 0 ? (
+                    Object.keys(groupedReferences).length === 0 ? ( // Renamed variable
                       <div className="text-center py-20 text-gray-medium">
-                        <p>Aucune réalisation n'is disponible pour le moment.</p>
+                        <p>Aucune référence n'est disponible pour le moment.</p> {/* Renamed text */}
                       </div>
                     ) : (
                       <div className="space-y-20">
                         {domaines.sort((a, b) => a.position - b.position).map(domaine => {
-                          const projectsInDomain = groupedRealisations[domaine.title] || [];
+                          const projectsInDomain = groupedReferences[domaine.title] || []; // Renamed variable
                           const isExpanded = expandedDomains.has(domaine.title);
                           const projectsToShow = isExpanded ? projectsInDomain : projectsInDomain.slice(0, 3);
 
@@ -242,7 +242,7 @@ const RealisationsPage = () => {
                               </h2>
                               <div className="space-y-20"> {/* Nested space-y-20 for individual project items */}
                                 {projectsToShow.map((project, index) => (
-                                  <RealisationItem key={project.id} project={project} index={index} />
+                                  <ReferenceItem key={project.id} project={project} index={index} /> // Renamed component and prop
                                 ))}
                               </div>
                               {projectsInDomain.length > 3 && (
@@ -273,17 +273,17 @@ const RealisationsPage = () => {
                     )
                   ) : (
                     // Display filtered projects for a specific category
-                    filteredRealisations.length === 0 ? (
+                    filteredReferences.length === 0 ? ( // Renamed variable
                       <div className="text-center py-20 text-gray-medium">
-                        <p>Aucune réalisation n'est disponible pour cette catégorie.</p>
+                        <p>Aucune référence n'est disponible pour cette catégorie.</p> {/* Renamed text */}
                         <Button onClick={() => setSelectedCategory('all')} className="mt-8">
                           Voir tous les projets
                         </Button>
                       </div>
                     ) : (
                       <div className="space-y-20">
-                        {filteredRealisations.map((project, index) => (
-                          <RealisationItem key={project.id} project={project} index={index} />
+                        {filteredReferences.map((project, index) => ( // Renamed variable
+                          <ReferenceItem key={project.id} project={project} index={index} /> // Renamed component and prop
                         ))}
                       </div>
                     )
@@ -299,4 +299,4 @@ const RealisationsPage = () => {
   );
 };
 
-export default RealisationsPage;
+export default ReferencesPage;

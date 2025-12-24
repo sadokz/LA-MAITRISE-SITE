@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { MapPin, CheckCircle } from 'lucide-react';
-import { useRealisations, useSiteTexts } from '@/hooks/useSupabaseData';
+import { useReferences, useSiteTexts } from '@/hooks/useSupabaseData'; // Renamed hook
 import EditableText from '@/components/EditableText';
 import { cn } from '@/lib/utils';
 
@@ -42,21 +42,21 @@ const cityCoordinates: { [key: string]: { x: number; y: number } } = {
 };
 
 const TunisiaMap = () => {
-  const { realisations, loading: realisationsLoading } = useRealisations();
+  const { references, loading: referencesLoading } = useReferences(); // Renamed hook
   const { getSiteText } = useSiteTexts();
 
   const projectsByLocation = useMemo(() => {
     const map = new Map<string, number>();
-    realisations.forEach(project => {
+    references.forEach(project => { // Renamed hook
       if (project.emplacement) {
         const location = project.emplacement.split(',')[0].trim(); // Use first part of emplacement
         map.set(location, (map.get(location) || 0) + 1);
       }
     });
     return map;
-  }, [realisations]);
+  }, [references]); // Renamed hook
 
-  if (realisationsLoading) {
+  if (referencesLoading) { // Renamed hook
     return (
       <section id="tunisia-map" className="section-padding bg-muted/30 min-h-[400px]">
         <div className="container mx-auto px-4 lg:px-8">

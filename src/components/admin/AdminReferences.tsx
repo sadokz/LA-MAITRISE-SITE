@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Edit, Trash2, Plus, ArrowUp, ArrowDown, Upload, Link, Sparkles, Eye, EyeOff, Star, Calendar, MapPin, Hash, Image as ImageIcon, LayoutGrid, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useRealisations, useDomaines, Realisation, RealisationImage } from '@/hooks/useSupabaseData';
+import { useReferences, useDomaines, Reference, ReferenceImage } from '@/hooks/useSupabaseData'; // Renamed imports
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,11 +19,11 @@ import { cn } from '@/lib/utils';
 type ImageMode = 'auto' | 'url' | 'upload';
 type LayoutMode = 'list' | 'grid';
 
-const AdminRealisations = () => {
-  const { realisations, fetchRealisations } = useRealisations();
+const AdminReferences = () => { // Renamed component
+  const { references, fetchReferences } = useReferences(); // Renamed hook
   const { domaines } = useDomaines();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingRealisation, setEditingRealisation] = useState<Realisation | null>(null);
+  const [editingReference, setEditingReference] = useState<Reference | null>(null); // Renamed state
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -38,7 +38,7 @@ const AdminRealisations = () => {
     emplacement: '',
     reference: '',
   });
-  const [additionalImages, setAdditionalImages] = useState<RealisationImage[]>([]);
+  const [additionalImages, setAdditionalImages] = useState<ReferenceImage[]>([]); // Renamed state
   const [uploadingMainImage, setUploadingMainImage] = useState(false);
   const [uploadingAdditionalImage, setUploadingAdditionalImage] = useState(false);
   const mainImageFileInputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +64,7 @@ const AdminRealisations = () => {
       reference: '',
     });
     setAdditionalImages([]);
-    setEditingRealisation(null);
+    setEditingReference(null); // Renamed state
   };
 
   const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,14 +84,14 @@ const AdminRealisations = () => {
     setUploadingMainImage(true);
     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
 
-    const { error: uploadError } = await supabase.storage.from('realisation-images').upload(fileName, file);
+    const { error: uploadError } = await supabase.storage.from('reference-images').upload(fileName, file); // Renamed bucket
     if (uploadError) {
       toast({ title: 'Erreur', description: 'Impossible de téléverser l\'image principale.', variant: 'destructive' });
       setUploadingMainImage(false);
       return;
     }
 
-    const { data: publicData } = supabase.storage.from('realisation-images').getPublicUrl(fileName);
+    const { data: publicData } = supabase.storage.from('reference-images').getPublicUrl(fileName); // Renamed bucket
     setForm({ ...form, image_file: publicData.publicUrl, image_mode: 'upload' });
     setUploadingMainImage(false);
     toast({ title: 'Succès', description: 'Image principale téléversée avec succès.', });
@@ -114,18 +114,18 @@ const AdminRealisations = () => {
     setUploadingAdditionalImage(true);
     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
 
-    const { error: uploadError } = await supabase.storage.from('realisation-additional-images').upload(fileName, file);
+    const { error: uploadError } = await supabase.storage.from('reference-additional-images').upload(fileName, file); // Renamed bucket
     if (uploadError) {
       toast({ title: 'Erreur', description: 'Impossible de téléverser l\'image supplémentaire.', variant: 'destructive' });
       setUploadingAdditionalImage(false);
       return;
     }
 
-    const { data: publicData } = supabase.storage.from('realisation-additional-images').getPublicUrl(fileName);
+    const { data: publicData } = supabase.storage.from('reference-additional-images').getPublicUrl(fileName); // Renamed bucket
     
-    const newImage: RealisationImage = {
+    const newImage: ReferenceImage = { // Renamed interface
       id: `new-${Date.now()}`, // Temporary ID for new images
-      realisation_id: editingRealisation?.id || '',
+      reference_id: editingReference?.id || '', // Renamed column
       image_url: null,
       image_file: publicData.publicUrl,
       image_mode: 'upload',
@@ -139,9 +139,9 @@ const AdminRealisations = () => {
 
   const handleAddAdditionalImageFromUrl = (url: string) => {
     if (!url.trim()) return;
-    const newImage: RealisationImage = {
+    const newImage: ReferenceImage = { // Renamed interface
       id: `new-${Date.now()}`,
-      realisation_id: editingRealisation?.id || '',
+      reference_id: editingReference?.id || '', // Renamed column
       image_url: url.trim(),
       image_file: null,
       image_mode: 'url',
@@ -194,25 +194,25 @@ const AdminRealisations = () => {
       reference: form.reference || null,
     };
 
-    let realisationId = editingRealisation?.id;
-    if (editingRealisation) {
-      const { error } = await supabase.from('realisations').update(payload).eq('id', realisationId);
-      if (error) { toast({ title: 'Erreur', description: 'Impossible de mettre à jour la réalisation', variant: 'destructive' }); return; }
+    let referenceId = editingReference?.id; // Renamed variable
+    if (editingReference) { // Renamed state
+      const { error } = await supabase.from('references').update(payload).eq('id', referenceId); // Renamed table
+      if (error) { toast({ title: 'Erreur', description: 'Impossible de mettre à jour la référence', variant: 'destructive' }); return; } // Renamed text
     } else {
-      const maxPosition = Math.max(...realisations.map(r => r.position), 0);
-      const { data, error } = await supabase.from('realisations').insert({ ...payload, position: maxPosition + 1 }).select('id').single();
-      if (error) { toast({ title: 'Erreur', description: 'Impossible de créer la réalisation', variant: 'destructive' }); return; }
-      realisationId = data.id;
+      const maxPosition = Math.max(...references.map(r => r.position), 0); // Renamed hook
+      const { data, error } = await supabase.from('references').insert({ ...payload, position: maxPosition + 1 }).select('id').single(); // Renamed table
+      if (error) { toast({ title: 'Erreur', description: 'Impossible de créer la référence', variant: 'destructive' }); return; } // Renamed text
+      referenceId = data.id; // Renamed variable
     }
 
     // Handle additional images
-    if (realisationId) {
+    if (referenceId) { // Renamed variable
       // Delete existing additional images not in the current list
       const existingImageIds = additionalImages.filter(img => !img.id.startsWith('new-')).map(img => img.id);
       const { error: deleteError } = await supabase
-        .from('realisation_images')
+        .from('reference_images') // Renamed table
         .delete()
-        .eq('realisation_id', realisationId)
+        .eq('reference_id', referenceId) // Renamed column
         .not('id', 'in', `(${existingImageIds.map(id => `'${id}'`).join(',') || 'NULL'})`); // Handle empty array
 
       if (deleteError) { console.error('Error deleting old images:', deleteError); }
@@ -220,7 +220,7 @@ const AdminRealisations = () => {
       // Insert/Update additional images
       for (const img of additionalImages) {
         const imgPayload = {
-          realisation_id: realisationId,
+          reference_id: referenceId, // Renamed column
           image_url: img.image_mode === 'url' ? img.image_url : null,
           image_file: img.image_mode === 'upload' ? img.image_file : null,
           image_mode: img.image_mode,
@@ -229,100 +229,100 @@ const AdminRealisations = () => {
 
         if (img.id.startsWith('new-')) {
           // Insert new image
-          await supabase.from('realisation_images').insert(imgPayload);
+          await supabase.from('reference_images').insert(imgPayload); // Renamed table
         } else {
           // Update existing image
-          await supabase.from('realisation_images').update(imgPayload).eq('id', img.id);
+          await supabase.from('reference_images').update(imgPayload).eq('id', img.id); // Renamed table
         }
       }
     }
 
-    toast({ title: 'Succès', description: editingRealisation ? 'Réalisation mise à jour' : 'Réalisation créée', });
+    toast({ title: 'Succès', description: editingReference ? 'Référence mise à jour' : 'Référence créée', }); // Renamed text
     setIsDialogOpen(false);
     resetForm();
-    fetchRealisations();
+    fetchReferences(); // Renamed hook
   };
 
-  const handleEdit = (realisation: Realisation) => {
-    setEditingRealisation(realisation);
+  const handleEdit = (reference: Reference) => { // Renamed parameter
+    setEditingReference(reference); // Renamed state
     setForm({
-      title: realisation.title,
-      description: realisation.description,
-      long_description: realisation.long_description || '',
-      category: realisation.category,
-      image_url: realisation.image_url || '',
-      image_mode: realisation.image_mode || 'auto',
-      image_file: realisation.image_file || '',
-      is_visible: realisation.is_visible,
-      is_featured: realisation.is_featured,
-      date_text: realisation.date_text || '',
-      emplacement: realisation.emplacement || '',
-      reference: realisation.reference || '',
+      title: reference.title,
+      description: reference.description,
+      long_description: reference.long_description || '',
+      category: reference.category,
+      image_url: reference.image_url || '',
+      image_mode: reference.image_mode || 'auto',
+      image_file: reference.image_file || '',
+      is_visible: reference.is_visible,
+      is_featured: reference.is_featured,
+      date_text: reference.date_text || '',
+      emplacement: reference.emplacement || '',
+      reference: reference.reference || '',
     });
-    setAdditionalImages(realisation.images || []);
+    setAdditionalImages(reference.images || []);
     setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette réalisation ?')) { return; }
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette référence ?')) { return; } // Renamed text
 
-    const { error } = await supabase.from('realisations').delete().eq('id', id);
-    if (error) { toast({ title: 'Erreur', description: 'Impossible de supprimer la réalisation', variant: 'destructive' }); return; }
+    const { error } = await supabase.from('references').delete().eq('id', id); // Renamed table
+    if (error) { toast({ title: 'Erreur', description: 'Impossible de supprimer la référence', variant: 'destructive' }); return; } // Renamed text
 
-    toast({ title: 'Succès', description: 'Réalisation supprimée', });
-    fetchRealisations();
+    toast({ title: 'Succès', description: 'Référence supprimée', }); // Renamed text
+    fetchReferences(); // Renamed hook
   };
 
-  const handleMovePosition = async (realisation: Realisation, direction: 'up' | 'down') => {
-    const sortedRealisations = [...realisations].sort((a, b) => a.position - b.position);
-    const currentIndex = sortedRealisations.findIndex(r => r.id === realisation.id);
+  const handleMovePosition = async (reference: Reference, direction: 'up' | 'down') => { // Renamed parameter
+    const sortedReferences = [...references].sort((a, b) => a.position - b.position); // Renamed hook
+    const currentIndex = sortedReferences.findIndex(r => r.id === reference.id);
     
-    if ((direction === 'up' && currentIndex === 0) || (direction === 'down' && currentIndex === sortedRealisations.length - 1)) { return; }
+    if ((direction === 'up' && currentIndex === 0) || (direction === 'down' && currentIndex === sortedReferences.length - 1)) { return; }
 
     const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    const targetRealisation = sortedRealisations[targetIndex];
+    const targetReference = sortedReferences[targetIndex]; // Renamed variable
 
-    const { error } = await supabase.from('realisations').update({ position: targetRealisation.position }).eq('id', realisation.id);
+    const { error } = await supabase.from('references').update({ position: targetReference.position }).eq('id', reference.id); // Renamed table
     if (!error) {
-      await supabase.from('realisations').update({ position: realisation.position }).eq('id', targetRealisation.id);
+      await supabase.from('references').update({ position: reference.position }).eq('id', targetReference.id); // Renamed table
     }
 
-    if (error) { toast({ title: 'Erreur', description: 'Impossible de réorganiser les réalisations', variant: 'destructive' }); return; }
-    fetchRealisations();
+    if (error) { toast({ title: 'Erreur', description: 'Impossible de réorganiser les références', variant: 'destructive' }); return; } // Renamed text
+    fetchReferences(); // Renamed hook
   };
 
-  const getDisplayImage = (r: Realisation | RealisationImage) => {
+  const getDisplayImage = (r: Reference | ReferenceImage) => { // Renamed interface
     if (r.image_mode === 'upload' && r.image_file) return r.image_file;
     if (r.image_mode === 'url' && r.image_url) return r.image_url;
     
     // For auto mode, use keyword-based fallback
-    const searchString = `${(r as Realisation).title || ''} ${(r as Realisation).description || ''} ${(r as Realisation).category || ''} ${(r as Realisation).emplacement || ''}`;
-    return getRelevantFallbackImage(searchString, (r as Realisation).category?.toLowerCase() || 'default');
+    const searchString = `${(r as Reference).title || ''} ${(r as Reference).description || ''} ${(r as Reference).category || ''} ${(r as Reference).emplacement || ''}`; // Renamed interface
+    return getRelevantFallbackImage(searchString, (r as Reference).category?.toLowerCase() || 'default'); // Renamed interface
   };
 
-  // Filtered realisations based on selectedDomainFilter
-  const filteredRealisations = useMemo(() => {
+  // Filtered references based on selectedDomainFilter
+  const filteredReferences = useMemo(() => { // Renamed variable
     if (selectedDomainFilter === 'all') {
-      return realisations;
+      return references; // Renamed hook
     }
-    return realisations.filter(r => r.category === selectedDomainFilter);
-  }, [realisations, selectedDomainFilter]);
+    return references.filter(r => r.category === selectedDomainFilter); // Renamed hook
+  }, [references, selectedDomainFilter]); // Renamed hook
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Liste des réalisations</h3>
+        <h3 className="text-lg font-semibold">Liste des références</h3> {/* Renamed text */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => resetForm()}>
               <Plus className="h-4 w-4 mr-2" />
-              Ajouter une réalisation
-            </Button>
+              Ajouter une référence
+            </Button> {/* Renamed text */}
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingRealisation ? 'Modifier la réalisation' : 'Ajouter une réalisation'}
+                {editingReference ? 'Modifier la référence' : 'Ajouter une référence'} {/* Renamed text */}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -358,12 +358,12 @@ const AdminRealisations = () => {
                 <Input id="reference" value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} placeholder="Ex: Réf-001, Projet-X" />
               </div>
               <div>
-                <Label htmlFor="description">Description courte (pour la page d'accueil et la page Réalisations)</Label>
+                <Label htmlFor="description">Description courte (pour la page d'accueil et la page Références)</Label> {/* Renamed text */}
                 <Textarea id="description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required />
               </div>
               <div>
-                <Label htmlFor="long_description">Description longue (uniquement pour la page Réalisations)</Label>
-                <Textarea id="long_description" value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} placeholder="Description détaillée de la réalisation..." />
+                <Label htmlFor="long_description">Description longue (uniquement pour la page Références)</Label> {/* Renamed text */}
+                <Textarea id="long_description" value={form.long_description} onChange={(e) => setForm({ ...form, long_description: e.target.value })} placeholder="Description détaillée de la référence..." /> {/* Renamed text */}
               </div>
 
               {/* Main Image Section */}
@@ -408,7 +408,7 @@ const AdminRealisations = () => {
 
                   {form.image_mode === 'auto' && (
                     <p className="text-sm text-muted-foreground bg-muted p-3 rounded">
-                      En mode automatique, une image sera générée selon la catégorie de la réalisation.
+                      En mode automatique, une image sera générée selon la catégorie de la référence. {/* Renamed text */}
                     </p>
                   )}
                 </CardContent>
@@ -418,10 +418,10 @@ const AdminRealisations = () => {
               <Card className="p-4">
                 <CardHeader className="p-0 mb-4">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <ImageIcon className="h-5 w-5" /> Images supplémentaires (Galerie de la page Réalisations)
+                    <ImageIcon className="h-5 w-5" /> Images supplémentaires (Galerie de la page Références) {/* Renamed text */}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    Ces images s'afficheront dans une galerie sur la page de détails de la réalisation.
+                    Ces images s'afficheront dans une galerie sur la page de détails de la référence. {/* Renamed text */}
                   </p>
                 </CardHeader>
                 <CardContent className="p-0 space-y-4">
@@ -511,7 +511,7 @@ const AdminRealisations = () => {
               </div>
 
               <Button type="submit" className="w-full" disabled={uploadingMainImage || uploadingAdditionalImage}>
-                {editingRealisation ? 'Mettre à jour' : 'Créer'}
+                {editingReference ? 'Mettre à jour' : 'Créer'} {/* Renamed text */}
               </Button>
             </form>
           </DialogContent>
@@ -577,37 +577,37 @@ const AdminRealisations = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredRealisations
+            {filteredReferences // Renamed variable
               .sort((a, b) => a.position - b.position)
-              .map((realisation) => {
-                const mainDisplayImage = getDisplayImage(realisation);
+              .map((reference) => { // Renamed parameter
+                const mainDisplayImage = getDisplayImage(reference);
                 const allImages = [
                   ...(mainDisplayImage ? [{ id: 'main', image_file: mainDisplayImage, image_mode: 'upload', position: -1 }] : []),
-                  ...(realisation.images || []),
+                  ...(reference.images || []),
                 ].sort((a, b) => a.position - b.position);
 
                 return (
-                  <TableRow key={realisation.id}>
+                  <TableRow key={reference.id}>
                     <TableCell>
                       <div className="flex space-x-1">
-                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'up')}>
+                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(reference, 'up')}>
                           <ArrowUp className="h-3 w-3" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'down')}>
+                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(reference, 'down')}>
                           <ArrowDown className="h-3 w-3" />
                         </Button>
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium">{realisation.title}</TableCell>
+                    <TableCell className="font-medium">{reference.title}</TableCell>
                     <TableCell>
                       <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs">
-                        {realisation.category}
+                        {reference.category}
                       </span>
                     </TableCell>
-                    <TableCell>{realisation.date_text || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
-                    <TableCell>{realisation.emplacement || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
-                    <TableCell>{realisation.reference || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
-                    <TableCell className="max-w-xs truncate">{realisation.description}</TableCell>
+                    <TableCell>{reference.date_text || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                    <TableCell>{reference.emplacement || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                    <TableCell>{reference.reference || <span className="text-muted-foreground italic">N/A</span>}</TableCell>
+                    <TableCell className="max-w-xs truncate">{reference.description}</TableCell>
                     <TableCell>
                       <div className="flex -space-x-2 overflow-hidden">
                         {allImages.slice(0, 3).map((img, idx) => (
@@ -622,14 +622,14 @@ const AdminRealisations = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {realisation.is_visible ? (
+                      {reference.is_visible ? (
                         <Eye className="h-5 w-5 text-green-500" />
                       ) : (
                         <EyeOff className="h-5 w-5 text-red-500" />
                       )}
                     </TableCell>
                     <TableCell>
-                      {realisation.is_featured ? (
+                      {reference.is_featured ? (
                         <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                       ) : (
                         <Star className="h-5 w-5 text-gray-400" />
@@ -637,10 +637,10 @@ const AdminRealisations = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => handleEdit(realisation)}>
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(reference)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDelete(realisation.id)}>
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(reference.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -652,16 +652,16 @@ const AdminRealisations = () => {
         </Table>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRealisations
+          {filteredReferences // Renamed variable
             .sort((a, b) => a.position - b.position)
-            .map((realisation) => {
-              const mainDisplayImage = getDisplayImage(realisation);
+            .map((reference) => { // Renamed parameter
+              const mainDisplayImage = getDisplayImage(reference);
               return (
-                <Card key={realisation.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200">
+                <Card key={reference.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200">
                   <div className="relative h-48 w-full">
                     <img
                       src={mainDisplayImage || getRelevantFallbackImage('default')}
-                      alt={realisation.title}
+                      alt={reference.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -669,43 +669,43 @@ const AdminRealisations = () => {
                       }}
                     />
                     <div className="absolute top-2 right-2 flex gap-1">
-                      {realisation.is_visible ? (
+                      {reference.is_visible ? (
                         <span className="bg-green-500 text-white p-1 rounded-full text-xs" title="Visible"><Eye className="h-3 w-3" /></span>
                       ) : (
                         <span className="bg-red-500 text-white p-1 rounded-full text-xs" title="Masquée"><EyeOff className="h-3 w-3" /></span>
                       )}
-                      {realisation.is_featured && (
+                      {reference.is_featured && (
                         <span className="bg-yellow-500 text-white p-1 rounded-full text-xs" title="Mise en avant"><Star className="h-3 w-3 fill-white" /></span>
                       )}
                     </div>
                   </div>
                   <CardContent className="p-4 flex-1 flex flex-col">
-                    <h4 className="font-semibold text-lg mb-1">{realisation.title}</h4>
+                    <h4 className="font-semibold text-lg mb-1">{reference.title}</h4>
                     <p className="text-sm text-muted-foreground mb-2">
                       <span className="px-2 py-0.5 bg-secondary text-secondary-foreground rounded text-xs">
-                        {realisation.category}
+                        {reference.category}
                       </span>
                     </p>
-                    <p className="text-sm text-gray-medium line-clamp-2 mb-3">{realisation.description}</p>
+                    <p className="text-sm text-gray-medium line-clamp-2 mb-3">{reference.description}</p>
                     <div className="flex items-center text-xs text-gray-muted mb-3 gap-x-2">
-                      {realisation.date_text && (
-                        <span className="flex items-center"><Calendar className="h-3 w-3 mr-1" /> {realisation.date_text}</span>
+                      {reference.date_text && (
+                        <span className="flex items-center"><Calendar className="h-3 w-3 mr-1" /> {reference.date_text}</span>
                       )}
-                      {realisation.emplacement && (
-                        <span className="flex items-center"><MapPin className="h-3 w-3 mr-1" /> {realisation.emplacement}</span>
+                      {reference.emplacement && (
+                        <span className="flex items-center"><MapPin className="h-3 w-3 mr-1" /> {reference.emplacement}</span>
                       )}
                     </div>
                     <div className="flex mt-auto space-x-2 pt-4 border-t border-border">
-                      <Button size="sm" variant="outline" onClick={() => handleEdit(realisation)}>
+                      <Button size="sm" variant="outline" onClick={() => handleEdit(reference)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(realisation.id)}>
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(reference.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'up')}>
+                      <Button size="sm" variant="outline" onClick={() => handleMovePosition(reference, 'up')}>
                         <ArrowUp className="h-3 w-3" />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleMovePosition(realisation, 'down')}>
+                      <Button size="sm" variant="outline" onClick={() => handleMovePosition(reference, 'down')}>
                         <ArrowDown className="h-3 w-3" />
                       </Button>
                     </div>
@@ -719,4 +719,4 @@ const AdminRealisations = () => {
   );
 };
 
-export default AdminRealisations;
+export default AdminReferences;

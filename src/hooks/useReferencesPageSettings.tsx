@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface RealisationsPageSettings {
+export interface ReferencesPageSettings { // Renamed interface
   id: number;
   media_type: 'image' | 'video';
   source_type: 'upload' | 'url';
@@ -9,19 +9,19 @@ export interface RealisationsPageSettings {
   media_file: string | null;
 }
 
-export const useRealisationsPageSettings = () => {
-  const [settings, setSettings] = useState<RealisationsPageSettings | null>(null);
+export const useReferencesPageSettings = () => { // Renamed hook
+  const [settings, setSettings] = useState<ReferencesPageSettings | null>(null); // Renamed state and interface
   const [loading, setLoading] = useState(true);
 
   const fetchSettings = useCallback(async () => {
     const { data, error } = await supabase
-      .from('realisations_page_settings')
+      .from('references_page_settings') // Renamed table
       .select('*')
       .eq('id', 1)
       .single();
     
     if (!error && data) {
-      setSettings(data as RealisationsPageSettings);
+      setSettings(data as ReferencesPageSettings); // Renamed interface
     }
     setLoading(false);
   }, []);
@@ -30,5 +30,5 @@ export const useRealisationsPageSettings = () => {
     fetchSettings();
   }, [fetchSettings]);
 
-  return { realisationsPageSettings: settings, loading, fetchRealisationsPageSettings: fetchSettings };
+  return { referencesPageSettings: settings, loading, fetchReferencesPageSettings: fetchSettings }; // Renamed return values
 };

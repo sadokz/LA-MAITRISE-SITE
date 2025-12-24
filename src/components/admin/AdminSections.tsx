@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle, Palette, RefreshCw } from 'lucide-react'; // Added Palette and RefreshCw icons
 import AdminCompetencesPageHero from './AdminCompetencesPageHero';
 import AdminDomainsPageHero from './AdminDomainsPageHero';
-import AdminRealisationsPageHero from './AdminRealisationsPageHero';
+import AdminReferencesPageHero from './AdminReferencesPageHero'; // Renamed import
 
 interface SectionConfig {
   key: string;
@@ -24,7 +24,7 @@ const sections: SectionConfig[] = [
   { key: 'about', label: 'À propos', icon: <Users className="h-5 w-5" /> },
   { key: 'skills', label: 'Compétences', icon: <Zap className="h-5 w-5" /> },
   { key: 'domains', label: 'Domaines d\'intervention', icon: <Grid3X3 className="h-5 w-5" /> },
-  { key: 'projects', label: 'Références / Réalisations', icon: <FolderOpen className="h-5 w-5" /> },
+  { key: 'projects', label: 'Références', icon: <FolderOpen className="h-5 w-5" /> }, // Renamed label
   { key: 'founder', label: 'Le Fondateur', icon: <User className="h-5 w-5" /> },
   { key: 'contact', label: 'Contact', icon: <Mail className="h-5 w-5" /> },
   { key: 'chatbot_visible', label: 'Chatbot', icon: <MessageCircle className="h-5 w-5" /> }, // New chatbot toggle
@@ -222,13 +222,13 @@ const AdminSections = () => {
             Paramètres des bannières de page
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Gérez les images ou vidéos de fond pour les pages dédiées aux compétences, domaines et réalisations.
+            Gérez les images ou vidéos de fond pour les pages dédiées aux compétences, domaines et références.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <AdminCompetencesPageHero />
           <AdminDomainsPageHero />
-          <AdminRealisationsPageHero />
+          <AdminReferencesPageHero /> {/* Renamed component */}
         </CardContent>
       </Card>
     </div>

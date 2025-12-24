@@ -5,7 +5,7 @@ import {
   useSiteTexts,
   useCompetences,
   useDomaines,
-  useRealisations,
+  useReferences, // Renamed hook
   useFounder,
   useContactTexts,
 } from '@/hooks/useSupabaseData';
@@ -25,7 +25,7 @@ interface ChatbotData {
   };
   competences: { title: string; description: string; long_description?: string }[];
   domaines: { title: string; description: string; long_description?: string }[];
-  realisations: { title: string; description: string; long_description?: string; category: string }[];
+  references: { title: string; description: string; long_description?: string; category: string }[]; // Renamed key
   founder: { name: string; bio: string; experience: string };
   general: {
     welcome: string;
@@ -45,7 +45,7 @@ export const useChatbot = () => {
   const { siteTexts, loading: siteTextsLoading, getSiteText } = useSiteTexts();
   const { competences, loading: competencesLoading } = useCompetences();
   const { domaines, loading: domainesLoading } = useDomaines();
-  const { realisations, loading: realisationsLoading } = useRealisations();
+  const { references, loading: referencesLoading } = useReferences(); // Renamed hook
   const { founder, loading: founderLoading } = useFounder();
   const { contactTexts, loading: contactTextsLoading, getContactText } = useContactTexts();
 
@@ -67,7 +67,7 @@ export const useChatbot = () => {
     siteTextsLoading ||
     competencesLoading ||
     domainesLoading ||
-    realisationsLoading ||
+    referencesLoading || // Renamed hook
     founderLoading ||
     contactTextsLoading ||
     contactCoordinatesLoading;
@@ -98,7 +98,7 @@ export const useChatbot = () => {
           description: d.description,
           long_description: d.long_description,
         })),
-        realisations: realisations.filter(r => r.is_visible).map(r => ({
+        references: references.filter(r => r.is_visible).map(r => ({ // Renamed key and hook
           title: r.title,
           description: r.description,
           long_description: r.long_description,
@@ -122,7 +122,7 @@ export const useChatbot = () => {
     siteTexts,
     competences,
     domaines,
-    realisations,
+    references, // Renamed hook
     founder,
     contactTexts,
     contactCoordinates,
@@ -180,13 +180,13 @@ export const useChatbot = () => {
         return "Nos compétences ne sont pas détaillées sur le site pour le moment.";
       }
 
-      // Réalisations / projets
-      if (lowerQuery.includes('réalisations') || lowerQuery.includes('projets') || lowerQuery.includes('références')) {
-        if (chatbotData.realisations.length > 0) {
-          const realisationsList = chatbotData.realisations.slice(0, 3).map(r => r.title).join(', '); // Show top 3
-          return `Nous avons réalisé de nombreux projets, notamment : ${realisationsList} et bien d'autres. Visitez notre page Réalisations pour en savoir plus.`;
+      // References / projects
+      if (lowerQuery.includes('références') || lowerQuery.includes('projets') || lowerQuery.includes('réalisations')) { // Renamed text
+        if (chatbotData.references.length > 0) { // Renamed key
+          const referencesList = chatbotData.references.slice(0, 3).map(r => r.title).join(', '); // Show top 3 (Renamed key)
+          return `Nous avons réalisé de nombreux projets, notamment : ${referencesList} et bien d'autres. Visitez notre page Références pour en savoir plus.`; // Renamed text
         }
-        return "Nous n'avons pas de réalisations détaillées sur le site pour le moment.";
+        return "Nous n'avons pas de références détaillées sur le site pour le moment."; // Renamed text
       }
 
       // Founder information

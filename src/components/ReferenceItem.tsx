@@ -4,15 +4,15 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft as ArrowLeftIcon, ArrowRight, Calendar, MapPin, Hash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useInterval } from '@/hooks/useInterval';
-import { Realisation } from '@/hooks/useSupabaseData';
+import { Reference } from '@/hooks/useSupabaseData'; // Renamed import
 import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
 
-interface RealisationItemProps {
-  project: Realisation;
+interface ReferenceItemProps { // Renamed interface
+  project: Reference; // Renamed prop type
   index: number;
 }
 
-const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => {
+const ReferenceItem: React.FC<ReferenceItemProps> = ({ project, index }) => { // Renamed component
   const isImageLeft = index % 2 === 0; // True for 0, 2, 4... (image on left on desktop)
 
   // Combine main image and additional images, then sort by position
@@ -188,4 +188,4 @@ const RealisationItem: React.FC<RealisationItemProps> = ({ project, index }) => 
   );
 };
 
-export default RealisationItem;
+export default ReferenceItem;

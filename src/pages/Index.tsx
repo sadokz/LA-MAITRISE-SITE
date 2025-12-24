@@ -4,7 +4,7 @@ import Hero from '@/components/Hero';
 import About from '@/components/About';
 import Services from '@/components/Services';
 import Domains from '@/components/Domains';
-import References from '@/components/References';
+import References from '@/components/References'; // Renamed import
 import Founder from '@/components/Founder';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
@@ -47,7 +47,7 @@ const Index = () => {
         {isVisible('domains') && <Domains />}
         
         {/* References Section */}
-        {isVisible('projects') && <References />}
+        {isVisible('projects') && <References />} {/* Renamed component */}
         
         {/* Tunisia Map Section */}
         <TunisiaMap />

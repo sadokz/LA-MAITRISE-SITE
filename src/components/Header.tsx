@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoLaMaitrise from '@/assets/logo-lamaitrise.png';
-import { useSectionVisibility, useCompetences, useDomaines, useRealisations } from '@/hooks/useSupabaseData';
+import { useSectionVisibility, useCompetences, useDomaines, useReferences } from '@/hooks/useSupabaseData'; // Renamed hook
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -23,7 +23,7 @@ const Header = () => {
   const { data: visibility, isLoading: visibilityLoading } = useSectionVisibility();
   const { competences, loading: competencesLoading } = useCompetences();
   const { domaines, loading: domainesLoading } = useDomaines();
-  const { realisations, loading: realisationsLoading } = useRealisations();
+  const { references, loading: referencesLoading } = useReferences(); // Renamed hook
 
   // Helper to check section visibility
   const isVisible = (section: string) => {
@@ -68,8 +68,8 @@ const Header = () => {
 
   const handleNavLinkClick = (item: NavItem) => {
     if (item.path) {
-      // For main navigation links, if it's the realisations page, default to 'all' category
-      if (item.path === '/realisations') {
+      // For main navigation links, if it's the references page, default to 'all' category
+      if (item.path === '/references') { // Renamed path
         navigate(item.path, { state: { category: 'all' } });
       } else {
         navigate(item.path);
@@ -97,8 +97,8 @@ const Header = () => {
       isVisible: isVisible('domains'),
     },
     {
-      label: 'Références',
-      path: '/realisations',
+      label: 'Références', // Renamed label
+      path: '/references', // Renamed path
       isVisible: isVisible('projects'),
     },
     {
@@ -145,7 +145,7 @@ const Header = () => {
               item.path ? (
                 <Link 
                   key={item.label}
-                  to={item.path === '/realisations' ? { pathname: item.path, state: { category: 'all' } } : item.path}
+                  to={item.path === '/references' ? { pathname: item.path, state: { category: 'all' } } : item.path} // Renamed path
                   className={cn(
                     `${textColor} transition-colors duration-300 font-medium cursor-pointer`,
                     (location.pathname === item.path || (isHomePage && location.hash === `#${item.id}`)) && 'text-primary'
@@ -210,7 +210,7 @@ const Header = () => {
                 item.path ? (
                   <Link 
                     key={item.label}
-                    to={item.path === '/realisations' ? { pathname: item.path, state: { category: 'all' } } : item.path}
+                    to={item.path === '/references' ? { pathname: item.path, state: { category: 'all' } } : item.path} // Renamed path
                     onClick={() => handleNavLinkClick(item)}
                     className="block w-full text-left py-2 text-gray-dark hover:text-primary transition-colors font-medium"
                   >

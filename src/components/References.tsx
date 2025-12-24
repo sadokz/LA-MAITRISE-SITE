@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useSiteTexts, useRealisations, useDomaines } from '@/hooks/useSupabaseData';
+import { useSiteTexts, useReferences, useDomaines } from '@/hooks/useSupabaseData'; // Renamed hook
 import EditableText from '@/components/EditableText';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -8,25 +8,25 @@ import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the n
 
 const References = () => {
   const { getSiteText } = useSiteTexts();
-  const { realisations, loading: realisationsLoading } = useRealisations();
+  const { references, loading: referencesLoading } = useReferences(); // Renamed hook
   const { domaines, loading: domainesLoading } = useDomaines(); 
 
-  const loading = realisationsLoading || domainesLoading;
+  const loading = referencesLoading || domainesLoading;
 
-  // Filter realisations to only include visible AND featured ones for public display on homepage
-  const featuredAndVisibleRealisations = useMemo(() => 
-    realisations.filter(r => r.is_visible && r.is_featured), 
-    [realisations]
+  // Filter references to only include visible AND featured ones for public display on homepage
+  const featuredAndVisibleReferences = useMemo(() => 
+    references.filter(r => r.is_visible && r.is_featured), 
+    [references]
   );
 
   // The projects to display are now simply the featured and visible ones, sorted by position
   const projectsToDisplay = useMemo(() => 
-    [...featuredAndVisibleRealisations].sort((a, b) => a.position - b.position),
-    [featuredAndVisibleRealisations]
+    [...featuredAndVisibleReferences].sort((a, b) => a.position - b.position),
+    [featuredAndVisibleReferences]
   );
 
-  // Get display image for a realisation
-  const getDisplayImage = (r: typeof realisations[0]) => {
+  // Get display image for a reference
+  const getDisplayImage = (r: typeof references[0]) => {
     if (r.image_mode === 'upload' && r.image_file) {
       return r.image_file;
     }
@@ -64,7 +64,7 @@ const References = () => {
           <div className="text-center mb-16 animate-fade-up">
             <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
               <EditableText textKey="references.header.title1" defaultValue={getSiteText('references', 'header', 'title1', 'Nos')} className="inline" as="span" />{' '}
-              <EditableText textKey="references.header.title2" defaultValue={getSiteText('references', 'header', 'title2', 'Réalisations')} className="text-gradient-primary inline" as="span" />
+              <EditableText textKey="references.header.title2" defaultValue={getSiteText('references', 'header', 'title2', 'Références')} className="text-gradient-primary inline" as="span" /> {/* Renamed text */}
             </h2>
             <EditableText textKey="references.header.description" defaultValue={getSiteText('references', 'header', 'description', "Découvrez nos projets illustrant notre savoir-faire et notre capacité d'innovation dans l'ingénierie électrique et le BIM.")} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>
@@ -132,7 +132,7 @@ const References = () => {
           {/* Empty state */}
           {projectsToDisplay.length === 0 && (
             <div className="text-center py-12 text-gray-medium">
-              <p>Aucune réalisation trouvée pour cette catégorie.</p>
+              <p>Aucune référence trouvée pour cette catégorie.</p> {/* Renamed text */}
             </div>
           )}
 
@@ -142,7 +142,7 @@ const References = () => {
               asChild 
               className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3"
             >
-              <Link to="/realisations">
+              <Link to="/references"> {/* Renamed path */}
                 En Savoir Plus
                 <span className="ml-2">→</span>
               </Link>
@@ -157,7 +157,7 @@ const References = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
                 <div>
                   <EditableText textKey="references.stats.projects_count" defaultValue={getSiteText('references', 'stats', 'projects_count', '500+')} className="text-3xl font-bold text-primary-light mb-1" as="div" />
-                  <EditableText textKey="references.stats.projects_label" defaultValue={getSiteText('references', 'stats', 'projects_label', 'Projets réalisés')} className="text-sm text-white/80" as="div" />
+                  <EditableText textKey="references.stats.projects_label" defaultValue={getSiteText('references', 'stats', 'projects_label', 'Références réalisées')} className="text-sm text-white/80" as="div" /> {/* Renamed text */}
                 </div>
                 <div>
                   <EditableText textKey="references.stats.countries_count" defaultValue={getSiteText('references', 'stats', 'countries_count', '5')} className="text-3xl font-bold text-primary-light mb-1" as="div" />

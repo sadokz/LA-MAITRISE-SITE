@@ -12,7 +12,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { EditModeProvider } from "@/contexts/EditModeContext";
 import DomainsPage from "./pages/DomainsPage";
 import CompetencesPage from "./pages/CompetencesPage";
-import RealisationsPage from "./pages/RealisationsPage";
+import ReferencesPage from "./pages/ReferencesPage"; // Renamed import
 import { useAppColors } from "@/hooks/useAppColors";
 import { hexToHsl } from "@/lib/colorUtils";
 import { useEffect } from "react";
@@ -67,7 +67,7 @@ const AppContent = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/domaines" element={<DomainsPage />} />
               <Route path="/competences" element={<CompetencesPage />} />
-              <Route path="/realisations" element={<RealisationsPage />} />
+              <Route path="/references" element={<ReferencesPage />} /> {/* Renamed route path */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
