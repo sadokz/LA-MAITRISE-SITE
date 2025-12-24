@@ -1,11 +1,9 @@
 import React, { useMemo } from 'react';
 import { MapPin, CheckCircle } from 'lucide-react';
-import { useReferences, useSiteTexts } from '@/hooks/useSupabaseData'; // Renamed hook
+import { useReferences, useSiteTexts } from '@/hooks/useSupabaseData';
 import EditableText from '@/components/EditableText';
 import { cn } from '@/lib/utils';
-
-// Using an actual map image of Tunisia
-const DEFAULT_TUNISIA_MAP_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Tunisia_location_map.svg/800px-Tunisia_location_map.svg.png';
+import tunisiaMapImage from '@/assets/tunisia-map.png'; // Import the local image
 
 // Define approximate coordinates for cities on a 800x600px map image (relative percentages)
 // These coordinates are illustrative and would need fine-tuning with an actual map image.
@@ -42,21 +40,21 @@ const cityCoordinates: { [key: string]: { x: number; y: number } } = {
 };
 
 const TunisiaMap = () => {
-  const { references, loading: referencesLoading } = useReferences(); // Renamed hook
+  const { references, loading: referencesLoading } = useReferences();
   const { getSiteText } = useSiteTexts();
 
   const projectsByLocation = useMemo(() => {
     const map = new Map<string, number>();
-    references.forEach(project => { // Renamed hook
+    references.forEach(project => {
       if (project.emplacement) {
         const location = project.emplacement.split(',')[0].trim(); // Use first part of emplacement
         map.set(location, (map.get(location) || 0) + 1);
       }
     });
     return map;
-  }, [references]); // Renamed hook
+  }, [references]);
 
-  if (referencesLoading) { // Renamed hook
+  if (referencesLoading) {
     return (
       <section id="tunisia-map" className="section-padding bg-muted/30 min-h-[400px]">
         <div className="container mx-auto px-4 lg:px-8">
@@ -85,7 +83,7 @@ const TunisiaMap = () => {
 
           <div className="relative w-full max-w-4xl mx-auto aspect-[4/3] bg-gray-200 rounded-xl shadow-elegant overflow-hidden min-h-[300px]">
             <img 
-              src={DEFAULT_TUNISIA_MAP_IMAGE} 
+              src={tunisiaMapImage} // Using the local asset
               alt="Carte de la Tunisie" 
               className="w-full h-full object-cover" 
             />
