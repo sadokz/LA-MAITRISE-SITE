@@ -11,6 +11,7 @@ import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
 import DomainItem from '@/components/DomainItem'; // Import the new component
+import ScrollToTopButton from '@/components/ScrollToTopButton'; // Import the new component
 
 const DomainsPage = () => {
   const { getSiteText } = useSiteTexts();
@@ -129,6 +130,7 @@ const DomainsPage = () => {
           </section>
         </main>
         <Footer />
+        <ScrollToTopButton /> {/* Add the scroll to top button here */}
       </div>
     </div>
   );
