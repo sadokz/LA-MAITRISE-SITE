@@ -247,7 +247,7 @@ export const useReferences = () => {
       const { data, error: supabaseError } = await supabase
         .from('references')
         .select('*, reference_images(*)')
-        .order('position', { ascending: true });
+        .order('position', { ascending: true }); // Order only by position
       
       if (supabaseError) {
         console.error('Supabase fetch references error:', supabaseError);
@@ -257,6 +257,7 @@ export const useReferences = () => {
       if (data) {
         console.log('References data fetched successfully:', data);
         const processedReferences = data.map(r => {
+          // Still parse year for potential future use or display, but not for primary sorting
           const yearMatch = r.date_text?.match(/\d{4}/);
           const parsedYear = yearMatch ? parseInt(yearMatch[0]) : 0;
 
@@ -267,14 +268,10 @@ export const useReferences = () => {
           };
         });
 
-        const sortedReferences = processedReferences.sort((a, b) => {
-          if (a.parsed_year !== b.parsed_year) {
-            return (b.parsed_year || 0) - (a.parsed_year || 0);
-          }
-          return a.position - b.position;
-        });
-
-        setReferences(sortedReferences as Reference[]);
+        // The primary sort is now solely by the 'position' column from the database.
+        // Any secondary sorting (like by year) should be handled in the UI components if desired,
+        // but the core data fetch will respect the 'position' set in the admin.
+        setReferences(processedReferences as Reference[]);
       }
     } catch (err: any) {
       console.error('Caught error in fetchReferences:', err);
