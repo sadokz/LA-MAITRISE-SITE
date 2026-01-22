@@ -12,7 +12,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { EditModeProvider } from "@/contexts/EditModeContext";
 import DomainsPage from "./pages/DomainsPage";
 import CompetencesPage from "./pages/CompetencesPage";
-import ReferencesPage from "./pages/ReferencesPage";
+import ReferencesLandingPage from "./pages/ReferencesLandingPage"; // New import
+import ProjectCategoryPage from "./pages/ProjectCategoryPage"; // Renamed import
 import { useAppColors } from "@/hooks/useAppColors";
 import { hexToHsl } from "@/lib/colorUtils";
 import { useEffect } from "react";
@@ -67,7 +68,8 @@ const AppContent = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/domaines" element={<DomainsPage />} />
           <Route path="/competences" element={<CompetencesPage />} />
-          <Route path="/references" element={<ReferencesPage />} />
+          <Route path="/references" element={<ReferencesLandingPage />} /> {/* New landing page */}
+          <Route path="/references/:categorySlug" element={<ProjectCategoryPage />} /> {/* Dynamic category page */}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -374,7 +374,7 @@ export type Database = {
         }
         Relationships: []
       }
-      reference_images: { -- Renamed table
+      reference_images: {
         Row: {
           created_at: string
           id: string
@@ -382,7 +382,7 @@ export type Database = {
           image_mode: string
           image_url: string | null
           position: number
-          reference_id: string | null -- Renamed column
+          reference_id: string | null
           updated_at: string
         }
         Insert: {
@@ -392,7 +392,7 @@ export type Database = {
           image_mode?: string
           image_url?: string | null
           position?: number
-          reference_id?: string | null -- Renamed column
+          reference_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -402,20 +402,20 @@ export type Database = {
           image_mode?: string
           image_url?: string | null
           position?: number
-          reference_id?: string | null -- Renamed column
+          reference_id?: string | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "reference_images_reference_id_fkey" -- Renamed foreign key
-            columns: ["reference_id"] -- Renamed column
+            foreignKeyName: "reference_images_reference_id_fkey"
+            columns: ["reference_id"]
             isOneToOne: false
-            referencedRelation: "references" -- Renamed table
+            referencedRelation: "references"
             referencedColumns: ["id"]
           },
         ]
       }
-      references: { -- Renamed table
+      references: {
         Row: {
           category: string
           created_at: string
@@ -472,7 +472,7 @@ export type Database = {
         }
         Relationships: []
       }
-      references_page_settings: { -- Renamed table
+      references_page_settings: {
         Row: {
           created_at: string
           id: number
@@ -512,7 +512,7 @@ export type Database = {
           founder: boolean
           home: boolean
           id: number
-          projects: boolean -- Renamed column
+          projects: boolean
           skills: boolean
           updated_at: string
         }
@@ -525,7 +525,7 @@ export type Database = {
           founder?: boolean
           home?: boolean
           id?: number
-          projects?: boolean -- Renamed column
+          projects?: boolean
           skills?: boolean
           updated_at?: string
         }
@@ -538,7 +538,7 @@ export type Database = {
           founder?: boolean
           home?: boolean
           id?: number
-          projects?: boolean -- Renamed column
+          projects?: boolean
           skills?: boolean
           updated_at?: string
         }

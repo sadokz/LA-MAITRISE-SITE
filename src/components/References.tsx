@@ -1,14 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { useSiteTexts, useReferences, useDomaines } from '@/hooks/useSupabaseData'; // Renamed hook
+import { useSiteTexts, useReferences, useDomaines } from '@/hooks/useSupabaseData';
 import EditableText from '@/components/EditableText';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin } from 'lucide-react';
-import { getRelevantFallbackImage } from '@/lib/fallbackImages'; // Import the new utility
+import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 
 const References = () => {
   const { getSiteText } = useSiteTexts();
-  const { references, loading: referencesLoading } = useReferences(); // Renamed hook
+  const { references, loading: referencesLoading } = useReferences();
   const { domaines, loading: domainesLoading } = useDomaines(); 
 
   const loading = referencesLoading || domainesLoading;
@@ -64,7 +64,7 @@ const References = () => {
           <div className="text-center mb-16 animate-fade-up">
             <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
               <EditableText textKey="references.header.title1" defaultValue={getSiteText('references', 'header', 'title1', 'Nos')} className="inline" as="span" />{' '}
-              <EditableText textKey="references.header.title2" defaultValue={getSiteText('references', 'header', 'title2', 'Références')} className="text-gradient-primary inline" as="span" /> {/* Renamed text */}
+              <EditableText textKey="references.header.title2" defaultValue={getSiteText('references', 'header', 'title2', 'Références')} className="text-gradient-primary inline" as="span" />
             </h2>
             <EditableText textKey="references.header.description" defaultValue={getSiteText('references', 'header', 'description', "Découvrez nos projets illustrant notre savoir-faire et notre capacité d'innovation dans l'ingénierie électrique et le BIM.")} className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed" as="p" multiline />
           </div>
@@ -132,7 +132,7 @@ const References = () => {
           {/* Empty state */}
           {projectsToDisplay.length === 0 && (
             <div className="text-center py-12 text-gray-medium">
-              <p>Aucune référence trouvée pour cette catégorie.</p> {/* Renamed text */}
+              <p>Aucune référence trouvée pour cette catégorie.</p>
             </div>
           )}
 
@@ -142,7 +142,7 @@ const References = () => {
               asChild 
               className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3"
             >
-              <Link to="/references"> {/* Renamed path */}
+              <Link to="/references">
                 En Savoir Plus
                 <span className="ml-2">→</span>
               </Link>
@@ -157,7 +157,7 @@ const References = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
                 <div>
                   <EditableText textKey="references.stats.projects_count" defaultValue={getSiteText('references', 'stats', 'projects_count', '500+')} className="text-3xl font-bold text-primary-light mb-1" as="div" />
-                  <EditableText textKey="references.stats.projects_label" defaultValue={getSiteText('references', 'stats', 'projects_label', 'Références réalisées')} className="text-sm text-white/80" as="div" /> {/* Renamed text */}
+                  <EditableText textKey="references.stats.projects_label" defaultValue={getSiteText('references', 'stats', 'projects_label', 'Références réalisées')} className="text-sm text-white/80" as="div" />
                 </div>
                 <div>
                   <EditableText textKey="references.stats.countries_count" defaultValue={getSiteText('references', 'stats', 'countries_count', '5')} className="text-3xl font-bold text-primary-light mb-1" as="div" />

@@ -233,7 +233,7 @@ export const useHeroSettings = () => {
 export const useReferences = () => {
   const [references, setReferences] = useState<Reference[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null); // Add error state
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     fetchReferences();
@@ -241,23 +241,19 @@ export const useReferences = () => {
 
   const fetchReferences = async () => {
     setLoading(true);
-    setError(null); // Reset error state
+    setError(null);
     try {
-      console.log('Attempting to fetch references...');
       const { data, error: supabaseError } = await supabase
         .from('references')
         .select('*, reference_images(*)')
-        .order('position', { ascending: true }); // Order only by position
+        .order('position', { ascending: true });
       
       if (supabaseError) {
-        console.error('Supabase fetch references error:', supabaseError);
         throw supabaseError;
       }
       
       if (data) {
-        console.log('References data fetched successfully:', data);
         const processedReferences = data.map(r => {
-          // Still parse year for potential future use or display, but not for primary sorting
           const yearMatch = r.date_text?.match(/\d{4}/);
           const parsedYear = yearMatch ? parseInt(yearMatch[0]) : 0;
 
@@ -268,20 +264,16 @@ export const useReferences = () => {
           };
         });
 
-        // The primary sort is now solely by the 'position' column from the database.
-        // Any secondary sorting (like by year) should be handled in the UI components if desired,
-        // but the core data fetch will respect the 'position' set in the admin.
         setReferences(processedReferences as Reference[]);
       }
     } catch (err: any) {
-      console.error('Caught error in fetchReferences:', err);
       setError(err);
     } finally {
       setLoading(false);
     }
   };
 
-  return { references, loading, fetchReferences, error }; // Return error state
+  return { references, loading, fetchReferences, error };
 };
 
 export const useFounder = () => {

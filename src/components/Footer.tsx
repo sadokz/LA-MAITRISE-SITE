@@ -9,7 +9,7 @@ import {
   Clock
 } from 'lucide-react';
 import logoLaMaitrise from '@/assets/logo-lamaitrise.png';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // Import Link, useLocation, useNavigate
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Footer = () => {
   const location = useLocation();
@@ -19,20 +19,15 @@ const Footer = () => {
   const scrollToSection = (sectionId: string) => {
     if (sectionId === 'accueil') {
       if (!isHomePage) {
-        // If not on home page, navigate to home and then scroll to top
         navigate('/');
-        // Use a small delay to ensure the page has rendered before scrolling
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 100); 
       } else {
-        // If already on home page, just scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } else {
-      // For other sections, use scrollIntoView
       if (!isHomePage) {
-        // If not on home page, navigate to home with hash, then scroll
         navigate(`/#${sectionId}`);
         setTimeout(() => {
           const element = document.getElementById(sectionId);
@@ -41,7 +36,6 @@ const Footer = () => {
           }
         }, 100);
       } else {
-        // If already on home page, just scroll
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
@@ -54,7 +48,7 @@ const Footer = () => {
     { label: 'Accueil', id: 'accueil', type: 'scroll' },
     { label: 'Compétences', path: '/competences', type: 'page' },
     { label: 'Domaines', path: '/domaines', type: 'page' },
-    { label: 'Références', path: '/references', type: 'page' }, // Renamed path
+    { label: 'Références', path: '/references', type: 'page' }, // Now points to the landing page
     { label: 'Contact', id: 'contact', type: 'scroll' }
   ];
 

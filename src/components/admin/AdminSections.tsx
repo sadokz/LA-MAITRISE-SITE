@@ -5,13 +5,13 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useSectionVisibility } from '@/hooks/useSupabaseData';
-import { useAppColors } from '@/hooks/useAppColors'; // Import the new hook
+import { useAppColors } from '@/hooks/useAppColors';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle, Palette, RefreshCw } from 'lucide-react'; // Added Palette and RefreshCw icons
+import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle, Palette, RefreshCw } from 'lucide-react';
 import AdminCompetencesPageHero from './AdminCompetencesPageHero';
 import AdminDomainsPageHero from './AdminDomainsPageHero';
-import AdminReferencesPageHero from './AdminReferencesPageHero'; // Renamed import
+import AdminReferencesPageHero from './AdminReferencesPageHero';
 
 interface SectionConfig {
   key: string;
@@ -24,17 +24,17 @@ const sections: SectionConfig[] = [
   { key: 'about', label: 'À propos', icon: <Users className="h-5 w-5" /> },
   { key: 'skills', label: 'Compétences', icon: <Zap className="h-5 w-5" /> },
   { key: 'domains', label: 'Domaines d\'intervention', icon: <Grid3X3 className="h-5 w-5" /> },
-  { key: 'projects', label: 'Références', icon: <FolderOpen className="h-5 w-5" /> }, // Renamed label
+  { key: 'projects', label: 'Références', icon: <FolderOpen className="h-5 w-5" /> },
   { key: 'founder', label: 'Le Fondateur', icon: <User className="h-5 w-5" /> },
   { key: 'contact', label: 'Contact', icon: <Mail className="h-5 w-5" /> },
-  { key: 'chatbot_visible', label: 'Chatbot', icon: <MessageCircle className="h-5 w-5" /> }, // New chatbot toggle
+  { key: 'chatbot_visible', label: 'Chatbot', icon: <MessageCircle className="h-5 w-5" /> },
 ];
 
 const AdminSections = () => {
   const { data: visibility, isLoading, refetch } = useSectionVisibility();
   const { appColors, loading: colorsLoading, updateAppColors, isUpdating } = useAppColors();
-  const [primaryColor, setPrimaryColor] = useState<string>('#FF7F00'); // Changed default to corporate orange
-  const [secondaryColor, setSecondaryColor] = useState<string>('#F0F0F0'); // Default light gray
+  const [primaryColor, setPrimaryColor] = useState<string>('#FF7F00');
+  const [secondaryColor, setSecondaryColor] = useState<string>('#F0F0F0');
 
   useEffect(() => {
     if (appColors) {
@@ -69,8 +69,8 @@ const AdminSections = () => {
 
   const handleResetColors = () => {
     updateAppColors({
-      primary_color_hex: '#FF7F00', // Default primary color (corporate orange)
-      secondary_color_hex: '#F0F0F0', // Default secondary color (light gray)
+      primary_color_hex: '#FF7F00',
+      secondary_color_hex: '#F0F0F0',
     });
   };
 
@@ -228,7 +228,7 @@ const AdminSections = () => {
         <CardContent className="space-y-6">
           <AdminCompetencesPageHero />
           <AdminDomainsPageHero />
-          <AdminReferencesPageHero /> {/* Renamed component */}
+          <AdminReferencesPageHero />
         </CardContent>
       </Card>
     </div>
