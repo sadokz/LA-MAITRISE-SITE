@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, PlusCircle, MinusCircle } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useReferences, useDomaines, Reference } from '@/hooks/useSupabaseData';
-import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings';
+import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Corrected import path
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';

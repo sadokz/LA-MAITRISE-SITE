@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 import { cn } from '@/lib/utils';
+import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Corrected import path
 
 type ImageMode = 'auto' | 'url' | 'upload';
 type LayoutMode = 'list' | 'grid';
@@ -23,6 +24,7 @@ const AdminReferences = () => {
   // ALL HOOKS MUST BE DECLARED AT THE TOP LEVEL, UNCONDITIONALLY
   const { references, fetchReferences, loading: referencesLoading, error: referencesError } = useReferences();
   const { domaines, loading: domainesLoading, error: domainesError } = useDomaines();
+  const { referencesPageSettings } = useReferencesPageSettings(); // Using the hook here
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingReference, setEditingReference] = useState<Reference | null>(null);
   const [form, setForm] = useState({
@@ -670,6 +672,12 @@ const AdminReferences = () => {
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => handleDelete(reference.id)}>
                           <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(reference, 'up')}>
+                          <ArrowUp className="h-3 w-3" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleMovePosition(reference, 'down')}>
+                          <ArrowDown className="h-3 w-3" />
                         </Button>
                       </div>
                     </TableCell>

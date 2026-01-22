@@ -5,7 +5,8 @@ import Footer from '@/components/Footer';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import EditableText from '@/components/EditableText';
-import { useSiteTexts, useReferencesPageSettings } from '@/hooks/useSupabaseData';
+import { useSiteTexts } from '@/hooks/useSupabaseData'; // Removed useReferencesPageSettings from here
+import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Corrected import path
 import heroImage from '@/assets/hero-engineering.jpg';
 import SectorsGrid from '@/components/SectorsGrid';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
