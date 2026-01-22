@@ -19,58 +19,114 @@ const SectorsGrid = () => {
   const { domaines, loading: domainesLoading } = useDomaines();
 
   const sectorCards: SectorCardData[] = useMemo(() => {
-    const baseCards: SectorCardData[] = [
-      {
-        id: 'all-projects',
-        title: 'TOUS LES PROJETS',
-        description: 'Découvrez l\'ensemble de nos réalisations en ingénierie électrique.',
-        image: getRelevantFallbackImage('default'),
-        icon: LayoutGrid,
-        categorySlug: 'all',
-      },
-      // Specific cards with provided images
+    const cards: SectorCardData[] = [];
+
+    // 1. Add "Tous les projets" card
+    cards.push({
+      id: 'all-projects',
+      title: 'TOUS LES PROJETS',
+      description: 'Découvrez l\'ensemble de nos réalisations en ingénierie électrique.',
+      image: getRelevantFallbackImage('default'),
+      icon: LayoutGrid,
+      categorySlug: 'all',
+    });
+
+    // Map for quick lookup of domains by title
+    const domainesMap = new Map(domaines.map(d => [d.title, d]));
+
+    // 2. Add specific hardcoded cards, trying to pull images from domaines
+    const specificCardDefinitions = [
       {
         id: 'etablissements-hospitaliers',
         title: 'ÉTABLISSEMENTS HOSPITALIERS',
         description: 'Études et installations électriques complètes pour les infrastructures de santé.',
-        image: 'https://la-maitrise.tn/MEDIA/REF.HOPITAL.png',
+        defaultImage: 'https://la-maitrise.tn/MEDIA/REF.HOPITAL.png',
         icon: Hospital,
-        categorySlug: 'Établissements Hospitaliers',
       },
       {
         id: 'batiments-patrimoine-musees',
-        title: 'BÂTIMENTS DU PATRIMOINE ET MUSÉES',
+        title: 'BÂTIMENTS DU PATRIMONIAL ET MUSÉES', // Corrected title to match potential domain
         description: 'Expertise en électricité pour la valorisation et la conservation du patrimoine.',
-        image: 'https://la-maitrise.tn/MEDIA/REF.MUSEE.png',
+        defaultImage: 'https://la-maitrise.tn/MEDIA/REF.MUSEE.png',
         icon: Landmark,
-        categorySlug: 'Bâtiments du Patrimoine et Musées',
       },
       {
         id: 'etablissements-scolaire',
         title: 'ÉTABLISSEMENTS SCOLAIRES',
         description: 'Solutions électriques adaptées aux besoins des établissements éducatifs.',
-        image: 'https://la-maitrise.tn/MEDIA/REF.ECOLE.png',
+        defaultImage: 'https://la-maitrise.tn/MEDIA/REF.ECOLE.png',
         icon: School,
-        categorySlug: 'Établissements Scolaire',
+      },
+      // Add other specific categories if needed, e.g., Aéroports, Ports
+      {
+        id: 'aeroports',
+        title: 'AÉROPORTS',
+        description: 'Conception et mise en œuvre de systèmes électriques pour les infrastructures aéroportuaires.',
+        defaultImage: getRelevantFallbackImage('aéroport'),
+        icon: Plane,
+      },
+      {
+        id: 'ports',
+        title: 'PORTS',
+        description: 'Solutions d\'ingénierie électrique pour les infrastructures portuaires et maritimes.',
+        defaultImage: getRelevantFallbackImage('port'),
+        icon: Anchor,
       },
     ];
 
-    // Dynamically add cards for other domains, ensuring no duplicates with specific cards
-    const existingSlugs = new Set(baseCards.map(card => card.categorySlug));
-    const dynamicCards = domaines
-      .filter(domaine => !existingSlugs.has(domaine.title))
-      .sort((a, b) => a.position - b.position) // Sort by position
-      .map(domaine => ({
-        id: domaine.id,
-        title: domaine.title.toUpperCase(),
-        description: domaine.description,
-        image: getRelevantFallbackImage(`${domaine.title} ${domaine.description}`, domaine.title.toLowerCase()),
-        icon: Building, // Generic icon, could be improved with a map
-        categorySlug: domaine.title,
-      }));
+    specificCardDefinitions.forEach(def => {
+      const matchingDomaine = domainesMap.get(def.title);
+      let imageUrl = def.defaultImage;
+      let cardDescription = def.description;
 
-    return [...baseCards, ...dynamicCards];
-  }, [domaines]);
+      if (matchingDomaine) {
+        if (matchingDomaine.image_mode === 'upload' && matchingDomaine.image_file) {
+          imageUrl = matchingDomaine.image_file;
+        } else if (matchingDomaine.image_mode === 'url' && matchingDomaine.image_url) {
+          imageUrl = matchingDomaine.image_url;
+        } else {
+          // Fallback for auto mode or no image set in domaine
+          imageUrl = getRelevantFallbackImage(`${matchingDomaine.title} ${matchingDomaine.description}`, matchingDomaine.title.toLowerCase());
+        }
+        cardDescription = matchingDomaine.description; // Use description from domaine
+        // Remove this domain from the map so it's not added again dynamically
+        domainesMap.delete(def.title);
+      }
+
+      cards.push({
+        id: def.id,
+        title: def.title.toUpperCase(),
+        description: cardDescription,
+        image: imageUrl,
+        icon: def.icon,
+        categorySlug: def.title, // Use the full title as slug
+      });
+    });
+
+    // 3. Add remaining dynamic cards from domaines (those not covered by specific cards)
+    const dynamicCards = Array.from(domainesMap.values())
+      .sort((a, b) => a.position - b.position) // Sort by position
+      .map(domaine => {
+        let imageUrl;
+        if (domaine.image_mode === 'upload' && domaine.image_file) {
+          imageUrl = domaine.image_file;
+        } else if (domaine.image_mode === 'url' && domaine.image_url) {
+          imageUrl = domaine.image_url;
+        } else {
+          imageUrl = getRelevantFallbackImage(`${domaine.title} ${domaine.description}`, domaine.title.toLowerCase());
+        }
+        return {
+          id: domaine.id,
+          title: domaine.title.toUpperCase(),
+          description: domaine.description,
+          image: imageUrl,
+          icon: Building, // Generic icon, could be improved with a map
+          categorySlug: domaine.title,
+        };
+      });
+
+    return [...cards, ...dynamicCards];
+  }, [domaines]); // Depend on domaines to re-calculate when data changes
 
   if (domainesLoading) {
     return (
@@ -109,8 +165,8 @@ const SectorsGrid = () => {
             {/* Content */}
             <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
               {Icon && (
-                <div className="mb-3 self-start p-3 bg-primary rounded-lg group-hover:bg-primary/90 transition-colors"> {/* Increased padding, solid primary background */}
-                  <Icon className="h-8 w-8" /> {/* Increased icon size */}
+                <div className="mb-3 self-start p-2 bg-primary/80 rounded-lg group-hover:bg-primary transition-colors">
+                  <Icon className="h-6 w-6" />
                 </div>
               )}
               <h3 className="font-heading font-bold text-xl uppercase mb-2 leading-tight">
