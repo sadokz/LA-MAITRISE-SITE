@@ -135,11 +135,11 @@ const SectorsGrid = () => {
             {/* Content */}
             <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
               {IconComponent && (
-                <div className="mb-6 self-start w-16 h-16 bg-primary rounded-xl flex items-center justify-center group-hover:bg-primary-dark transition-colors duration-300">
+                <div className="mb-4 self-start w-16 h-16 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
                   {typeof IconComponent === 'string' ? (
                     <span className="text-5xl">{IconComponent}</span> // Render emoji directly
                   ) : (
-                    <IconComponent className="h-8 w-8 text-white" /> // Render Lucide icon
+                    <IconComponent className="h-10 w-10 text-white" /> // Render Lucide icon slightly larger
                   )}
                 </div>
               )}
