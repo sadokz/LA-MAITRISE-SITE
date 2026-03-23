@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, LayoutGrid, Building, Hospital, Home, Factory, Sun, Lightbulb, Landmark, School, Plane, Anchor } from 'lucide-react';
+import { ArrowRight, LayoutGrid, Hospital, Landmark, School, Plane, Anchor } from 'lucide-react';
 import { useDomaines } from '@/hooks/useSupabaseData';
 import { getRelevantFallbackImage } from '@/lib/fallbackImages';
-import { cn } from '@/lib/utils';
 
 interface SectorCardData {
   id: string;
@@ -115,7 +114,7 @@ const SectorsGrid = () => {
           <Link 
             key={card.id} 
             to={`/references/${card.categorySlug}`} 
-            className="group relative aspect-[4/3] rounded-xl overflow-hidden shadow-card cursor-pointer animate-scale-in hover:scale-[1.02] transition-transform duration-300"
+            className="group relative aspect-[2/3] rounded-xl overflow-hidden shadow-card cursor-pointer animate-scale-in hover:scale-[1.02] transition-transform duration-300"
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             {/* Background Image */}
@@ -134,9 +133,9 @@ const SectorsGrid = () => {
             <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 transition-colors duration-300" />
             
             {/* Content */}
-            <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
+            <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
               {IconComponent && (
-                <div className="mb-4 self-start w-16 h-16 bg-primary rounded-xl flex items-center justify-center group-hover:bg-primary-dark transition-colors duration-300">
+                <div className="mb-6 self-start w-16 h-16 bg-primary rounded-xl flex items-center justify-center group-hover:bg-primary-dark transition-colors duration-300">
                   {typeof IconComponent === 'string' ? (
                     <span className="text-5xl">{IconComponent}</span> // Render emoji directly
                   ) : (
@@ -144,14 +143,14 @@ const SectorsGrid = () => {
                   )}
                 </div>
               )}
-              <h3 className="font-heading font-bold text-2xl uppercase mb-2 leading-tight">
+              <h3 className="font-heading font-bold text-2xl uppercase mb-3 leading-tight">
                 {card.title}
               </h3>
-              <p className="text-base text-white/90 mb-4 line-clamp-1">
+              <p className="text-base text-white/90 mb-6 line-clamp-3">
                 {card.description}
               </p>
               <Button 
-                className="bg-yellow-500 text-gray-900 hover:bg-yellow-600 font-semibold px-6 py-3 rounded-lg w-auto inline-flex items-center"
+                className="bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 font-semibold px-6 py-3 rounded-lg w-auto inline-flex items-center self-start transition-all duration-300"
               >
                 Découvrir <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
