@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, LayoutGrid, Hospital, Landmark, School, Plane, Anchor } from 'lucide-react';
+import { ArrowRight, LayoutGrid, Hospital, Landmark, School, Plane, Anchor, Building2, Factory, Lightbulb } from 'lucide-react';
 import { useDomaines } from '@/hooks/useSupabaseData';
 import { getRelevantFallbackImage } from '@/lib/fallbackImages';
 
@@ -10,72 +10,45 @@ interface SectorCardData {
   title: string;
   description: string;
   image: string;
-  icon?: string | React.ElementType; // Allow string for emojis
+  icon?: string | React.ElementType;
   categorySlug: string;
 }
+
+// Helper to map domain titles to Lucide icons for better visuals
+const getIconForDomain = (title: string, dbIcon?: string): string | React.ElementType => {
+  if (dbIcon && dbIcon.trim().length > 0) return dbIcon;
+  
+  const t = title.toLowerCase();
+  if (t.includes('hospital') || t.includes('santé')) return Hospital;
+  if (t.includes('musée') || t.includes('patrimoine') || t.includes('culture')) return Landmark;
+  if (t.includes('scolaire') || t.includes('école') || t.includes('enseignement')) return School;
+  if (t.includes('aéroport') || t.includes('aviation')) return Plane;
+  if (t.includes('port') || t.includes('maritime')) return Anchor;
+  if (t.includes('tertiaire') || t.includes('bureau')) return Building2;
+  if (t.includes('industrie')) return Factory;
+  
+  return Lightbulb; // Default icon
+};
 
 const SectorsGrid = () => {
   const { domaines, loading: domainesLoading } = useDomaines();
 
   const sectorCards: SectorCardData[] = useMemo(() => {
-    const baseCards: SectorCardData[] = [
+    // 1. Start with the "All Projects" static card
+    const cards: SectorCardData[] = [
       {
         id: 'all-projects',
         title: 'TOUS LES PROJETS',
         description: 'Découvrez l\'ensemble de nos réalisations en ingénierie électrique.',
-        image: getRelevantFallbackImage('default'),
+        image: getRelevantFallbackImage('engineering complex'),
         icon: LayoutGrid,
         categorySlug: 'all',
-      },
-      // Specific cards with provided images
-      {
-        id: 'etablissements-hospitaliers',
-        title: 'ÉTABLISSEMENTS HOSPITALIERS',
-        description: 'Études et installations électriques complètes pour les infrastructures de santé.',
-        image: 'https://la-maitrise.tn/MEDIA/REF.HOPITAL.png',
-        icon: Hospital,
-        categorySlug: 'Établissements Hospitaliers',
-      },
-      {
-        id: 'batiments-patrimoine-musees',
-        title: 'BÂTIMENTS DU PATRIMOINE ET MUSÉES',
-        description: 'Expertise en électricité pour la valorisation et la conservation du patrimoine.',
-        image: 'https://la-maitrise.tn/MEDIA/REF.MUSEE.png',
-        icon: Landmark,
-        categorySlug: 'Bâtiments du Patrimoine et Musées',
-      },
-      {
-        id: 'etablissements-scolaire',
-        title: 'ÉTABLISSEMENTS SCOLAIRES',
-        description: 'Solutions électriques adaptées aux besoins des établissements éducatifs.',
-        image: 'https://la-maitrise.tn/MEDIA/REF.ECOLE.png',
-        icon: School,
-        categorySlug: 'Établissements Scolaire',
-      },
-      // Add other specific categories if needed, e.g., Aéroports, Ports
-      {
-        id: 'aeroports',
-        title: 'AÉROPORTS',
-        description: 'Conception et mise en œuvre de systèmes électriques pour les infrastructures aéroportuaires.',
-        image: getRelevantFallbackImage('aéroport'),
-        icon: Plane,
-        categorySlug: 'Aéroports',
-      },
-      {
-        id: 'ports',
-        title: 'PORTS',
-        description: 'Solutions d\'ingénierie électrique pour les infrastructures portuaires et maritimes.',
-        image: getRelevantFallbackImage('port'),
-        icon: Anchor,
-        categorySlug: 'Ports',
-      },
+      }
     ];
 
-    // Dynamically add cards for other domains, ensuring no duplicates with specific cards
-    const existingSlugs = new Set(baseCards.map(card => card.categorySlug));
+    // 2. Add all domains from database dynamically
     const dynamicCards = domaines
-      .filter(domaine => !existingSlugs.has(domaine.title))
-      .sort((a, b) => a.position - b.position) // Sort by position
+      .sort((a, b) => a.position - b.position)
       .map(domaine => {
         let imageUrl;
         if (domaine.image_mode === 'upload' && domaine.image_file) {
@@ -85,18 +58,19 @@ const SectorsGrid = () => {
         } else {
           imageUrl = getRelevantFallbackImage(`${domaine.title} ${domaine.description}`, domaine.title.toLowerCase());
         }
+
         return {
           id: domaine.id,
           title: domaine.title.toUpperCase(),
           description: domaine.description,
           image: imageUrl,
-          icon: domaine.icon, // Use the actual icon from Supabase
+          icon: getIconForDomain(domaine.title, domaine.icon),
           categorySlug: domaine.title,
         };
       });
 
-    return [...baseCards, ...dynamicCards];
-  }, [domaines]); // Depend on domaines to re-calculate when data changes
+    return [...cards, ...dynamicCards];
+  }, [domaines]);
 
   if (domainesLoading) {
     return (
@@ -125,7 +99,6 @@ const SectorsGrid = () => {
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = getRelevantFallbackImage('default');
-                console.warn(`Image non disponible pour "${card.title}", fallback utilisé.`);
               }}
             />
             
@@ -137,9 +110,9 @@ const SectorsGrid = () => {
               {IconComponent && (
                 <div className="mb-4 self-start w-16 h-16 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
                   {typeof IconComponent === 'string' ? (
-                    <span className="text-5xl">{IconComponent}</span> // Render emoji directly
+                    <span className="text-5xl">{IconComponent}</span>
                   ) : (
-                    <IconComponent className="h-10 w-10 text-white" /> // Render Lucide icon slightly larger
+                    <IconComponent className="h-10 w-10 text-white" />
                   )}
                 </div>
               )}
