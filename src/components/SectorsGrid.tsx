@@ -20,7 +20,7 @@ const getIconForDomain = (title: string, dbIcon?: string): string | React.Elemen
   
   const t = title.toLowerCase();
   if (t.includes('hospital') || t.includes('santé')) return Hospital;
-  if (t.includes('musée') || t.includes('patrimoine') || t.includes('culture')) return Landmark;
+  if (t.includes('musée') || t.includes('patrimoine') || t.includes('culture') || t.includes('administratif') || t.includes('public')) return Landmark;
   if (t.includes('scolaire') || t.includes('école') || t.includes('enseignement')) return School;
   if (t.includes('aéroport') || t.includes('aviation')) return Plane;
   if (t.includes('port') || t.includes('maritime')) return Anchor;

@@ -14,6 +14,8 @@ export const keywordFallbackImages = new Map<string, string>([
   // Domains & Categories
   ['bâtiments résidentiels', 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop'],
   ['bâtiments tertiaires', 'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop'],
+  ['administratif', 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop'],
+  ['public', 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=400&fit=crop'],
   ['industrie', 'https://images.unsplash.com/photo-1545558014_8692077e9b5c?w=600&h=400&fit=crop'],
   ['infrastructures', 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop'],
   ['énergie', 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop'],
