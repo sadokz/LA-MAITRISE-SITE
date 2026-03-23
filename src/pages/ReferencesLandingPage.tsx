@@ -5,8 +5,8 @@ import Footer from '@/components/Footer';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import EditableText from '@/components/EditableText';
-import { useSiteTexts } from '@/hooks/useSupabaseData'; // Removed useReferencesPageSettings from here
-import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Corrected import path
+import { useSiteTexts } from '@/hooks/useSupabaseData';
+import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings'; // Switched to domains settings
 import heroImage from '@/assets/hero-engineering.jpg';
 import SectorsGrid from '@/components/SectorsGrid';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
@@ -14,18 +14,18 @@ import ScrollToTopButton from '@/components/ScrollToTopButton';
 const ReferencesLandingPage = () => {
   const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
-  const { referencesPageSettings } = useReferencesPageSettings();
+  const { domainsPageSettings } = useDomainsPageSettings(); // Using domains settings
 
-  const sectorsGridRef = useRef<HTMLDivElement>(null); // Ref for the sectors grid
+  const sectorsGridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const getHeroMedia = () => {
-    if (!referencesPageSettings) return { type: 'image', url: heroImage };
+    if (!domainsPageSettings) return { type: 'image', url: heroImage };
     
-    const { media_type, source_type, media_url, media_file } = referencesPageSettings;
+    const { media_type, source_type, media_url, media_file } = domainsPageSettings;
 
     if (source_type === 'upload' && media_file) {
       return { type: media_type, url: media_file };

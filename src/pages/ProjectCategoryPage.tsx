@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, PlusCircle, MinusCircle } from 'lucide-react';
 import EditableText from '@/components/EditableText';
 import { useSiteTexts, useReferences, useDomaines, Reference } from '@/hooks/useSupabaseData';
-import { useReferencesPageSettings } from '@/hooks/useReferencesPageSettings'; // Corrected import path
+import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings'; // Switched to domains settings
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
 import heroImage from '@/assets/hero-engineering.jpg';
@@ -18,8 +18,8 @@ const ProjectCategoryPage = () => {
   const { isAdmin } = useEditMode();
   const { references, loading: referencesLoading } = useReferences();
   const { domaines, loading: domainesLoading } = useDomaines();
-  const { referencesPageSettings } = useReferencesPageSettings();
-  const { categorySlug } = useParams<{ categorySlug: string }>(); // Get category slug from URL
+  const { domainsPageSettings } = useDomainsPageSettings(); // Using domains settings
+  const { categorySlug } = useParams<{ categorySlug: string }>();
   const location = useLocation();
 
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
@@ -55,15 +55,15 @@ const ProjectCategoryPage = () => {
 
   const filteredReferences = useMemo(() => {
     if (!categorySlug || categorySlug === 'all') {
-      return visibleReferences; // Show all visible references if 'all' or no slug
+      return visibleReferences;
     }
     return groupedReferences[categorySlug] || [];
   }, [categorySlug, groupedReferences, visibleReferences]);
 
   const getHeroMedia = () => {
-    if (!referencesPageSettings) return { type: 'image', url: heroImage };
+    if (!domainsPageSettings) return { type: 'image', url: heroImage };
     
-    const { media_type, source_type, media_url, media_file } = referencesPageSettings;
+    const { media_type, source_type, media_url, media_file } = domainsPageSettings;
 
     if (source_type === 'upload' && media_file) {
       return { type: media_type, url: media_file };
