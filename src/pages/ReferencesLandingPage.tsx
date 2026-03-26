@@ -8,7 +8,6 @@ import { useEditMode } from '@/contexts/EditModeContext';
 import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings';
 import heroImage from '@/assets/hero-engineering.jpg';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
-import StatsHeader from '@/components/references/StatsHeader';
 import ReferencesDashboard from '@/components/references/ReferencesDashboard';
 
 const ReferencesLandingPage = () => {
@@ -44,8 +43,8 @@ const ReferencesLandingPage = () => {
       <div className={isAdmin ? 'pt-12' : ''}>
         <Header />
         <main className="flex-grow">
-          {/* Hero Section - Plus compacte pour laisser place au dashboard */}
-          <section className="relative min-h-[30vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
+          {/* Hero Section - Header principal unique */}
+          <section className="relative min-h-[35vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
             <div className="absolute inset-0 pointer-events-none">
               {isVideo ? (
                 <video 
@@ -77,13 +76,9 @@ const ReferencesLandingPage = () => {
             </div>
           </section>
 
-          {/* Dashboard Section */}
-          <section className="py-16 bg-transparent">
+          {/* Dashboard Section - Accès direct aux filtres et projets */}
+          <section className="py-12 bg-transparent">
             <div className="container mx-auto px-4 lg:px-8" ref={dashboardRef}>
-              {/* Stats Header */}
-              <StatsHeader />
-              
-              {/* Main Dashboard */}
               <ReferencesDashboard />
             </div>
           </section>
