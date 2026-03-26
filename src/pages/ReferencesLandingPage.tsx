@@ -1,22 +1,21 @@
+"use client";
+
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AdminEditBar from '@/components/AdminEditBar';
 import { useEditMode } from '@/contexts/EditModeContext';
-import EditableText from '@/components/EditableText';
-import { useSiteTexts } from '@/hooks/useSupabaseData';
-import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings'; // Switched to domains settings
+import { useDomainsPageSettings } from '@/hooks/useDomainsPageSettings';
 import heroImage from '@/assets/hero-engineering.jpg';
-import SectorsGrid from '@/components/SectorsGrid';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
+import StatsHeader from '@/components/references/StatsHeader';
+import ReferencesDashboard from '@/components/references/ReferencesDashboard';
 
 const ReferencesLandingPage = () => {
-  const { getSiteText } = useSiteTexts();
   const { isAdmin } = useEditMode();
-  const { domainsPageSettings } = useDomainsPageSettings(); // Using domains settings
+  const { domainsPageSettings } = useDomainsPageSettings();
 
-  const sectorsGridRef = useRef<HTMLDivElement>(null);
+  const dashboardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -40,13 +39,13 @@ const ReferencesLandingPage = () => {
   const isVideo = heroMedia.type === 'video' && heroMedia.url;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-light/20">
       <AdminEditBar />
       <div className={isAdmin ? 'pt-12' : ''}>
         <Header />
         <main className="flex-grow">
-          {/* Hero Section */}
-          <section className="relative min-h-[33vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
+          {/* Hero Section - Plus compacte pour laisser place au dashboard */}
+          <section className="relative min-h-[30vh] flex items-center justify-center bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
             <div className="absolute inset-0 pointer-events-none">
               {isVideo ? (
                 <video 
@@ -67,38 +66,31 @@ const ReferencesLandingPage = () => {
                 />
               )}
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/40 pointer-events-none"></div>
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                <EditableText 
-                  textKey="references.landing.title"
-                  defaultValue={getSiteText('references', 'landing', 'title', 'Nos Références par Secteur d\'Activité')}
-                  className="inline" 
-                  as="span" 
-                />
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                Nos Réalisations
               </h1>
-              <p className="text-xl text-white/90 max-w-3xl mx-auto">
-                <EditableText 
-                  textKey="references.landing.description"
-                  defaultValue={getSiteText('references', 'landing', 'description', 'Explorez nos réalisations classées par domaines d\'expertise et types de projets.')}
-                  className="inline" 
-                  as="span" 
-                  multiline 
-                />
+              <p className="text-lg text-white/90 max-w-2xl mx-auto font-medium drop-shadow-md">
+                Découvrez l'expertise de LA MAITRISE ENGINEERING à travers nos projets emblématiques.
               </p>
             </div>
           </section>
 
-          {/* Sectors Grid Section */}
-          <section id="sectors-grid" className="section-padding bg-white">
-            <div className="container mx-auto px-4 lg:px-8" ref={sectorsGridRef}>
-              <SectorsGrid />
+          {/* Dashboard Section */}
+          <section className="py-16 bg-transparent">
+            <div className="container mx-auto px-4 lg:px-8" ref={dashboardRef}>
+              {/* Stats Header */}
+              <StatsHeader />
+              
+              {/* Main Dashboard */}
+              <ReferencesDashboard />
             </div>
           </section>
         </main>
         <Footer />
       </div>
-      <ScrollToTopButton targetRef={sectorsGridRef} />
+      <ScrollToTopButton targetRef={dashboardRef} />
     </div>
   );
 };
