@@ -14,6 +14,9 @@ export interface SectionVisibility {
   founder: boolean;
   contact: boolean;
   chatbot_visible: boolean;
+  page_competences: boolean; // Nouvelle colonne
+  page_domaines: boolean;    // Nouvelle colonne
+  page_references: boolean;  // Nouvelle colonne
   created_at: string;
   updated_at: string;
 }
