@@ -12,7 +12,8 @@ import {
   Printer
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { useContactTexts, useSiteTexts, supabase } from '@/hooks/useSupabaseData';
+import { useContactTexts, useSiteTexts } from '@/hooks/useSupabaseData';
+import { supabase } from '@/integrations/supabase/client';
 import EditableText from '@/components/EditableText';
 
 interface Coordinate {
