@@ -1,10 +1,12 @@
 import React from 'react';
 import { CheckCircle, Award, Users, Lightbulb } from 'lucide-react';
 import founderImage from '@/assets/ahmed-zgolli.jpg';
-import { useFounder } from '@/hooks/useSupabaseData';
+import { useFounder, useSiteTexts } from '@/hooks/useSupabaseData';
+import EditableText from '@/components/EditableText';
 
 const Founder = () => {
   const { founder, loading } = useFounder();
+  const { getSiteText } = useSiteTexts();
   
   const values = [
     {
@@ -44,8 +46,18 @@ const Founder = () => {
             {/* Content */}
             <div className="animate-fade-up">
               <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
-                <span className="text-gradient-primary">À Propos</span>
-                <br />Le Fondateur
+                <EditableText
+                  textKey="home.founder.title_part1"
+                  defaultValue={getSiteText('home', 'founder', 'title_part1', 'À Propos')}
+                  className="text-gradient-primary block"
+                  as="span"
+                />
+                <EditableText
+                  textKey="home.founder.title_part2"
+                  defaultValue={getSiteText('home', 'founder', 'title_part2', 'Le Fondateur')}
+                  className="block"
+                  as="span"
+                />
               </h2>
               
               <div className="text-lg text-gray-medium mb-8 leading-relaxed"

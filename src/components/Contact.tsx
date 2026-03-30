@@ -11,9 +11,9 @@ import {
   MessageSquare,
   Printer
 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast'; // Updated import
-import { useContactTexts } from '@/hooks/useSupabaseData';
-import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
+import { useContactTexts, useSiteTexts, supabase } from '@/hooks/useSupabaseData';
+import EditableText from '@/components/EditableText';
 
 interface Coordinate {
   id: string;
@@ -23,9 +23,10 @@ interface Coordinate {
   position: number;
 }
 
-const Contact = forwardRef<HTMLElement>((props, ref) => { // Use forwardRef here
+const Contact = forwardRef<HTMLElement>((props, ref) => {
   const { toast } = useToast();
   const { getContactText, loading } = useContactTexts();
+  const { getSiteText } = useSiteTexts();
   const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
   const [formData, setFormData] = useState({
     name: '',
@@ -113,21 +114,26 @@ const Contact = forwardRef<HTMLElement>((props, ref) => { // Use forwardRef here
   }
 
   return (
-    <section id="contact" className="section-padding bg-gray-light/30" ref={ref}> {/* Apply ref here */}
+    <section id="contact" className="section-padding bg-gray-light/30" ref={ref}>
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16 animate-fade-up">
             <h2 className="font-heading font-bold text-3xl lg:text-4xl text-gray-dark mb-6">
-              {getContactText('header_title', 'Contactez notre équipe').split(' ').map((word, index, array) => 
-                index === array.length - 2 ? (
-                  <span key={index} className="text-gradient-primary">{word} </span>
-                ) : word + ' '
-              )}
+              <EditableText
+                textKey="home.contact.title"
+                defaultValue={getSiteText('home', 'contact', 'title', 'Contactez notre équipe')}
+                className="inline"
+                as="span"
+              />
             </h2>
-            <p className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed">
-              {getContactText('header_subtitle', 'Prêt à démarrer votre projet ? Contactez-nous pour discuter de vos besoins et découvrir nos solutions d\'ingénierie électrique.')}
-            </p>
+            <EditableText
+              textKey="home.contact.subtitle"
+              defaultValue={getSiteText('home', 'contact', 'subtitle', "Prêt à démarrer votre projet ? Contactez-nous pour discuter de vos besoins et découvrir nos solutions d'ingénierie électrique.")}
+              className="text-xl text-gray-medium max-w-3xl mx-auto leading-relaxed"
+              as="p"
+              multiline
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -410,6 +416,6 @@ const Contact = forwardRef<HTMLElement>((props, ref) => { // Use forwardRef here
   );
 });
 
-Contact.displayName = 'Contact'; // Add display name for forwardRef
+Contact.displayName = 'Contact';
 
 export default Contact;

@@ -21,7 +21,7 @@ interface ConfigItem {
 
 const sections: ConfigItem[] = [
   { key: 'home', label: 'Accueil (Hero)', icon: <Home className="h-5 w-5" /> },
-  { key: 'about', label: 'À propos (Intro)', icon: <Users className="h-5 w-5" /> },
+  { key: 'about', label: 'Intro', icon: <Users className="h-5 w-5" /> },
   { key: 'skills', label: 'Compétences', icon: <Zap className="h-5 w-5" /> },
   { key: 'domains', label: 'Domaines d\'intervention', icon: <Grid3X3 className="h-5 w-5" /> },
   { key: 'projects', label: 'Références', icon: <FolderOpen className="h-5 w-5" /> },
