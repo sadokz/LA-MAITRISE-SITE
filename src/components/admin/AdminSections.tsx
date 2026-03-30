@@ -8,18 +8,18 @@ import { useSectionVisibility } from '@/hooks/useSupabaseData';
 import { useAppColors } from '@/hooks/useAppColors';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, Lightbulb, Building, Trophy, LayoutGrid, Image, MessageCircle, Palette, RefreshCw } from 'lucide-react';
+import { Home, Users, Zap, Grid3X3, FolderOpen, User, Mail, LayoutGrid, Image, MessageCircle, Palette, RefreshCw, FileText } from 'lucide-react';
 import AdminCompetencesPageHero from './AdminCompetencesPageHero';
 import AdminDomainsPageHero from './AdminDomainsPageHero';
 import AdminReferencesPageHero from './AdminReferencesPageHero';
 
-interface SectionConfig {
+interface ConfigItem {
   key: string;
   label: string;
   icon: React.ReactNode;
 }
 
-const sections: SectionConfig[] = [
+const sections: ConfigItem[] = [
   { key: 'home', label: 'Accueil (Hero)', icon: <Home className="h-5 w-5" /> },
   { key: 'about', label: 'À propos', icon: <Users className="h-5 w-5" /> },
   { key: 'skills', label: 'Compétences', icon: <Zap className="h-5 w-5" /> },
@@ -28,6 +28,12 @@ const sections: SectionConfig[] = [
   { key: 'founder', label: 'Le Fondateur', icon: <User className="h-5 w-5" /> },
   { key: 'contact', label: 'Contact', icon: <Mail className="h-5 w-5" /> },
   { key: 'chatbot_visible', label: 'Chatbot', icon: <MessageCircle className="h-5 w-5" /> },
+];
+
+const pages: ConfigItem[] = [
+  { key: 'page_competences', label: 'Page Compétences', icon: <FileText className="h-5 w-5" /> },
+  { key: 'page_domaines', label: 'Page Domaines', icon: <FileText className="h-5 w-5" /> },
+  { key: 'page_references', label: 'Page Références', icon: <FileText className="h-5 w-5" /> },
 ];
 
 const AdminSections = () => {
@@ -43,19 +49,23 @@ const AdminSections = () => {
     }
   }, [appColors]);
 
-  const handleToggle = async (sectionKey: string, newValue: boolean) => {
+  const handleToggle = async (key: string, newValue: boolean, type: 'section' | 'page') => {
     try {
       const { error } = await supabase
         .from('section_visibility')
-        .update({ [sectionKey]: newValue })
+        .update({ [key]: newValue })
         .eq('id', 1);
 
       if (error) throw error;
 
-      toast.success(`Section "${sections.find(s => s.key === sectionKey)?.label}" ${newValue ? 'affichée' : 'masquée'}`);
+      const label = type === 'section' 
+        ? sections.find(s => s.key === key)?.label 
+        : pages.find(p => p.key === key)?.label;
+
+      toast.success(`${label} ${newValue ? 'activée' : 'désactivée'}`);
       refetch();
     } catch (error) {
-      console.error('Error updating section visibility:', error);
+      console.error('Error updating visibility:', error);
       toast.error('Erreur lors de la mise à jour');
     }
   };
@@ -98,11 +108,8 @@ const AdminSections = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            Paramètres des couleurs de l'application
+            Paramètres des couleurs
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Personnalisez les couleurs principales de votre site.
-          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -153,60 +160,60 @@ const AdminSections = () => {
             </Button>
             <Button variant="outline" onClick={handleResetColors} disabled={isUpdating}>
               <RefreshCw className="h-4 w-4 mr-2" />
-              Réinitialiser les couleurs
+              Réinitialiser
             </Button>
           </div>
         </CardContent>
       </Card>
 
+      {/* Section Visibility */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <LayoutGrid className="h-5 w-5" />
-            Visibilité des sections
+            Visibilité des sections (Page d'accueil)
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Activez ou désactivez les sections du site public. Les sections masquées ne seront plus visibles par les visiteurs.
-          </p>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {sections.map((section) => {
-              const visibilityValue = visibility?.[section.key as keyof typeof visibility];
-              const isVisible = typeof visibilityValue === 'boolean' ? visibilityValue : true;
-              
+              const isVisible = visibility?.[section.key as keyof typeof visibility] ?? true;
               return (
-                <div
-                  key={section.key}
-                  className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
-                    isVisible 
-                      ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' 
-                      : 'bg-muted/50 border-border'
-                  }`}
-                >
+                <div key={section.key} className={`flex items-center justify-between p-4 rounded-lg border ${isVisible ? 'bg-green-50 border-green-200' : 'bg-muted/50 border-border'}`}>
                   <div className="flex items-center gap-3">
-                    <div className={`${isVisible ? 'text-green-600' : 'text-muted-foreground'}`}>
-                      {section.icon}
-                    </div>
-                    <Label 
-                      htmlFor={`toggle-${section.key}`} 
-                      className={`font-medium cursor-pointer ${
-                        isVisible ? 'text-foreground' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {section.label}
-                    </Label>
+                    <div className={isVisible ? 'text-green-600' : 'text-muted-foreground'}>{section.icon}</div>
+                    <Label htmlFor={`toggle-${section.key}`} className="font-medium cursor-pointer">{section.label}</Label>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-medium ${isVisible ? 'text-green-600' : 'text-muted-foreground'}`}>
-                      {isVisible ? 'Visible' : 'Masquée'}
-                    </span>
-                    <Switch
-                      id={`toggle-${section.key}`}
-                      checked={isVisible}
-                      onCheckedChange={(checked) => handleToggle(section.key, checked)}
-                    />
+                  <Switch id={`toggle-${section.key}`} checked={isVisible} onCheckedChange={(checked) => handleToggle(section.key, checked, 'section')} />
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Page Visibility */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Visibilité des pages dédiées
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Désactiver une page la masquera de la navigation et désactivera les boutons "En savoir plus".
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {pages.map((page) => {
+              const isVisible = visibility?.[page.key as keyof typeof visibility] ?? true;
+              return (
+                <div key={page.key} className={`flex items-center justify-between p-4 rounded-lg border ${isVisible ? 'bg-blue-50 border-blue-200' : 'bg-muted/50 border-border'}`}>
+                  <div className="flex items-center gap-3">
+                    <div className={isVisible ? 'text-blue-600' : 'text-muted-foreground'}>{page.icon}</div>
+                    <Label htmlFor={`toggle-${page.key}`} className="font-medium cursor-pointer">{page.label}</Label>
                   </div>
+                  <Switch id={`toggle-${page.key}`} checked={isVisible} onCheckedChange={(checked) => handleToggle(page.key, checked, 'page')} />
                 </div>
               );
             })}
@@ -221,9 +228,6 @@ const AdminSections = () => {
             <Image className="h-5 w-5" />
             Paramètres des bannières de page
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Gérez les images ou vidéos de fond pour les pages dédiées aux compétences, domaines et références.
-          </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <AdminCompetencesPageHero />

@@ -3,12 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useSiteTexts, useCompetences } from '@/hooks/useSupabaseData';
+import { useSiteTexts, useCompetences, useSectionVisibility } from '@/hooks/useSupabaseData';
 import EditableText from '@/components/EditableText';
 
 const Services = () => {
   const { getSiteText } = useSiteTexts();
   const { competences } = useCompetences();
+  const { data: visibility } = useSectionVisibility();
+
+  const isPageVisible = visibility?.page_competences ?? true;
 
   return (
     <section id="competences" className="py-20 bg-muted/30">
@@ -39,17 +42,17 @@ const Services = () => {
             </Card>
           ))}
         </div>
-        <div className="text-center mt-12">
-          <Button 
-            asChild 
-            className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3"
-          >
-            <Link to="/competences">
-              En Savoir Plus
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
+        
+        {isPageVisible && (
+          <div className="text-center mt-12">
+            <Button asChild className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3">
+              <Link to="/competences">
+                En Savoir Plus
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );
