@@ -63,7 +63,7 @@ const Header = () => {
     { label: 'Compétences', path: '/competences', isVisible: isVisible('page_competences') },
     { label: 'Domaines d\'intervention', path: '/domaines', isVisible: isVisible('page_domaines') },
     { label: 'Références', path: '/references', isVisible: isVisible('page_references') },
-    { label: 'Le Fondateur', id: 'fondateur', isVisible: isVisible('founder') },
+    { label: 'À Propos', id: 'fondateur', isVisible: isVisible('founder') },
     { label: 'Contact', id: 'contact', isVisible: isVisible('contact') },
   ];
 

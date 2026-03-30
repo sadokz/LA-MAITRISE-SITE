@@ -8,7 +8,7 @@ import { LogOut, Settings, Lightbulb, Building, Trophy, User, Phone, Home, Penci
 import AdminHero from '@/components/admin/AdminHero';
 import AdminCompetences from '@/components/admin/AdminCompetences';
 import AdminDomaines from '@/components/admin/AdminDomaines';
-import AdminReferences from '@/components/admin/AdminReferences'; // Renamed import
+import AdminReferences from '@/components/admin/AdminReferences';
 import AdminFounder from '@/components/admin/AdminFounder';
 import AdminContact from '@/components/admin/AdminContact';
 import AdminSections from '@/components/admin/AdminSections';
@@ -100,13 +100,13 @@ const Admin = () => {
               <Building className="h-4 w-4" />
               <span>Domaines</span>
             </TabsTrigger>
-            <TabsTrigger value="references" className="flex items-center space-x-2"> {/* Renamed tab trigger */}
+            <TabsTrigger value="references" className="flex items-center space-x-2">
               <Trophy className="h-4 w-4" />
-              <span>Références</span> {/* Renamed tab label */}
+              <span>Références</span>
             </TabsTrigger>
             <TabsTrigger value="founder" className="flex items-center space-x-2">
               <User className="h-4 w-4" />
-              <span>Fondateur</span>
+              <span>À Propos</span>
             </TabsTrigger>
             <TabsTrigger value="contact" className="flex items-center space-x-2">
               <Phone className="h-4 w-4" />
@@ -151,13 +151,13 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="references"> {/* Renamed tab content value */}
+          <TabsContent value="references">
             <Card>
               <CardHeader>
-                <CardTitle>Gestion des références</CardTitle> {/* Renamed card title */}
+                <CardTitle>Gestion des références</CardTitle>
               </CardHeader>
               <CardContent>
-                <AdminReferences /> {/* Renamed component */}
+                <AdminReferences />
               </CardContent>
             </Card>
           </TabsContent>
@@ -165,7 +165,7 @@ const Admin = () => {
           <TabsContent value="founder">
             <Card>
               <CardHeader>
-                <CardTitle>Gestion du fondateur</CardTitle>
+                <CardTitle>Gestion de la section À Propos</CardTitle>
               </CardHeader>
               <CardContent>
                 <AdminFounder />

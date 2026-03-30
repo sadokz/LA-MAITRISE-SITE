@@ -48,7 +48,8 @@ const Footer = () => {
     { label: 'Accueil', id: 'accueil', type: 'scroll' },
     { label: 'Compétences', path: '/competences', type: 'page' },
     { label: 'Domaines', path: '/domaines', type: 'page' },
-    { label: 'Références', path: '/references', type: 'page' }, // Now points to the landing page
+    { label: 'Références', path: '/references', type: 'page' },
+    { label: 'À Propos', id: 'fondateur', type: 'scroll' },
     { label: 'Contact', id: 'contact', type: 'scroll' }
   ];
 
