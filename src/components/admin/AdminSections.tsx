@@ -234,7 +234,7 @@ const AdminSections = () => {
           <AdminDomainsPageHero />
           <AdminReferencesPageHero />
         </CardContent>
-      </div>
+      </Card>
     </div>
   );
 };
